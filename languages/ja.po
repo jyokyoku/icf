@@ -1,0 +1,319 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Inspire Custom field Framework\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-04-07 22:13+0900\n"
+"PO-Revision-Date: 2012-04-07 23:24+0900\n"
+"Last-Translator: Masayuki Ietomi <jyokyoku@gmail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: __;_e;_x\n"
+"X-Poedit-Basepath: D:/Htdocs/wordpress/development/wp-content/plugins/icf-sample\n"
+"X-Poedit-Language: Japanese\n"
+"X-Poedit-Country: JAPAN\n"
+"X-Poedit-SearchPath-0: icf\n"
+
+#: icf/component.php:481
+msgid "Select File"
+msgstr "ファイル選択"
+
+#: icf/component.php:496
+msgid "Clear"
+msgstr "クリア"
+
+#: icf/custompost.php:37
+msgid "Add New"
+msgstr "新規追加"
+
+#: icf/custompost.php:38
+#: icf/custompost.php:98
+#, php-format
+msgid "Add New %s"
+msgstr "新規%sを追加"
+
+#: icf/custompost.php:39
+#: icf/custompost.php:95
+#, php-format
+msgid "Edit %s"
+msgstr "%sを編集"
+
+#: icf/custompost.php:40
+#, php-format
+msgid "New %s"
+msgstr "新規%s"
+
+#: icf/custompost.php:41
+#: icf/custompost.php:96
+#, php-format
+msgid "View %s"
+msgstr "%sを表示"
+
+#: icf/custompost.php:42
+#: icf/custompost.php:90
+#, php-format
+msgid "Search %s"
+msgstr "%sを検索"
+
+#: icf/custompost.php:43
+#, php-format
+msgid "No %s found."
+msgstr "%sが見つかりませんでした。"
+
+#: icf/custompost.php:44
+#, php-format
+msgid "No %s found in Trash."
+msgstr "ゴミ箱内に%sが見つかりませんでした。"
+
+#: icf/custompost.php:45
+#: icf/custompost.php:94
+#, php-format
+msgid "Parent %s:"
+msgstr "親%s:"
+
+#: icf/custompost.php:46
+#: icf/custompost.php:92
+#, php-format
+msgid "All %s"
+msgstr "%s一覧"
+
+#: icf/custompost.php:91
+#, php-format
+msgid "Popular %s"
+msgstr "人気の%s"
+
+#: icf/custompost.php:93
+#, php-format
+msgid "Parent %s"
+msgstr "親%s"
+
+#: icf/custompost.php:97
+#, php-format
+msgid "Update %s"
+msgstr "%sを更新"
+
+#: icf/custompost.php:99
+#, php-format
+msgid "New %s Name"
+msgstr "新規%s名"
+
+#: icf/custompost.php:100
+#, php-format
+msgid "Separate %s with commas"
+msgstr "%sが複数ある場合はコンマで区切ってください"
+
+#: icf/custompost.php:101
+#, php-format
+msgid "Add or remove %s"
+msgstr "%sの追加もしくは削除"
+
+#: icf/custompost.php:102
+#, php-format
+msgid "Choose from the most used %s"
+msgstr "よく使われている%sから選択"
+
+#: icf/loader.php:131
+msgid "Insert to field"
+msgstr "フィールドに挿入"
+
+#: icf/loader.php:132
+msgid "Cancel"
+msgstr "戻る"
+
+#: icf/loader.php:133
+msgid "mm/dd/yy"
+msgstr "yyyy/mm/dd"
+
+#: icf/loader.php:134
+msgid "mmddy"
+msgstr "yymmdd"
+
+#: icf/loader.php:135
+msgid "Sunday"
+msgstr "日曜"
+
+#: icf/loader.php:136
+msgid "Monday"
+msgstr "月曜"
+
+#: icf/loader.php:137
+msgid "Tuesday"
+msgstr "火曜"
+
+#: icf/loader.php:138
+msgid "Wednesday"
+msgstr "水曜"
+
+#: icf/loader.php:139
+msgid "Thursday"
+msgstr "木曜"
+
+#: icf/loader.php:140
+msgid "Friday"
+msgstr "金曜"
+
+#: icf/loader.php:141
+msgid "Saturday"
+msgstr "土曜"
+
+#: icf/loader.php:142
+msgid "Sun"
+msgstr "日"
+
+#: icf/loader.php:143
+msgid "Mon"
+msgstr "月"
+
+#: icf/loader.php:144
+msgid "Tue"
+msgstr "火"
+
+#: icf/loader.php:145
+msgid "Wed"
+msgstr "水"
+
+#: icf/loader.php:146
+msgid "Thu"
+msgstr "木"
+
+#: icf/loader.php:147
+msgid "Fri"
+msgstr "金"
+
+#: icf/loader.php:148
+msgid "Sat"
+msgstr "土"
+
+#: icf/loader.php:149
+msgid "Day"
+msgstr "日"
+
+#: icf/loader.php:150
+msgid "Hours"
+msgstr "時"
+
+#: icf/loader.php:151
+msgid "Minutes"
+msgstr "分"
+
+#: icf/loader.php:152
+msgid "January"
+msgstr "1月"
+
+#: icf/loader.php:153
+msgid "February"
+msgstr "2月"
+
+#: icf/loader.php:154
+msgid "March"
+msgstr "3月"
+
+#: icf/loader.php:155
+msgid "April"
+msgstr "4月"
+
+#. translators: long
+#: icf/loader.php:156
+msgctxt "long"
+msgid "May"
+msgstr "5月"
+
+#: icf/loader.php:157
+msgid "June"
+msgstr "6月"
+
+#: icf/loader.php:158
+msgid "July"
+msgstr "7月"
+
+#: icf/loader.php:159
+msgid "August"
+msgstr "8月"
+
+#: icf/loader.php:160
+msgid "September"
+msgstr "9月"
+
+#: icf/loader.php:161
+msgid "October"
+msgstr "10月"
+
+#: icf/loader.php:162
+msgid "November"
+msgstr "11月"
+
+#: icf/loader.php:163
+msgid "December"
+msgstr "12月"
+
+#: icf/loader.php:164
+msgid "Jan"
+msgstr "1月"
+
+#: icf/loader.php:165
+msgid "Feb"
+msgstr "2月"
+
+#: icf/loader.php:166
+msgid "Mar"
+msgstr "3月"
+
+#: icf/loader.php:167
+msgid "Apr"
+msgstr "4月"
+
+#. translators: short
+#: icf/loader.php:168
+msgctxt "short"
+msgid "May"
+msgstr "5月"
+
+#: icf/loader.php:169
+msgid "Jun"
+msgstr "6月"
+
+#: icf/loader.php:170
+msgid "Jul"
+msgstr "7月"
+
+#: icf/loader.php:171
+msgid "Aug"
+msgstr "8月"
+
+#: icf/loader.php:172
+msgid "Sep"
+msgstr "9月"
+
+#: icf/loader.php:173
+msgid "Oct"
+msgstr "10月"
+
+#: icf/loader.php:174
+msgid "Nov"
+msgstr "11月"
+
+#: icf/loader.php:175
+msgid "Dec"
+msgstr "12月"
+
+#: icf/loader.php:176
+msgid "Month"
+msgstr "月"
+
+#: icf/loader.php:177
+msgid "Seconds"
+msgstr "病"
+
+#: icf/loader.php:178
+msgid "Set"
+msgstr "設定"
+
+#: icf/loader.php:179
+msgid "hh:ii A"
+msgstr "H:i"
+
+#: icf/loader.php:180
+msgid "Year"
+msgstr "年"
+
