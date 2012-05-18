@@ -109,6 +109,8 @@ class ICF_Tag
 			$html .= $element->render();
 		}
 
+		$this->clear();
+
 		return $html;
 	}
 

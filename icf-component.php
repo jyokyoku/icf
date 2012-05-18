@@ -130,6 +130,8 @@ abstract class ICF_Component_Abstract extends ICF_Tag
 			$html .= $result;
 		}
 
+		$this->clear();
+
 		echo $html;
 	}
 
