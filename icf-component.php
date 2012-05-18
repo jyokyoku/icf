@@ -7,9 +7,9 @@
  * @copyright	Copyright(c) 2011 Masayuki Ietomi
  */
 
-require_once dirname(__FILE__) . '/tag.php';
-require_once dirname(__FILE__) . '/form.php';
-require_once dirname(__FILE__) . '/inflector.php';
+require_once dirname(__FILE__) . '/icf-tag.php';
+require_once dirname(__FILE__) . '/icf-form.php';
+require_once dirname(__FILE__) . '/icf-inflector.php';
 
 abstract class ICF_Component_Abstract extends ICF_Tag
 {

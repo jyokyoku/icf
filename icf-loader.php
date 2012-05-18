@@ -39,7 +39,7 @@ if (!class_exists('ICF_Loader')) {
 			}
 
 			$base_dir = self::get_latest_version_dir();
-			load_textdomain('icf', $base_dir . '/languages/' . get_locale() . '.mo');
+			load_textdomain('icf', $base_dir . '/languages/icf-' . get_locale() . '.mo');
 
 			if ($dh = opendir($base_dir)) {
 				while (false !== ($file = readdir($dh))) {
