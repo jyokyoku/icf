@@ -31,7 +31,7 @@ class ICF_MetaBox
 	public function __construct($post_type, $id, $title = null, $args = array())
 	{
 		$args = wp_parse_args($args, array(
-			'context' => 'normal', 'priority' => 'default', 'capability' => null
+			'context' => 'normal', 'priority' => 'default', 'capability' => null, 'register' => true
 		));
 
 		$this->_post_type = $post_type;
@@ -44,7 +44,11 @@ class ICF_MetaBox
 
 		add_action('admin_print_scripts', array($this, 'add_scripts'));
 		add_action('admin_print_styles', array($this, 'add_styles'));
-		add_action('admin_menu', array($this, 'register'));
+
+		if ($args['register']) {
+			add_action('admin_menu', array($this, 'register'));
+		}
+
 		add_action('save_post', array($this, 'save'));
 	}
 
