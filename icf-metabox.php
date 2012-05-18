@@ -7,7 +7,7 @@
  * @copyright	Copyright(c) 2011 Masayuki Ietomi
  */
 
-require_once dirname(__FILE__) . '/component.php';
+require_once dirname(__FILE__) . '/icf-component.php';
 
 class ICF_MetaBox
 {
