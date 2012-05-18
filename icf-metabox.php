@@ -268,6 +268,8 @@ class ICF_MetaBox_Component extends ICF_Component_Abstract
 			$html .= $result;
 		}
 
+		$this->clear();
+
 		echo $html;
 	}
 }
