@@ -89,7 +89,7 @@ abstract class ICF_SettingsPage_Abstract
 			@include $this->template;
 
 		} else if ($this->template && is_callable($this->template)) {
-			$this->template($this);
+			call_user_func_array($this->template, array($this));
 
 		} else {
 			require ABSPATH . 'wp-admin/options-head.php';
