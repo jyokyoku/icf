@@ -23,7 +23,9 @@ if (!class_exists('ICF_Loader')) {
 		public static function init($callback = '')
 		{
 			if ($callback) {
-				add_action('icf_loaded', $callback, 10, 1);
+				foreach ((array)$callback as $_callback) {
+					add_action('icf_loaded', $_callback, 10, 1);
+				}
 			}
 
 			add_action('after_setup_theme', array('ICF_Loader', 'load'));
