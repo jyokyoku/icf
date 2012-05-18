@@ -413,7 +413,7 @@ class ICF_SettingsPage_Section
 	}
 }
 
-class ICF_SettingsPage_Section_Component extends ICF_Component_Abstract
+class ICF_SettingsPage_Section_Component extends ICF_Component
 {
 	public $title;
 

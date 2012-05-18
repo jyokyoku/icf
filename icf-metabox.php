@@ -198,7 +198,7 @@ class ICF_MetaBox
 	}
 }
 
-class ICF_MetaBox_Component extends ICF_Component_Abstract
+class ICF_MetaBox_Component extends ICF_Component
 {
 	public $title;
 
