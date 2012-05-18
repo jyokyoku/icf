@@ -1,4 +1,9 @@
 <?php
+function icf_find(array $array, $key, $default = null)
+{
+	return isset($array[$key]) ? $array[$key] : $default;
+}
+
 function icf_extract(array &$array, $key)
 {
 	$keys = array_splice(func_get_args(), 1);
