@@ -252,16 +252,13 @@ class ICF_MetaBox_Component extends ICF_Component_Abstract
 		$html = $this->title ? ICF_Tag::create('p', null, ICF_Tag::create('strong', null, $this->title)) : '';
 
 		foreach ($this->_elements as $element) {
-			$before = $this->_element_callback($element, 'before_render');
-
-			if ($before === false) {
+			if ($this->_element_trigger($element, 'before_render') === false) {
 				continue;
 			}
 
-			$result = $element->render($post);
-			$after = $this->_element_callback($element, 'after_render', array($result));
+			$result = $element->render();
 
-			if ($after !== true) {
+			if (($after = $this->_element_trigger($element, 'after_render', array($result))) && $after !== true) {
 				$result = $after;
 			}
 

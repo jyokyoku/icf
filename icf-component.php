@@ -99,7 +99,7 @@ abstract class ICF_Component_Abstract extends ICF_Tag
 			throw new Exception('Class "' . $element_class . '" is not sub class of the "' . $sub_class . '"');
 		}
 
-		$this->_element_callback($element, 'initialize');
+		$this->_element_trigger($element, 'initialize');
 		$this->_elements[] = $element;
 
 		return $this;
@@ -114,16 +114,13 @@ abstract class ICF_Component_Abstract extends ICF_Tag
 		$html = '';
 
 		foreach ($this->_elements as $element) {
-			$before = $this->_element_callback($element, 'before_render');
-
-			if ($before === false) {
+			if ($this->_element_trigger($element, 'before_render') === false) {
 				continue;
 			}
 
 			$result = $element->render();
-			$after = $this->_element_callback($element, 'after_render', array($result));
 
-			if ($after !== true) {
+			if (($after = $this->_element_trigger($element, 'after_render', array($result))) && $after !== true) {
 				$result = $after;
 			}
 
@@ -136,16 +133,16 @@ abstract class ICF_Component_Abstract extends ICF_Tag
 	}
 
 	/**
-	 * Trigger callback function of element
+	 * Trigger function of element
 	 *
 	 * @param	ICF_Tag_Element_Interface	$element
-	 * @param	callback					$callback
+	 * @param	callback					$function
 	 * @return	mixed
 	 */
-	protected function _element_callback(ICF_Tag_Element_Interface $element, $callback, array $args = array())
+	protected function _element_trigger(ICF_Tag_Element_Interface $element, $function, array $args = array())
 	{
-		if (is_subclass_of($element, 'ICF_Component_Element_Abstract') && method_exists($element, $callback)) {
-			return call_user_func_array(array($element, $callback), $args);
+		if (method_exists($element, $function)) {
+			return call_user_func_array(array($element, $function), $args);
 		}
 
 		return true;
