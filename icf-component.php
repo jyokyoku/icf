@@ -11,9 +11,9 @@ require_once dirname(__FILE__) . '/icf-tag.php';
 require_once dirname(__FILE__) . '/icf-form.php';
 require_once dirname(__FILE__) . '/icf-inflector.php';
 
-abstract class ICF_Component_Abstract extends ICF_Tag
+class ICF_Component extends ICF_Tag
 {
-	protected $_name;
+	protected $_name = '';
 	protected $_name_cache = array();
 	protected $_form_types = array('media', 'date');
 
@@ -169,12 +169,12 @@ abstract class ICF_Component_Abstract extends ICF_Tag
 
 interface ICF_Component_Element_General_Interface
 {
-	public function __construct(ICF_Component_Abstract $component);
+	public function __construct(ICF_Component $component);
 }
 
 interface ICF_Component_Element_FormField_Interface
 {
-	public function __construct(ICF_Component_Abstract $component, $name, $value = null, array $args = array());
+	public function __construct(ICF_Component $component, $name, $value = null, array $args = array());
 }
 
 abstract class ICF_Component_Element_Abstract implements ICF_Tag_Element_Interface
@@ -202,9 +202,9 @@ abstract class ICF_Component_Element_General_Abstract extends ICF_Component_Elem
 	/**
 	 * Constructor
 	 *
-	 * @param	ICF_Component_Abstract	$component
+	 * @param	ICF_Component	$component
 	 */
-	public function __construct(ICF_Component_Abstract $component)
+	public function __construct(ICF_Component $component)
 	{
 		$this->_component = $component;
 	}
@@ -225,12 +225,12 @@ abstract class ICF_Component_Element_FormField_Abstract extends ICF_Component_El
 	/**
 	 * Constructor
 	 *
-	 * @param	ICF_Component_Abstract	$component
+	 * @param	ICF_Component	$component
 	 * @param	string					$name
 	 * @param	int|string				$value
 	 * @param	array					$args
 	 */
-	public function __construct(ICF_Component_Abstract $component, $name, $value = null, array $args = array())
+	public function __construct(ICF_Component $component, $name, $value = null, array $args = array())
 	{
 		if (is_array($name)) {
 			$args = $name;
@@ -297,7 +297,7 @@ class ICF_Component_Element_Validation extends ICF_Component_Element_General_Abs
 {
 	protected $_rules = array();
 
-	public function __construct(ICF_Component_Abstract $component, $rules = array(), $container = null)
+	public function __construct(ICF_Component $component, $rules = array(), $container = null)
 	{
 		parent::__construct($component);
 		$container_args = array();
@@ -329,7 +329,7 @@ class ICF_Component_Element_Nbsp extends ICF_Component_Element_General_Abstract
 {
 	protected $_repeat = 1;
 
-	public function __construct(ICF_Component_Abstract $component, $repeat = 1)
+	public function __construct(ICF_Component $component, $repeat = 1)
 	{
 		parent::__construct($component);
 
@@ -351,7 +351,7 @@ class ICF_Component_Element_Button_Secondary extends ICF_Component_Element_Gener
 	protected $_value;
 	protected $_args = array();
 
-	public function __construct(ICF_Component_Abstract $component, $value = null, $args = array())
+	public function __construct(ICF_Component $component, $value = null, $args = array())
 	{
 		$this->_value = $value;
 		$this->_args = $args;
@@ -380,7 +380,7 @@ class ICF_Component_Element_Button_Media extends ICF_Component_Element_General_A
 {
 	protected $_for;
 
-	public function __construct(ICF_Component_Abstract $component, $for = null, $value = null, $args = array())
+	public function __construct(ICF_Component $component, $for = null, $value = null, $args = array())
 	{
 		$this->_for = $for;
 		$this->_value = $value;
@@ -422,6 +422,46 @@ class ICF_Component_Element_Button_Reset extends ICF_Component_Element_Button_Me
 		$this->_args['data-for'] = $this->_for;
 		$this->_args['type'] = 'button';
 		ICF_Tag_Element_Node::add_class($this->_args, 'button reset_button');
+	}
+}
+
+class ICF_Component_Element_Text extends ICF_Component_Element_FormField_Abstract
+{
+	public function render()
+	{
+		return ICF_Form::text($this->_name, $this->_value, $this->_args);
+	}
+}
+
+class ICF_Component_Element_Checkbox extends ICF_Component_Element_FormField_Abstract
+{
+	public function render()
+	{
+		return ICF_Form::checkbox($this->_name, $this->_value, $this->_args);
+	}
+}
+
+class ICF_Component_Element_Radio extends ICF_Component_Element_FormField_Abstract
+{
+	public function render()
+	{
+		return ICF_Form::radio($this->_name, $this->_value, $this->_args);
+	}
+}
+
+class ICF_Component_Element_Textarea extends ICF_Component_Element_FormField_Abstract
+{
+	public function render()
+	{
+		return ICF_Form::textarea($this->_name, $this->_value, $this->_args);
+	}
+}
+
+class ICF_Component_Element_Select extends ICF_Component_Element_FormField_Abstract
+{
+	public function render()
+	{
+		return ICF_Form::select($this->_name, $this->_value, $this->_args);
 	}
 }
 
