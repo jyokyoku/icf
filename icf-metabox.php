@@ -260,7 +260,7 @@ class ICF_MetaBox_Component extends ICF_Component
 				continue;
 			}
 
-			$result = $element->render();
+			$result = $element->render($post);
 
 			if (($after = $this->_element_trigger($element, 'after_render', array($result))) && $after !== true) {
 				$result = $after;
