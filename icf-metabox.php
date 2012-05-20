@@ -297,13 +297,7 @@ abstract class ICF_MetaBox_Component_Element_FormField_Abstract extends ICF_Comp
 		}
 
 		$value = $_POST[$this->_name];
-
-		if ($value != '') {
-			update_post_meta($post_id, $this->_name, $value);
-
-		} else {
-			delete_post_meta($post_id, $this->_name);
-		}
+		update_post_meta($post_id, $this->_name, $value);
 
 		return true;
 	}
