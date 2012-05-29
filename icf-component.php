@@ -594,7 +594,7 @@ class ICF_Component_Element_Media extends ICF_Component_Element_FormField_Abstra
 		}
 
 		$this->_component
-			->text($this->_name, null, $this->_args)
+			->text($this->_name, $this->_value, $this->_args)
 			->nbsp(1)
 			->button_media($this->_name, $media_label, $media);
 
