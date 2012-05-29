@@ -260,7 +260,7 @@ class ICF_MetaBox_Component extends ICF_Component
 				continue;
 			}
 
-			$result = $element->render();
+			$result = $element->render($post);
 
 			if (($after = $this->_element_trigger($element, 'after_render', array($result))) && $after !== true) {
 				$result = $after;
@@ -297,13 +297,7 @@ abstract class ICF_MetaBox_Component_Element_FormField_Abstract extends ICF_Comp
 		}
 
 		$value = $_POST[$this->_name];
-
-		if ($value != '') {
-			update_post_meta($post_id, $this->_name, $value);
-
-		} else {
-			delete_post_meta($post_id, $this->_name);
-		}
+		update_post_meta($post_id, $this->_name, $value);
 
 		return true;
 	}
