@@ -217,7 +217,7 @@ class ICF_Form
 
 	protected static function _generate_id($name)
 	{
-		return '_' . $name;
+		return '_' . preg_replace(array('/\]\[|\[/', '/(\[\]|\])/'), array('_', ''), $name);
 	}
 
 	protected static function _filter_label($label, $type = 'text')
