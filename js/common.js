@@ -12,7 +12,7 @@
 
 		$('button.media_button').live('click', function() {
 			var field = $(this).data('for'),
-				$element = $('input[name=' + field + '], textarea[name=' + field + ']');
+				$element = $('input[name="' + field + '"], textarea[name="' + field + '"]');
 
 			if ($element) {
 				var insertAtCaret;
