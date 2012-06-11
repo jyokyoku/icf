@@ -80,7 +80,15 @@
 
 						case 'url':
 						default:
-							data = $(html).find('img').attr('src');
+							if ($(html).find('img').length > 0) {
+								data = $(html).find('img').attr('src');
+
+							} else if ($(html).find('a').length > 0) {
+								data = $(html).find('a').attr('href');
+
+							} else {
+								data = $(html).html();
+							}
 					}
 
 					switch (mode) {
