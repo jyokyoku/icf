@@ -507,8 +507,8 @@ abstract class ICF_SettingsPage_Section_Component_Element_FormField_Abstract ext
 	{
 		register_setting($this->_component->get_page_slug(), $this->_name);
 
-		if (get_option($this->_name) === false) {
-			add_option($this->_name, '');
+		if (!get_option($this->_name) && $this->_value) {
+			update_option($this->_name, $this->_value);
 		}
 	}
 
