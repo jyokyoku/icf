@@ -200,6 +200,83 @@ class ICF_MetaBox
 			$component->save($post_id);
 		}
 	}
+
+	/**
+	 * Refresh postmeta for all the post
+	 *
+	 * @param int $posts_per_page
+	 * @param int $force
+	 */
+	public function refresh($posts_per_page = 0, $force = 0)
+	{
+		global $wpdb;
+
+		$return = true;
+
+		$uniq_id = sha1(serialize($this->_components));
+		$status_key = $uniq_id . '_reflash';
+
+		$status = ($force > 1) ? false : get_option($status_key, false);
+		delete_option($status_key);
+
+		$query = "
+			SELECT %s
+			FROM $wpdb->posts as p
+			WHERE p.post_status IN ('publish', 'draft') AND p.post_type = '{$this->_post_type}'
+		";
+
+		if ($status === false) {
+			$posts_per_page = (int)$posts_per_page;
+			$total = $wpdb->get_var(sprintf($query, 'COUNT(p.ID) as count'));
+
+			if ($total <= 0) {
+				return false;
+			}
+
+			if ($posts_per_page > 0 && $total > $posts_per_page) {
+				$query .= " LIMIT {$posts_per_page}";
+				update_option($status_key, serialize(array('posts_per_page' => $posts_per_page, 'page' => 1, 'force' => (bool)$force)));
+			}
+
+			$post_ids = $wpdb->get_col(sprintf($query, 'p.ID'));
+			$return = false;
+
+		} else if ($status) {
+			$status = unserialize($status);
+
+			if (!isset($status['posts_per_page'], $status['page'], $status['force'])) {
+				return false;
+			}
+
+			$posts_per_page = (int)$status['posts_per_page'];
+			$page = (int)$status['page'];
+			$force = (boolean)$status['force'];
+
+			$total = $wpdb->get_var(sprintf($query, 'COUNT(p.ID) as count'));
+			$offset = $posts_per_page * $page;
+			$max = $posts_per_page * ($page + 1);
+
+			$query .= " LIMIT {$offset}, {$max}";
+
+			if ($max > $count) {
+				delete_option($status_key);
+				$return = false;
+
+			} else {
+				update_option($status_key, serialize(array('posts_per_page' => $posts_per_page, 'page' => $page + 1, 'force' => (bool)$force)));
+			}
+
+			$post_ids = $wpdb->get_col(sprintf($query, 'p.ID'));
+		}
+
+		foreach ((array)$post_ids as $post_id) {
+			foreach ($this->_components as $component) {
+				$component->refresh($post_id, $force);
+			}
+		}
+
+		return $return;
+	}
 }
 
 class ICF_MetaBox_Component extends ICF_Component
@@ -243,6 +320,15 @@ class ICF_MetaBox_Component extends ICF_Component
 		foreach ($this->_elements as $element) {
 			if (is_subclass_of($element, 'ICF_MetaBox_Component_Element_FormField_Abstract')) {
 				$element->save($post_id);
+			}
+		}
+	}
+
+	public function refresh($post_id, $force = false)
+	{
+		foreach ($this->_elements as $element) {
+			if (is_subclass_of($element, 'ICF_MetaBox_Component_Element_FormField_Abstract')) {
+				$element->refresh($post_id, $force);
 			}
 		}
 	}
@@ -300,6 +386,13 @@ abstract class ICF_MetaBox_Component_Element_FormField_Abstract extends ICF_Comp
 		update_post_meta($post_id, $this->_name, $value);
 
 		return true;
+	}
+
+	public function refresh($post_id, $force = false)
+	{
+		if ($force || get_post_meta($post_id, $this->_name, true) === false) {
+			update_post_meta($post_id, $this->_name, $this->_value);
+		}
 	}
 }
 
