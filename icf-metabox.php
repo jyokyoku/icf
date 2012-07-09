@@ -190,6 +190,9 @@ class ICF_MetaBox
     		return $post_id;
 		}
 
+		$status_key = $this->_generate_uniq_id() . '_refresh';
+		delete_option($status_key);
+
 		$nonce = isset($_POST['_' . $this->_id . '_nonce']) ? $_POST['_' . $this->_id . '_nonce'] : '';
 
 		if (!$nonce || !wp_verify_nonce($nonce, $this->_id)) {
@@ -202,21 +205,21 @@ class ICF_MetaBox
 	}
 
 	/**
-	 * Refresh postmeta for all the post
+	 * Refresh postmeta for all posts
 	 *
 	 * @param int $posts_per_page
 	 * @param int $force
+	 * @param boolean $force_start_first
+	 * @return boolean
 	 */
-	public function refresh($posts_per_page = 0, $force = 0)
+	public function refresh($posts_per_page = 0, $force = 0, $force_start_first = false)
 	{
 		global $wpdb;
 
 		$return = true;
+		$status_key = $this->_generate_uniq_id() . '_refresh';
 
-		$uniq_id = sha1(serialize($this->_components));
-		$status_key = $uniq_id . '_reflash';
-
-		$status = ($force > 1) ? false : get_option($status_key, false);
+		$status = $force_start_first ? false : get_option($status_key, false);
 		delete_option($status_key);
 
 		$query = "
@@ -276,6 +279,11 @@ class ICF_MetaBox
 		}
 
 		return $return;
+	}
+
+	protected function _generate_uniq_id()
+	{
+		return 'icf_metabox_' . sha1(serialize($this->_components));
 	}
 }
 
