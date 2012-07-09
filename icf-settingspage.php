@@ -507,7 +507,7 @@ abstract class ICF_SettingsPage_Section_Component_Element_FormField_Abstract ext
 	{
 		register_setting($this->_component->get_page_slug(), $this->_name);
 
-		if (!get_option($this->_name) && $this->_value) {
+		if (get_option($this->_name) === false && $this->_value) {
 			update_option($this->_name, $this->_value);
 		}
 	}
@@ -542,6 +542,15 @@ class ICF_SettingsPage_Section_Component_Element_Text extends ICF_SettingsPage_S
 
 class ICF_SettingsPage_Section_Component_Element_Checkbox extends ICF_SettingsPage_Section_Component_Element_FormField_Abstract
 {
+	public function register()
+	{
+		register_setting($this->_component->get_page_slug(), $this->_name);
+
+		if (get_option($this->_name) === false && $this->_value && !empty($this->_args['default'])) {
+			update_option($this->_name, $this->_value);
+		}
+	}
+
 	public function render()
 	{
 		$value = get_option($this->_name);
@@ -557,6 +566,20 @@ class ICF_SettingsPage_Section_Component_Element_Checkbox extends ICF_SettingsPa
 
 class ICF_SettingsPage_Section_Component_Element_Radio extends ICF_SettingsPage_Section_Component_Element_FormField_Abstract
 {
+	public function register()
+	{
+		register_setting($this->_component->get_page_slug(), $this->_name);
+
+		if (
+			get_option($this->_name) === false
+			&& $this->_value
+			&& !empty($this->_args['default'])
+			&& in_array($this->_args['default'], array_values((array)$this->_value))
+		) {
+			update_option($this->_name, $this->_value);
+		}
+	}
+
 	public function render()
 	{
 		$value = get_option($this->_name);
@@ -586,6 +609,20 @@ class ICF_SettingsPage_Section_Component_Element_Textarea extends ICF_SettingsPa
 
 class ICF_SettingsPage_Section_Component_Element_Select extends ICF_SettingsPage_Section_Component_Element_FormField_Abstract
 {
+	public function register()
+	{
+		register_setting($this->_component->get_page_slug(), $this->_name);
+
+		if (
+			get_option($this->_name) === false
+			&& $this->_value
+			&& !empty($this->_args['default'])
+			&& in_array($this->_args['default'], array_values((array)$this->_value))
+		) {
+			update_option($this->_name, $this->_value);
+		}
+	}
+
 	public function render()
 	{
 		$value = get_option($this->_name);
