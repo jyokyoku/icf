@@ -15,7 +15,7 @@ class ICF_Component extends ICF_Tag
 {
 	protected $_name = '';
 	protected $_name_cache = array();
-	protected $_form_types = array('media', 'date');
+	protected $_form_types = array('media', 'date', 'quicktag');
 
 	/**
 	 * Constructor
@@ -462,6 +462,27 @@ class ICF_Component_Element_Select extends ICF_Component_Element_FormField_Abstr
 	public function render()
 	{
 		return ICF_Form::select($this->_name, $this->_value, $this->_args);
+	}
+}
+
+class ICF_Component_Element_Quicktag extends ICF_Component_Element_FormField_Abstract
+{
+	public function initialize()
+	{
+		parent::initialize();
+
+		$buttons = icf_extract($this->_args, 'buttons');
+
+		if ($buttons) {
+			$this->_args['data-buttons'] = is_array($buttons) ? implode(' ') : $buttons;
+		}
+
+		ICF_Tag_Element_Node::add_class($this->_args, 'quicktag wp-editor-area');
+		$this->_component->div(array('class' => 'wp-editor-container'))->textarea($this->_name, $this->_value, $this->_args)->close;
+	}
+
+	public function render()
+	{
 	}
 }
 

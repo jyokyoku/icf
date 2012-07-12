@@ -108,6 +108,7 @@ if (!class_exists('ICF_Loader')) {
 		{
 			wp_enqueue_script('media-upload');
 			wp_enqueue_script('thickbox');
+			wp_enqueue_script('quicktags');
 
 			if (!wp_script_is('icf-mobiscroll', 'registered')) {
 				wp_enqueue_script('icf-mobiscroll', self::get_latest_version_url() . '/js/mobiscroll/mobiscroll-1.6.min.js', array('jquery'));
@@ -192,6 +193,7 @@ if (!class_exists('ICF_Loader')) {
 		public static function register_css(array $queue = array())
 		{
 			wp_enqueue_style('thickbox');
+			wp_enqueue_style('editor-buttons');
 
 			if (!wp_style_is('icf-mobiscroll', 'registered')) {
 				wp_enqueue_style('icf-mobiscroll', ICF_Loader::get_latest_version_url() . '/js/mobiscroll/mobiscroll-1.6.min.css');
