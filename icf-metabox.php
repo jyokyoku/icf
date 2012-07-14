@@ -205,12 +205,12 @@ class ICF_MetaBox
 	}
 
 	/**
-	 * Refresh postmeta for all posts
+	 * Save the default data of components when data is not registered
 	 *
-	 * @param int $posts_per_page
-	 * @param int $force
-	 * @param boolean $force_start_first
-	 * @return boolean
+	 * @param	int		$posts_per_page
+	 * @param	int		$force
+	 * @param	boolean	$force_start_first
+	 * @return	boolean
 	 */
 	public function refresh($posts_per_page = 0, $force = 0, $force_start_first = false)
 	{
@@ -344,6 +344,12 @@ class ICF_MetaBox_Component extends ICF_Component
 		}
 	}
 
+	/**
+	 * Save the default data of elements when data is not registered
+	 *
+	 * @param	int		$post_id
+	 * @param	boolean	$force
+	 */
 	public function refresh($post_id, $force = false)
 	{
 		foreach ($this->_elements as $element) {
