@@ -478,7 +478,14 @@ class ICF_Component_Element_Quicktag extends ICF_Component_Element_FormField_Abs
 		}
 
 		ICF_Tag_Element_Node::add_class($this->_args, 'icf-quicktag wp-editor-area');
-		$this->_component->div(array('class' => 'wp-editor-container'))->textarea($this->_name, $this->_value, $this->_args)->close;
+		$this->_args['id'] = 'icf-quicktag-' . md5(uniqid(mt_rand()));
+		
+		$this->_component
+			->div(array('class' => 'wp-editor-container'))
+				->div(array('class' => 'wp-editor-wrap', 'id' => 'wp-' . $this->_args['id'] . '-wrap'))
+					->textarea($this->_name, $this->_value, $this->_args)
+				->close
+			->close;
 	}
 
 	public function render()
