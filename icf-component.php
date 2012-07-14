@@ -15,7 +15,7 @@ class ICF_Component extends ICF_Tag
 {
 	protected $_name = '';
 	protected $_name_cache = array();
-	protected $_form_types = array('media', 'date', 'quicktag');
+	protected $_form_types = array('media', 'date', 'quicktag', 'wysiwyg');
 
 	/**
 	 * Constructor
@@ -483,6 +483,30 @@ class ICF_Component_Element_Quicktag extends ICF_Component_Element_FormField_Abs
 
 	public function render()
 	{
+	}
+}
+
+class ICF_Component_Element_Wysiwyg extends ICF_Component_Element_FormField_Abstract
+{
+	public function initialize()
+	{
+		parent::initialize();
+
+		if (!isset($this->_args['settings'])) {
+			$this->_args['settings'] = array();
+		}
+
+		$this->_args['id'] = $this->_name;
+	}
+
+	public function render()
+	{
+		if (version_compare(get_bloginfo('version'), '3.3', '>=') && function_exists('wp_editor')) {
+			wp_editor($this->_value, $this->_args['id'], $this->_args['settings']);
+
+		} else {
+			trigger_error('The TinyMCE has been required for the WordPress 3.3 or above');
+		}
 	}
 }
 

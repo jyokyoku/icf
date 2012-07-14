@@ -486,3 +486,11 @@ class ICF_MetaBox_Component_Element_Select extends ICF_MetaBox_Component_Element
 		return ICF_Form::select($this->_name, $this->_value, $this->_args);
 	}
 }
+
+class ICF_MetaBox_Component_Element_Wysiwyg extends ICF_MetaBox_Component_Element_FormField_Abstract
+{
+	public function render()
+	{
+		trigger_error(__('The TinyMCE cannot be use to inside of a MetaBox', 'icf'), E_USER_NOTICE);
+	}
+}

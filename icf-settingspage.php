@@ -635,3 +635,33 @@ class ICF_SettingsPage_Section_Component_Element_Select extends ICF_SettingsPage
 		return ICF_Form::select($this->_name, $this->_value, $this->_args);
 	}
 }
+
+class ICF_SettingsPage_Section_Component_Element_Wysiwyg extends ICF_SettingsPage_Section_Component_Element_FormField_Abstract
+{
+	public function initialize()
+	{
+		parent::initialize();
+
+		if (!isset($this->_args['settings'])) {
+			$this->_args['settings'] = array();
+		}
+
+		$this->_args['id'] = $this->_name;
+	}
+
+	public function render()
+	{
+		$value = get_option($this->_name);
+
+		if ($value !== false && $value !== '') {
+			$this->_value = $value;
+		}
+
+		if (version_compare(get_bloginfo('version'), '3.3', '>=') && function_exists('wp_editor')) {
+			wp_editor($this->_value, $this->_args['id'], $this->_args['settings']);
+
+		} else {
+			trigger_error('The TinyMCE has been required for the WordPress 3.3 or above');
+		}
+	}
+}
