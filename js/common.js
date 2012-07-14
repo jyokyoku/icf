@@ -23,7 +23,7 @@
 				buttons = 'strong,em,link';
 
 			} else {
-				buttons = buttons.replace(/^\s+|\s+$/g, '').split(/[\s,]+/).join(', ');
+				buttons = buttons.replace(/^\s+|\s+$/g, '').split(/[\s,]+/).join(',');
 			}
 
 			settings = {
