@@ -397,6 +397,9 @@ abstract class ICF_MetaBox_Component_Element_FormField_Abstract extends ICF_Comp
 
 			if ($this->_component->title && !preg_match('|' . preg_quote($required_mark) . '$|', $this->_component->title)) {
 				$this->_component->title .= ' ' . $required_mark;
+
+			} else if (!preg_match('|' . preg_quote($required_mark) . '$|', $this->_component->get_metabox()->title)) {
+				$this->_component->get_metabox()->title .= ' ' . $required_mark;
 			}
 		}
 	}
