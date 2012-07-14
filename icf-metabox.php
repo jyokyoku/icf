@@ -371,6 +371,11 @@ class ICF_MetaBox_Component extends ICF_Component
 
 abstract class ICF_MetaBox_Component_Element_FormField_Abstract extends ICF_Component_Element_FormField_Abstract
 {
+	public function __construct(ICF_MetaBox_Component $component, $name, $value = null, array $args = array())
+	{
+		parent::__construct($component, $name, $value, $args);
+	}
+
 	public function initialize()
 	{
 		parent::initialize();

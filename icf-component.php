@@ -167,16 +167,6 @@ class ICF_Component extends ICF_Tag
 	}
 }
 
-interface ICF_Component_Element_General_Interface
-{
-	public function __construct(ICF_Component $component);
-}
-
-interface ICF_Component_Element_FormField_Interface
-{
-	public function __construct(ICF_Component $component, $name, $value = null, array $args = array());
-}
-
 abstract class ICF_Component_Element_Abstract implements ICF_Tag_Element_Interface
 {
 	protected static function _parse_validation_rules($rules)
@@ -195,7 +185,7 @@ abstract class ICF_Component_Element_Abstract implements ICF_Tag_Element_Interfa
 	}
 }
 
-abstract class ICF_Component_Element_General_Abstract extends ICF_Component_Element_Abstract implements ICF_Component_Element_General_Interface
+abstract class ICF_Component_Element_General_Abstract extends ICF_Component_Element_Abstract
 {
 	protected $_component;
 
@@ -210,7 +200,7 @@ abstract class ICF_Component_Element_General_Abstract extends ICF_Component_Elem
 	}
 }
 
-abstract class ICF_Component_Element_FormField_Abstract extends ICF_Component_Element_Abstract implements ICF_Component_Element_FormField_Interface
+abstract class ICF_Component_Element_FormField_Abstract extends ICF_Component_Element_Abstract
 {
 	protected $_component;
 	protected $_name;

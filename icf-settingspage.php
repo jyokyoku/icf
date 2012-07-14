@@ -503,6 +503,11 @@ class ICF_SettingsPage_Section_Component extends ICF_Component
 
 abstract class ICF_SettingsPage_Section_Component_Element_FormField_Abstract extends ICF_Component_Element_FormField_Abstract
 {
+	public function __construct(ICF_SettingsPage_Section_Component $component, $name, $value = null, array $args = array())
+	{
+		parent::__construct($component, $name, $value, $args);
+	}
+
 	public function register()
 	{
 		register_setting($this->_component->get_page_slug(), $this->_name);
