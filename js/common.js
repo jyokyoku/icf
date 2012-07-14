@@ -10,12 +10,12 @@
 	$(function() {
 		var default_send_to_editor = window.send_to_editor;
 
-		$('textarea.quicktag').each(function(i) {
+		$('textarea.icf-quicktag').each(function(i) {
 			var id = $(this).attr('id');
 			var buttons = $(this).data('buttons');
 
 			if (!id) {
-				id = 'quickEditor-' + i;
+				id = 'icf-quicktag-' + i;
 				$(this).attr('id', id);
 			}
 
