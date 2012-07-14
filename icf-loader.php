@@ -129,7 +129,7 @@ if (!class_exists('ICF_Loader')) {
 			}
 
 			if (!wp_script_is('icf-common', 'registered')) {
-				wp_enqueue_script('icf-common', self::get_latest_version_url() . '/js/common.js', array('jquery', 'media-upload', 'thickbox', 'icf-exchecker', 'icf-mobiscroll'), null, true);
+				wp_enqueue_script('icf-common', self::get_latest_version_url() . '/js/common.js', array('jquery', 'quicktags', 'media-upload', 'thickbox', 'icf-exchecker', 'icf-mobiscroll'), null, true);
 				wp_localize_script('icf-common', 'icfCommonL10n', array(
 					'insertToField' => __('Insert to field', 'icf'),
 					'cancelText' => __('Cancel', 'icf'),
