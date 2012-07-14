@@ -97,7 +97,7 @@ class ICF_MetaBox
 			return $this->_components[$id];
 
 		} else {
-			$component = new ICF_MetaBox_Component($id, $title);
+			$component = new ICF_MetaBox_Component($this, $id, $title);
 		}
 
 		$this->_components[$id] = $component;
@@ -291,6 +291,7 @@ class ICF_MetaBox_Component extends ICF_Component
 {
 	public $title;
 
+	protected $_metabox;
 	protected $_id;
 
 	/**
@@ -299,10 +300,11 @@ class ICF_MetaBox_Component extends ICF_Component
 	 * @param	string		$id
 	 * @param	string		$title
 	 */
-	public function __construct($id, $title = '')
+	public function __construct(ICF_MetaBox $metabox, $id, $title = '')
 	{
 		parent::__construct();
 
+		$this->_metabox = $metabox;
 		$this->_id = $id;
 
 		$this->title = (empty($title) && $title !== false) ? $id : $title;
@@ -316,6 +318,16 @@ class ICF_MetaBox_Component extends ICF_Component
 	public function get_id()
 	{
 		return $this->_id;
+	}
+
+	/**
+	 * Get the Metabox of this parent
+	 *
+	 * @return ICF_MetaBox
+	 */
+	public function get_metabox()
+	{
+		return $this->_metabox;
 	}
 
 	/**
