@@ -378,7 +378,7 @@ abstract class ICF_MetaBox_Component_Element_FormField_Abstract extends ICF_Comp
 		if (in_array('chkrequired', $this->_validation)) {
 			$required_mark = '<span style="color: #B00C0C;">*</span>';
 
-			if (!preg_match('|' . preg_quote($required_mark) . '$|', $this->_component->title)) {
+			if ($this->_component->title && !preg_match('|' . preg_quote($required_mark) . '$|', $this->_component->title)) {
 				$this->_component->title .= ' ' . $required_mark;
 			}
 		}
