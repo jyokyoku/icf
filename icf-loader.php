@@ -108,7 +108,10 @@ if (!class_exists('ICF_Loader')) {
 		{
 			wp_enqueue_script('media-upload');
 			wp_enqueue_script('thickbox');
-			wp_enqueue_script('quicktags');
+
+			if (version_compare(get_bloginfo('version'), '3.3', '>=')) {
+				wp_enqueue_script('quicktags');
+			}
 
 			if (!wp_script_is('icf-mobiscroll', 'registered')) {
 				wp_enqueue_script('icf-mobiscroll', self::get_latest_version_url() . '/js/mobiscroll/mobiscroll-1.6.min.js', array('jquery'));
@@ -129,7 +132,13 @@ if (!class_exists('ICF_Loader')) {
 			}
 
 			if (!wp_script_is('icf-common', 'registered')) {
-				wp_enqueue_script('icf-common', self::get_latest_version_url() . '/js/common.js', array('jquery', 'quicktags', 'media-upload', 'thickbox', 'icf-exchecker', 'icf-mobiscroll'), null, true);
+				$assoc = array('jquery', 'media-upload', 'thickbox', 'icf-exchecker', 'icf-mobiscroll');
+
+				if (version_compare(get_bloginfo('version'), '3.3', '>=')) {
+					$assoc[] = 'quicktags';
+				}
+
+				wp_enqueue_script('icf-common', self::get_latest_version_url() . '/js/common.js', $assoc, null, true);
 				wp_localize_script('icf-common', 'icfCommonL10n', array(
 					'insertToField' => __('Insert to field', 'icf'),
 					'cancelText' => __('Cancel', 'icf'),

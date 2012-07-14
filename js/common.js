@@ -10,30 +10,6 @@
 	$(function() {
 		var default_send_to_editor = window.send_to_editor;
 
-		$('textarea.icf-quicktag').each(function(i) {
-			var id = $(this).attr('id');
-			var buttons = $(this).data('buttons');
-
-			if (!id) {
-				id = 'icf-quicktag-' + i;
-				$(this).attr('id', id);
-			}
-
-			if (!buttons) {
-				buttons = 'strong,em,link';
-
-			} else {
-				buttons = buttons.replace(/^\s+|\s+$/g, '').split(/[\s,]+/).join(',');
-			}
-
-			settings = {
-				id : id,
-				buttons: buttons
-			}
-
-			quicktags(settings);
-		});
-
 		$('button.media_button').live('click', function() {
 			var field = $(this).data('for'),
 				$element = $('input[name="' + field + '"], textarea[name="' + field + '"]');

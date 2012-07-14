@@ -469,27 +469,32 @@ class ICF_Component_Element_Quicktag extends ICF_Component_Element_FormField_Abs
 {
 	public function initialize()
 	{
-		parent::initialize();
+		if (version_compare(get_bloginfo('version'), '3.3', '>=')) {
+			parent::initialize();
 
-		$buttons = icf_extract($this->_args, 'buttons');
+			$buttons = icf_extract($this->_args, 'buttons');
 
-		if ($buttons) {
-			$this->_args['data-buttons'] = is_array($buttons) ? implode(' ') : $buttons;
+			if ($buttons) {
+				$this->_args['data-buttons'] = is_array($buttons) ? implode(' ') : $buttons;
+			}
+
+			ICF_Tag_Element_Node::add_class($this->_args, 'icf-quicktag wp-editor-area');
+			$this->_args['id'] = 'icf-quicktag-' . md5(uniqid(mt_rand()));
+
+			$this->_component
+				->div(array('class' => 'wp-editor-container'))
+					->div(array('class' => 'wp-editor-wrap', 'id' => 'wp-' . $this->_args['id'] . '-wrap'))
+						->textarea($this->_name, $this->_value, $this->_args)
+					->close
+				->close;
 		}
-
-		ICF_Tag_Element_Node::add_class($this->_args, 'icf-quicktag wp-editor-area');
-		$this->_args['id'] = 'icf-quicktag-' . md5(uniqid(mt_rand()));
-		
-		$this->_component
-			->div(array('class' => 'wp-editor-container'))
-				->div(array('class' => 'wp-editor-wrap', 'id' => 'wp-' . $this->_args['id'] . '-wrap'))
-					->textarea($this->_name, $this->_value, $this->_args)
-				->close
-			->close;
 	}
 
 	public function render()
 	{
+		if (version_compare(get_bloginfo('version'), '3.3', '<')) {
+			trigger_error('The Quicktag has been required for the WordPress 3.3 or above');
+		}
 	}
 }
 
