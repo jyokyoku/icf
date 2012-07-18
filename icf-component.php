@@ -475,7 +475,7 @@ class ICF_Component_Element_Quicktag extends ICF_Component_Element_FormField_Abs
 			$buttons = icf_extract($this->_args, 'buttons');
 
 			if ($buttons) {
-				$this->_args['data-buttons'] = is_array($buttons) ? implode(' ') : $buttons;
+				$this->_args['data-buttons'] = is_array($buttons) ? implode(' ', $buttons) : $buttons;
 			}
 
 			ICF_Tag_Element_Node::add_class($this->_args, 'icf-quicktag wp-editor-area');
