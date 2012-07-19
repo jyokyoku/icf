@@ -25,6 +25,13 @@ abstract class ICF_SettingsPage_Abstract
 	public function __construct()
 	{
 		add_action('admin_menu', array($this, 'register'));
+
+		if (is_admin()) {
+			add_action('admin_print_footer_scripts', array($this, 'load_wpeditor_html'), 9999);
+
+		} else {
+			add_action('wp_print_footer_scripts', array($this, 'load_wpeditor_html'), 9999);
+		}
 	}
 
 	/**
@@ -110,6 +117,23 @@ abstract class ICF_SettingsPage_Abstract
 <?php
 		}
 	}
+
+	public function load_wpeditor_html()
+	{
+		include_once ABSPATH . WPINC . '/class-wp-editor.php';
+
+		if (is_admin()) {
+			if (!has_action('admin_print_footer_scripts', array(_WP_Editors, 'editor_js'))) {
+				_WP_Editors::wp_link_dialog();
+			}
+
+		} else {
+			if (!has_action('wp_print_footer_scripts', array(_WP_Editors, 'editor_js'))) {
+				_WP_Editors::wp_link_dialog();
+			}
+		}
+	}
+
 
 	abstract public function register();
 }
