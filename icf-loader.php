@@ -9,6 +9,10 @@
 
 $GLOBALS['icf_versions']['0.2'] = __FILE__;
 
+if (!defined('ICF_DEBUG')) {
+	define('ICF_DEBUG', false);
+}
+
 if (!class_exists('ICF_Loader')) {
 	class ICF_Loader
 	{

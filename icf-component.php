@@ -645,7 +645,7 @@ class ICF_Component_Element_Media extends ICF_Component_Element_FormField_Abstra
 				$reset_label = __('Clear', 'icf');
 			}
 
-			if (!isset($this->_args['readonly'])) {
+			if (!isset($this->_args['readonly']) && !ICF_DEBUG) {
 				$this->_args['readonly'] = true;
 			}
 		}
