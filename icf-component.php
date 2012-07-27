@@ -336,6 +336,21 @@ class ICF_Component_Element_Nbsp extends ICF_Component_Element_General_Abstract
 	}
 }
 
+class ICF_Component_Element_Description extends ICF_Component_Element_General_Abstract
+{
+	public function __construct(ICF_Component $component, $args = array())
+	{
+		parent::__construct($component);
+
+		ICF_Tag_Element_Node::add_class($args, 'description');
+		$this->_component->p($args);
+	}
+
+	public function render()
+	{
+	}
+}
+
 class ICF_Component_Element_Button_Secondary extends ICF_Component_Element_General_Abstract
 {
 	protected $_value;
@@ -465,7 +480,7 @@ class ICF_Component_Element_Quicktag extends ICF_Component_Element_FormField_Abs
 			$buttons = icf_extract($this->_args, 'buttons');
 
 			if ($buttons) {
-				$this->_args['data-buttons'] = is_array($buttons) ? implode(' ') : $buttons;
+				$this->_args['data-buttons'] = is_array($buttons) ? implode(' ', $buttons) : $buttons;
 			}
 
 			ICF_Tag_Element_Node::add_class($this->_args, 'icf-quicktag wp-editor-area');
@@ -635,7 +650,7 @@ class ICF_Component_Element_Media extends ICF_Component_Element_FormField_Abstra
 				$reset_label = __('Clear', 'icf');
 			}
 
-			if (!isset($this->_args['readonly'])) {
+			if (!isset($this->_args['readonly']) && !ICF_DEBUG) {
 				$this->_args['readonly'] = true;
 			}
 		}
