@@ -162,7 +162,7 @@ class ICF_Form
 		$html = '';
 
 		if (isset($attributes['name'])) {
-			$html  = ICF_Tag::create('input', array('type' => 'hidden', 'value' => '', 'name' => $attributes['name'], 'id' => self::_filter_label($attributes['name'] . '_hidden')));
+			$html  = ICF_Tag::create('input', array('type' => 'hidden', 'value' => '', 'name' => $attributes['name'], 'id' => self::_generate_id($attributes['name'] . '_hidden')));
 		}
 
 		$html .= self::input($attributes);
