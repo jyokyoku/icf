@@ -7,6 +7,7 @@
  * @copyright	Copyright(c) 2011 Masayuki Ietomi
  */
 
+require_once dirname(__FILE__) . '/icf-loader.php';
 require_once dirname(__FILE__) . '/icf-tag.php';
 require_once dirname(__FILE__) . '/icf-form.php';
 require_once dirname(__FILE__) . '/icf-inflector.php';

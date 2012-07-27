@@ -7,6 +7,7 @@
  * @copyright	Copyright(c) 2011 Masayuki Ietomi
  */
 
+require_once dirname(__FILE__) . '/icf-loader.php';
 require_once dirname(__FILE__) . '/icf-component.php';
 
 abstract class ICF_SettingsPage_Abstract
