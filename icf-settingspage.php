@@ -551,7 +551,7 @@ class ICF_SettingsPage_Section_Component_Element_Checkbox extends ICF_SettingsPa
 	{
 		register_setting($this->_component->get_page_slug(), $this->_name);
 
-		if (get_option($this->_name) === false && $this->_value && !empty($this->_args['default'])) {
+		if (get_option($this->_name) === false && $this->_value && !empty($this->_args['checked'])) {
 			update_option($this->_name, $this->_value);
 		}
 	}
@@ -561,8 +561,8 @@ class ICF_SettingsPage_Section_Component_Element_Checkbox extends ICF_SettingsPa
 		$value = get_option($this->_name);
 
 		if ($value !== false && $value !== '') {
+			unset($this->_args['checked'], $this->_args['selected']);
 			$this->_args['checked'] = ($value == $this->_value);
-			unset($this->_args['selected']);
 		}
 
 		return ICF_Form::checkbox($this->_name, $this->_value, $this->_args);
@@ -578,10 +578,10 @@ class ICF_SettingsPage_Section_Component_Element_Radio extends ICF_SettingsPage_
 		if (
 			get_option($this->_name) === false
 			&& $this->_value
-			&& !empty($this->_args['default'])
-			&& in_array($this->_args['default'], array_values((array)$this->_value))
+			&& !empty($this->_args['checked'])
+			&& in_array($this->_args['checked'], array_values((array)$this->_value))
 		) {
-			update_option($this->_name, $this->_value);
+			update_option($this->_name, $this->_args['checked']);
 		}
 	}
 
@@ -590,8 +590,8 @@ class ICF_SettingsPage_Section_Component_Element_Radio extends ICF_SettingsPage_
 		$value = get_option($this->_name);
 
 		if ($value !== false && $value !== '') {
+			unset($this->_args['checked'], $this->_args['selected']);
 			$this->_args['checked'] = in_array($value, (array)$this->_value) ? $value : false;
-			unset($this->_args['selected']);
 		}
 
 		return ICF_Form::radio($this->_name, $this->_value, $this->_args);
@@ -621,10 +621,10 @@ class ICF_SettingsPage_Section_Component_Element_Select extends ICF_SettingsPage
 		if (
 			get_option($this->_name) === false
 			&& $this->_value
-			&& !empty($this->_args['default'])
-			&& in_array($this->_args['default'], array_values((array)$this->_value))
+			&& !empty($this->_args['selected'])
+			&& in_array($this->_args['selected'], array_values((array)$this->_value))
 		) {
-			update_option($this->_name, $this->_value);
+			update_option($this->_name, $this->_args['selected']);
 		}
 	}
 
@@ -633,8 +633,8 @@ class ICF_SettingsPage_Section_Component_Element_Select extends ICF_SettingsPage
 		$value = get_option($this->_name);
 
 		if ($value !== false && $value !== '') {
+			unset($this->_args['checked'], $this->_args['selected']);
 			$this->_args['selected'] = in_array($value, (array)$this->_value) ? $value : false;
-			unset($this->_args['checked']);
 		}
 
 		return ICF_Form::select($this->_name, $this->_value, $this->_args);
