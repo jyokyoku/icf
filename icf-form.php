@@ -182,6 +182,10 @@ class ICF_Form
 
 		list($name, $before, $after, $separator) = icf_extract($attributes, 'name', 'before', 'after', 'separator');
 
+		if ($separator === null) {
+			$separator = '&nbsp;&nbsp;';
+		}
+
 		$checked = reset(icf_extract_and_merge($attributes, 'checked', 'selected'));
 		$values = icf_extract_and_merge($attributes, 'value', 'values', 'options');
 
@@ -223,7 +227,7 @@ class ICF_Form
 	protected static function _filter_label($label, $type = 'text')
 	{
 		if (!preg_match_all('/(?:^|[^%])%(?:[0-9]+\$)?s/u', $label, $matches)) {
-			$label = in_array($type, array('checkbox', 'radio'), true) ? '%s' . $label : $label . '%s';
+			$label = in_array($type, array('checkbox', 'radio'), true) ? '%s&nbsp;' . $label : $label . '&nbsp;%s';
 		}
 
 		return $label;
