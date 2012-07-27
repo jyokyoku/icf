@@ -346,6 +346,21 @@ class ICF_Component_Element_Nbsp extends ICF_Component_Element_General_Abstract
 	}
 }
 
+class ICF_Component_Element_Description extends ICF_Component_Element_General_Abstract
+{
+	public function __construct(ICF_Component $component, $args = array())
+	{
+		parent::__construct($component);
+
+		ICF_Tag_Element_Node::add_class($args, 'description');
+		$this->_component->p($args);
+	}
+
+	public function render()
+	{
+	}
+}
+
 class ICF_Component_Element_Button_Secondary extends ICF_Component_Element_General_Abstract
 {
 	protected $_value;
