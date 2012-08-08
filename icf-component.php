@@ -339,12 +339,21 @@ class ICF_Component_Element_Nbsp extends ICF_Component_Element_General_Abstract
 
 class ICF_Component_Element_Description extends ICF_Component_Element_General_Abstract
 {
-	public function __construct(ICF_Component $component, $args = array())
+	public function __construct(ICF_Component $component, $value = null, $args = array())
 	{
 		parent::__construct($component);
 
+		if (is_array($value) && empty($args)) {
+			$args = $value;
+			$value = null;
+		}
+
 		ICF_Tag_Element_Node::add_class($args, 'description');
 		$this->_component->p($args);
+
+		if ($value) {
+			$this->_component->html((string)$value)->close();
+		}
 	}
 
 	public function render()
