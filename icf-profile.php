@@ -1,4 +1,12 @@
 <?php
+/**
+ * Inspire Custom field Framework (ICF)
+ *
+ * @package		ICF
+ * @author		Masayuki Ietomi
+ * @copyright	Copyright(c) 2011 Masayuki Ietomi
+ */
+
 require_once dirname(__FILE__) . '/icf-loader.php';
 require_once dirname(__FILE__) . '/icf-component.php';
 
@@ -9,11 +17,17 @@ abstract class ICF_Profile_Abstract
 	public function __construct()
 	{
 		add_action('profile_update', array($this, 'save'), 10, 2);
-		add_action('admin_head', array($this, 'style'), 10);
+		add_action('admin_init', array($this, 'load_wpeditor_html'), 10);
+		add_action('admin_head', array($this, 'add_local_style'), 10);
+		add_action('admin_print_scripts', array($this, 'add_scripts'), 10);
+		add_action('admin_print_styles', array($this, 'add_styles'), 10);
 	}
 
-	public function style()
+	public function add_local_style()
 	{
+		global $pagenow;
+
+		if ($pagenow == 'profile.php' || $pagenow == 'user-edit.php') {
 ?>
 <style type="text/css">
 #profile-page .form-table .wp-editor-container textarea {
@@ -22,6 +36,34 @@ abstract class ICF_Profile_Abstract
 }
 </style>
 <?php
+		}
+	}
+
+	public function add_scripts()
+	{
+		global $pagenow;
+
+		if ($pagenow == 'profile.php' || $pagenow == 'user-edit.php') {
+			ICF_Loader::register_javascript();
+		}
+	}
+
+	public function add_styles()
+	{
+		global $pagenow;
+
+		if ($pagenow == 'profile.php' || $pagenow == 'user-edit.php') {
+			ICF_Loader::register_css();
+		}
+	}
+
+	public function load_wpeditor_html()
+	{
+		global $pagenow;
+
+		if ($pagenow == 'profile.php' || $pagenow == 'user-edit.php') {
+			add_action('admin_print_footer_scripts', array('ICF_Loader', 'load_wpeditor_html'));
+		}
 	}
 
 	public function component($id, $title = null)

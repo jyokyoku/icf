@@ -7,7 +7,7 @@
  * @copyright	Copyright(c) 2011 Masayuki Ietomi
  */
 
-$GLOBALS['icf_versions']['1.1.1'] = __FILE__;
+$GLOBALS['icf_versions']['1.1.2'] = __FILE__;
 
 if (!defined('ICF_DEBUG')) {
 	define('ICF_DEBUG', false);
@@ -220,6 +220,18 @@ if (!class_exists('ICF_Loader')) {
 			}
 
 			self::_enqueue($queue, 'style');
+		}
+
+		/**
+		 * Add the codes of link dialog
+		 */
+		public function load_wpeditor_html()
+		{
+			include_once ABSPATH . WPINC . '/class-wp-editor.php';
+
+			if (!has_action('admin_print_footer_scripts', array(_WP_Editors, 'editor_js'))) {
+				_WP_Editors::wp_link_dialog();
+			}
 		}
 
 		/**

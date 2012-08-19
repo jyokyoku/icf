@@ -26,13 +26,6 @@ abstract class ICF_SettingsPage_Abstract
 	public function __construct()
 	{
 		add_action('admin_menu', array($this, 'register'));
-
-		if (is_admin()) {
-			add_action('admin_print_footer_scripts', array($this, 'load_wpeditor_html'), 9999);
-
-		} else {
-			add_action('wp_print_footer_scripts', array($this, 'load_wpeditor_html'), 9999);
-		}
 	}
 
 	/**
@@ -116,22 +109,6 @@ abstract class ICF_SettingsPage_Abstract
 </form>
 </div>
 <?php
-		}
-	}
-
-	public function load_wpeditor_html()
-	{
-		include_once ABSPATH . WPINC . '/class-wp-editor.php';
-
-		if (is_admin()) {
-			if (!has_action('admin_print_footer_scripts', array(_WP_Editors, 'editor_js'))) {
-				_WP_Editors::wp_link_dialog();
-			}
-
-		} else {
-			if (!has_action('wp_print_footer_scripts', array(_WP_Editors, 'editor_js'))) {
-				_WP_Editors::wp_link_dialog();
-			}
 		}
 	}
 
@@ -312,6 +289,7 @@ class ICF_SettingsPage_Section
 		$this->title = empty($title) ? $this->_id : $title;
 		$this->description_or_callback = $description_or_callback;
 
+		add_action('admin_init', array($this, 'load_wpeditor_html'));
 		add_action('admin_menu', array($this, 'register'));
 		add_action('admin_print_scripts', array($this, 'add_scripts'));
 		add_action('admin_print_styles', array($this, 'add_styles'));
@@ -402,6 +380,21 @@ class ICF_SettingsPage_Section
 	{
 		if (!empty($this->description_or_callback) && is_string($this->description_or_callback)) {
 			echo $this->description_or_callback;
+		}
+	}
+
+	/**
+	 * Add the html of link dialog
+	 */
+	public function load_wpeditor_html()
+	{
+		global $pagenow;
+
+		if (
+			(isset($_GET['page']) && $_GET['page'] == $this->_page_slug)
+			|| (!isset($_GET['page']) && strpos($pagenow, 'options-') === 0)
+		) {
+			add_action('admin_print_footer_scripts', array('ICF_Loader', 'load_wpeditor_html'));
 		}
 	}
 
@@ -687,11 +680,17 @@ class ICF_SettingsPage_Section_Component_Element_Wysiwyg extends ICF_SettingsPag
 			$this->_value = $value;
 		}
 
+		$editor = '';
+
 		if (version_compare(get_bloginfo('version'), '3.3', '>=') && function_exists('wp_editor')) {
+			ob_start();
 			wp_editor($this->_value, $this->_args['id'], $this->_args['settings']);
+			$editor = ob_get_clean();
 
 		} else {
 			trigger_error('The TinyMCE has been required for the WordPress 3.3 or above');
 		}
+
+		return $editor;
 	}
 }
