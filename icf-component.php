@@ -106,12 +106,13 @@ class ICF_Component extends ICF_Tag
 		return $this;
 	}
 
-	public function render()
+	public function render($arg1 = null, $arg2 = null)
 	{
 		if ($this->_stack) {
 			$this->all_close();
 		}
 
+		$args = func_get_args();
 		$html = '';
 
 		foreach ($this->_elements as $element) {
@@ -119,7 +120,7 @@ class ICF_Component extends ICF_Tag
 				continue;
 			}
 
-			$result = $element->render();
+			$result = $this->_element_trigger($element, 'render', $args);
 
 			if (($after = $this->_element_trigger($element, 'after_render', array($result))) && $after !== true) {
 				$result = $after;
@@ -130,7 +131,12 @@ class ICF_Component extends ICF_Tag
 
 		$this->clear();
 
-		echo $html;
+		return $html;
+	}
+
+	public function display($arg1 = null, $arg2 = null)
+	{
+		echo call_user_func_array(array($this, 'render'), func_get_args());
 	}
 
 	/**

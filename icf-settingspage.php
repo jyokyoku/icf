@@ -87,9 +87,9 @@ abstract class ICF_SettingsPage_Abstract
 	}
 
 	/**
-	 * Render the html
+	 * Display the html
 	 */
-	public function render()
+	public function display()
 	{
 		global $wp_settings_fields;
 
@@ -210,7 +210,7 @@ class ICF_SettingsPage extends ICF_SettingsPage_Abstract
 	{
 		add_menu_page(
 			$this->title, $this->menu_title, $this->capability, $this->_slug,
-			array($this, 'render'), $this->icon_url, $this->position
+			array($this, 'display'), $this->icon_url, $this->position
 		);
 	}
 }
@@ -282,7 +282,7 @@ class ICF_SettingsPage_Sub extends ICF_SettingsPage_Abstract
 	{
 		add_submenu_page(
 			$this->_parent_slug, $this->title, $this->menu_title,
-			$this->capability, $this->_slug, array($this, 'render')
+			$this->capability, $this->_slug, array($this, 'display')
 		);
 	}
 }
@@ -390,15 +390,15 @@ class ICF_SettingsPage_Section
 	public function register()
 	{
 		if ($this->_id != 'default') {
-			$callback = is_callable($this->description_or_callback) ? $this->description_or_callback : array($this, 'render');
+			$callback = is_callable($this->description_or_callback) ? $this->description_or_callback : array($this, 'display');
 			add_settings_section($this->_id, $this->title, $callback, $this->_page_slug);
 		}
 	}
 
 	/**
-	 * Render the html
+	 * Display the html
 	 */
-	public function render()
+	public function display()
 	{
 		if (!empty($this->description_or_callback) && is_string($this->description_or_callback)) {
 			echo $this->description_or_callback;
@@ -504,7 +504,7 @@ class ICF_SettingsPage_Section_Component extends ICF_Component
 	public function register()
 	{
 		if ($this->_page_slug && $this->_section_id) {
-			add_settings_field($this->_id, $this->title, array($this, 'render'), $this->_page_slug, $this->_section_id);
+			add_settings_field($this->_id, $this->title, array($this, 'display'), $this->_page_slug, $this->_section_id);
 		}
 
 		foreach ($this->_elements as $element) {
@@ -522,7 +522,7 @@ class ICF_SettingsPage_Section_Component extends ICF_Component
 			$this->register();
 		}
 
-		parent::render();
+		return parent::render();
 	}
 }
 

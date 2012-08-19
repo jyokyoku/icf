@@ -156,21 +156,21 @@ class ICF_MetaBox
 	public function register()
 	{
 		if (empty($this->capability) || (!empty($this->capability) && current_user_can($this->capability))) {
-			add_meta_box($this->_id, $this->title, array($this, 'render'), $this->_post_type, $this->context, $this->priority);
+			add_meta_box($this->_id, $this->title, array($this, 'display'), $this->_post_type, $this->context, $this->priority);
 		}
 	}
 
 	/**
-	 * Render the html
+	 * Display the html
 	 *
 	 * @param	StdClass	$post
 	 */
-	public function render($post)
+	public function display($post)
 	{
 		wp_nonce_field($this->_id, '_' . $this->_id . '_nonce');
 
 		foreach ($this->_components as $component) {
-			$component->render($post);
+			$component->display($post);
 		}
 	}
 
@@ -360,29 +360,10 @@ class ICF_MetaBox_Component extends ICF_Component
 		}
 	}
 
-	public function render(stdClass $post)
+	public function display($arg1 = null, $arg2 = null)
 	{
-		if ($this->_stack) {
-			$this->all_close();
-		}
-
-		$html = $this->title ? ICF_Tag::create('p', null, ICF_Tag::create('strong', null, $this->title)) : '';
-
-		foreach ($this->_elements as $element) {
-			if ($this->_element_trigger($element, 'before_render') === false) {
-				continue;
-			}
-
-			$result = $element->render($post);
-
-			if (($after = $this->_element_trigger($element, 'after_render', array($result))) && $after !== true) {
-				$result = $after;
-			}
-
-			$html .= $result;
-		}
-
-		$this->clear();
+		$html  = $this->title ? ICF_Tag::create('p', null, ICF_Tag::create('strong', null, $this->title)) : '';
+		$html .= call_user_func_array(array($this, 'render'), func_get_args());
 
 		echo $html;
 	}
