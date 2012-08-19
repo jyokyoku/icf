@@ -7,7 +7,7 @@
  * @copyright	Copyright(c) 2011 Masayuki Ietomi
  */
 
-$GLOBALS['icf_versions']['1.1.0'] = __FILE__;
+$GLOBALS['icf_versions']['1.1.1'] = __FILE__;
 
 if (!defined('ICF_DEBUG')) {
 	define('ICF_DEBUG', false);

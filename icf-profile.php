@@ -140,13 +140,13 @@ class ICF_Profile_Component extends ICF_Component
 		}
 	}
 
-	public function display($arg1 = null, $arg2 = null)
+	public function render($arg1 = null, $arg2 = null)
 	{
 		$html  = ICF_Tag::create('th', null, $this->title);
-		$html .= ICF_Tag::create('td', null, call_user_func_array(array($this, 'render'), func_get_args()));
+		$html .= ICF_Tag::create('td', null, call_user_func_array(array(parent, 'render'), func_get_args()));
 		$html  = ICF_Tag::create('tr', null, $html);
 
-		echo $html;
+		return $html;
 	}
 }
 
