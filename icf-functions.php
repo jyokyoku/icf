@@ -9,14 +9,32 @@
 
 require_once dirname(__FILE__) . '/icf-loader.php';
 
-function icf_find(array $array, $key, $default = null)
+function icf_filter(array $array, $key, $default = null)
 {
-	return isset($array[$key]) ? $array[$key] : $default;
+	$keys = is_array($key) ? $key : array($key => $default);
+	$values = array();
+
+	foreach ($keys as $_key => $value) {
+		if (is_numeric($_key) && $value !== null) {
+			$_key = $value;
+			$value = null;
+		}
+
+		if (isset($array[$_key])) {
+			$values[] = $array[$_key];
+
+		} else {
+			$values[] = $value;
+		}
+	}
+
+	return (is_array($key) && count($key) > 1) ? $values : reset($values);
 }
 
 function icf_extract(array &$array, $key)
 {
-	$keys = array_splice(func_get_args(), 1);
+	$args = func_get_args();
+	$keys = array_splice($args, 1);
 	$values = array();
 
 	foreach ($keys as $key) {
@@ -34,7 +52,8 @@ function icf_extract(array &$array, $key)
 
 function icf_extract_and_merge(array &$array, $key)
 {
-	$keys = array_splice(func_get_args(), 1);
+	$args = func_get_args();
+	$keys = array_splice($args, 1);
 	$values = array();
 
 	foreach ($keys as $key) {
