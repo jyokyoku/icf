@@ -184,8 +184,10 @@ class ICF_Profile_Component extends ICF_Component
 
 	public function render($arg1 = null, $arg2 = null)
 	{
+		$args = func_get_args();
+
 		$html  = ICF_Tag::create('th', null, $this->title);
-		$html .= ICF_Tag::create('td', null, call_user_func_array(array(parent, 'render'), func_get_args()));
+		$html .= ICF_Tag::create('td', null, call_user_func_array(array(parent, 'render'), $args));
 		$html  = ICF_Tag::create('tr', null, $html);
 
 		return $html;

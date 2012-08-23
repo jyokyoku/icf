@@ -136,7 +136,8 @@ class ICF_Component extends ICF_Tag
 
 	public function display($arg1 = null, $arg2 = null)
 	{
-		echo call_user_func_array(array($this, 'render'), func_get_args());
+		$args = func_get_args();
+		echo call_user_func_array(array($this, 'render'), $args);
 	}
 
 	/**
