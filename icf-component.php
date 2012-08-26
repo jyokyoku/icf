@@ -16,7 +16,6 @@ class ICF_Component extends ICF_Tag
 {
 	protected $_name = '';
 	protected $_name_cache = array();
-	protected $_form_types = array('media', 'date', 'quicktag', 'wysiwyg');
 
 	/**
 	 * Constructor
@@ -26,8 +25,6 @@ class ICF_Component extends ICF_Tag
 		if (preg_match('/^ICF_([A-Z][\w]+?)_Component$/', get_class($this), $matches)) {
 			$this->_name = $matches[1];
 		}
-
-		$this->add_form_type(get_class_methods('ICF_Form'));
 	}
 
 	/**
@@ -40,45 +37,37 @@ class ICF_Component extends ICF_Tag
 		return $this->_name;
 	}
 
-	/**
-	 * Returns the form types
-	 *
-	 * @return	array
-	 */
-	public function get_form_types()
-	{
-		return $this->_form_types;
-	}
-
-	/**
-	 * Adds the form type(s)
-	 *
-	 * @param	string|array	$type
-	 */
-	public function add_form_type($type)
-	{
-		if (!is_array($type)) {
-			$type = array($type);
-		}
-
-		$this->_form_types = array_merge($this->_form_types, array_diff($type, $this->_form_types));
-	}
-
 	public function __call($method, $args)
 	{
 		$element_class = 'ICF_Component_Element_' . $this->_classify($method);
 		$local_element_class = 'ICF_' . $this->_name . '_Component_Element_' . $this->_classify($method);
-		$local = false;
 
-		if (class_exists($local_element_class)) {
-			$element_class = $local_element_class;
-			$local = true;
+		$form_element_class = 'ICF_Component_Element_FormField_' . $this->_classify($method);
+		$local_form_element_class = 'ICF_' . $this->_name . '_Component_Element_FormField_' . $this->_classify($method);
 
-		} else if (!class_exists($element_class)) {
+		$local = $is_form = false;
+
+		if (class_exists($element_class) || class_exists($local_element_class)) {
+			if (class_exists($local_element_class)) {
+				$element_class = $local_element_class;
+				$local = true;
+			}
+
+		} else if (class_exists($form_element_class) || class_exists($local_form_element_class)) {
+			if (class_exists($local_form_element_class)) {
+				$element_class = $local_form_element_class;
+				$local = true;
+
+			} else {
+				$element_class = $form_element_class;
+			}
+
+			$is_form = true;
+
+		} else {
 			return parent::__call($method, $args);
 		}
 
-		$is_form = in_array(strtolower($method), $this->_form_types);
 		$reflection = new ReflectionClass($element_class);
 
 		array_unshift($args, $this);
@@ -443,7 +432,7 @@ class ICF_Component_Element_Button_Reset extends ICF_Component_Element_Button_Me
 	}
 }
 
-class ICF_Component_Element_Text extends ICF_Component_Element_FormField_Abstract
+class ICF_Component_Element_FormField_Text extends ICF_Component_Element_FormField_Abstract
 {
 	public function render()
 	{
@@ -451,7 +440,7 @@ class ICF_Component_Element_Text extends ICF_Component_Element_FormField_Abstrac
 	}
 }
 
-class ICF_Component_Element_Checkbox extends ICF_Component_Element_FormField_Abstract
+class ICF_Component_Element_FormField_Checkbox extends ICF_Component_Element_FormField_Abstract
 {
 	public function render()
 	{
@@ -459,7 +448,7 @@ class ICF_Component_Element_Checkbox extends ICF_Component_Element_FormField_Abs
 	}
 }
 
-class ICF_Component_Element_Radio extends ICF_Component_Element_FormField_Abstract
+class ICF_Component_Element_FormField_Radio extends ICF_Component_Element_FormField_Abstract
 {
 	public function render()
 	{
@@ -467,7 +456,7 @@ class ICF_Component_Element_Radio extends ICF_Component_Element_FormField_Abstra
 	}
 }
 
-class ICF_Component_Element_Textarea extends ICF_Component_Element_FormField_Abstract
+class ICF_Component_Element_FormField_Textarea extends ICF_Component_Element_FormField_Abstract
 {
 	public function render()
 	{
@@ -475,7 +464,7 @@ class ICF_Component_Element_Textarea extends ICF_Component_Element_FormField_Abs
 	}
 }
 
-class ICF_Component_Element_Select extends ICF_Component_Element_FormField_Abstract
+class ICF_Component_Element_FormField_Select extends ICF_Component_Element_FormField_Abstract
 {
 	public function render()
 	{
@@ -483,7 +472,7 @@ class ICF_Component_Element_Select extends ICF_Component_Element_FormField_Abstr
 	}
 }
 
-class ICF_Component_Element_Quicktag extends ICF_Component_Element_FormField_Abstract
+class ICF_Component_Element_FormField_Quicktag extends ICF_Component_Element_FormField_Abstract
 {
 	public function initialize()
 	{
@@ -516,7 +505,7 @@ class ICF_Component_Element_Quicktag extends ICF_Component_Element_FormField_Abs
 	}
 }
 
-class ICF_Component_Element_Wysiwyg extends ICF_Component_Element_FormField_Abstract
+class ICF_Component_Element_FormField_Wysiwyg extends ICF_Component_Element_FormField_Abstract
 {
 	public function initialize()
 	{
@@ -540,7 +529,7 @@ class ICF_Component_Element_Wysiwyg extends ICF_Component_Element_FormField_Abst
 	}
 }
 
-class ICF_Component_Element_Date extends ICF_Component_Element_FormField_Abstract
+class ICF_Component_Element_FormField_Date extends ICF_Component_Element_FormField_Abstract
 {
 	protected $_date_type = array('date', 'datetime', 'time');
 
@@ -630,7 +619,7 @@ class ICF_Component_Element_Date extends ICF_Component_Element_FormField_Abstrac
 	}
 }
 
-class ICF_Component_Element_Media extends ICF_Component_Element_FormField_Abstract
+class ICF_Component_Element_FormField_Media extends ICF_Component_Element_FormField_Abstract
 {
 	public function initialize()
 	{

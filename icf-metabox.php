@@ -414,7 +414,7 @@ abstract class ICF_MetaBox_Component_Element_FormField_Abstract extends ICF_Comp
 	}
 }
 
-class ICF_MetaBox_Component_Element_Text extends ICF_MetaBox_Component_Element_FormField_Abstract
+class ICF_MetaBox_Component_Element_FormField_Text extends ICF_MetaBox_Component_Element_FormField_Abstract
 {
 	public function render(stdClass $post = null)
 	{
@@ -430,7 +430,7 @@ class ICF_MetaBox_Component_Element_Text extends ICF_MetaBox_Component_Element_F
 	}
 }
 
-class ICF_MetaBox_Component_Element_Checkbox extends ICF_MetaBox_Component_Element_FormField_Abstract
+class ICF_MetaBox_Component_Element_FormField_Checkbox extends ICF_MetaBox_Component_Element_FormField_Abstract
 {
 	public function render(stdClass $post = null)
 	{
@@ -447,7 +447,7 @@ class ICF_MetaBox_Component_Element_Checkbox extends ICF_MetaBox_Component_Eleme
 	}
 }
 
-class ICF_MetaBox_Component_Element_Radio extends ICF_MetaBox_Component_Element_FormField_Abstract
+class ICF_MetaBox_Component_Element_FormField_Radio extends ICF_MetaBox_Component_Element_FormField_Abstract
 {
 	public function render(stdClass $post = null)
 	{
@@ -464,7 +464,7 @@ class ICF_MetaBox_Component_Element_Radio extends ICF_MetaBox_Component_Element_
 	}
 }
 
-class ICF_MetaBox_Component_Element_Textarea extends ICF_MetaBox_Component_Element_FormField_Abstract
+class ICF_MetaBox_Component_Element_FormField_Textarea extends ICF_MetaBox_Component_Element_FormField_Abstract
 {
 	public function render(stdClass $post = null)
 	{
@@ -480,7 +480,7 @@ class ICF_MetaBox_Component_Element_Textarea extends ICF_MetaBox_Component_Eleme
 	}
 }
 
-class ICF_MetaBox_Component_Element_Select extends ICF_MetaBox_Component_Element_FormField_Abstract
+class ICF_MetaBox_Component_Element_FormField_Select extends ICF_MetaBox_Component_Element_FormField_Abstract
 {
 	public function render(stdClass $post = null)
 	{
@@ -497,7 +497,7 @@ class ICF_MetaBox_Component_Element_Select extends ICF_MetaBox_Component_Element
 	}
 }
 
-class ICF_MetaBox_Component_Element_Wysiwyg extends ICF_MetaBox_Component_Element_FormField_Abstract
+class ICF_MetaBox_Component_Element_FormField_Wysiwyg extends ICF_MetaBox_Component_Element_FormField_Abstract
 {
 	public function render()
 	{
