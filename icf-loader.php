@@ -7,7 +7,7 @@
  * @copyright	Copyright(c) 2011 Masayuki Ietomi
  */
 
-$GLOBALS['icf_versions']['1.2.0'] = __FILE__;
+$GLOBALS['icf_versions']['1.2.1'] = __FILE__;
 
 if (!defined('ICF_DEBUG')) {
 	define('ICF_DEBUG', false);
@@ -26,9 +26,18 @@ if (!class_exists('ICF_Loader')) {
 		 */
 		public static function init($callback = '')
 		{
-			if ($callback) {
-				foreach ((array)$callback as $_callback) {
-					add_action('icf_loaded', $_callback, 10, 1);
+			$callbacks = array();
+
+			if (func_num_args() > 1) {
+				$callbacks = func_get_args();
+
+			} else if ($callback) {
+				$callbacks = is_array($callback) && is_callable($callback) ? array($callback) : (array)$callback;
+			}
+
+			foreach ($callbacks as $callback) {
+				if (is_callable($callback)) {
+					add_action('icf_loaded', $callback, 10, 1);
 				}
 			}
 
