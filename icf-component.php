@@ -87,14 +87,14 @@ class ICF_Component extends ICF_Tag
 		if ($local) {
 			$interface = $is_form
 					   ? 'ICF_' . $this->_name . '_Component_Element_FormField_Interface'
-					   : 'ICF_' . $this->_name . '_Component_Element_General_Interface';
+					   : 'ICF_' . $this->_name . '_Component_Element_Interface';
 
 			if (interface_exists($interface) && !($element instanceof $interface)) {
 				throw new Exception('Class "' . $element_class . '" does not implements interface of the "' . $interface . '"');
 			}
 		}
 
-		$sub_class = $is_form ? 'ICF_Component_Element_FormField_Abstract' : 'ICF_Component_Element_General_Abstract';
+		$sub_class = $is_form ? 'ICF_Component_Element_FormField_Abstract' : 'ICF_Component_Element_Abstract';
 
 		if (!is_subclass_of($element, $sub_class)) {
 			throw new Exception('Class "' . $element_class . '" is not sub class of the "' . $sub_class . '"');
@@ -177,6 +177,18 @@ class ICF_Component extends ICF_Tag
 
 abstract class ICF_Component_Element_Abstract implements ICF_Tag_Element_Interface
 {
+	protected $_component;
+
+	/**
+	 * Constructor
+	 *
+	 * @param	ICF_Component	$component
+	 */
+	public function __construct(ICF_Component $component)
+	{
+		$this->_component = $component;
+	}
+
 	protected static function _parse_validation_rules($rules)
 	{
 		if (!is_array($rules)) {
@@ -193,24 +205,8 @@ abstract class ICF_Component_Element_Abstract implements ICF_Tag_Element_Interfa
 	}
 }
 
-abstract class ICF_Component_Element_General_Abstract extends ICF_Component_Element_Abstract
-{
-	protected $_component;
-
-	/**
-	 * Constructor
-	 *
-	 * @param	ICF_Component	$component
-	 */
-	public function __construct(ICF_Component $component)
-	{
-		$this->_component = $component;
-	}
-}
-
 abstract class ICF_Component_Element_FormField_Abstract extends ICF_Component_Element_Abstract
 {
-	protected $_component;
 	protected $_name;
 	protected $_type;
 	protected $_value;
@@ -291,7 +287,7 @@ abstract class ICF_Component_Element_FormField_Abstract extends ICF_Component_El
 	}
 }
 
-class ICF_Component_Element_Validation extends ICF_Component_Element_General_Abstract
+class ICF_Component_Element_Validation extends ICF_Component_Element_Abstract
 {
 	protected $_rules = array();
 
@@ -323,7 +319,7 @@ class ICF_Component_Element_Validation extends ICF_Component_Element_General_Abs
 	}
 }
 
-class ICF_Component_Element_Nbsp extends ICF_Component_Element_General_Abstract
+class ICF_Component_Element_Nbsp extends ICF_Component_Element_Abstract
 {
 	protected $_repeat = 1;
 
@@ -344,7 +340,7 @@ class ICF_Component_Element_Nbsp extends ICF_Component_Element_General_Abstract
 	}
 }
 
-class ICF_Component_Element_Description extends ICF_Component_Element_General_Abstract
+class ICF_Component_Element_Description extends ICF_Component_Element_Abstract
 {
 	public function __construct(ICF_Component $component, $value = null, $args = array())
 	{
@@ -368,7 +364,7 @@ class ICF_Component_Element_Description extends ICF_Component_Element_General_Ab
 	}
 }
 
-class ICF_Component_Element_Button_Secondary extends ICF_Component_Element_General_Abstract
+class ICF_Component_Element_Button_Secondary extends ICF_Component_Element_Abstract
 {
 	protected $_value;
 	protected $_args = array();
@@ -398,7 +394,7 @@ class ICF_Component_Element_Button_Primary extends ICF_Component_Element_Button_
 	}
 }
 
-class ICF_Component_Element_Button_Media extends ICF_Component_Element_General_Abstract
+class ICF_Component_Element_Button_Media extends ICF_Component_Element_Abstract
 {
 	protected $_for;
 
