@@ -209,68 +209,76 @@ class ICF_MetaBox
 	}
 
 	/**
-	 * Save the default data of components when data is not registered
+	 * Saves the default data of components when data is not registered
 	 *
-	 * @param	int		$posts_per_page
-	 * @param	int		$force
+	 * @param	int		$posts_per_process
+	 * @param	int		$force_default_all
 	 * @param	boolean	$force_start_first
 	 * @return	boolean
 	 */
-	public function refresh($posts_per_page = 0, $force = 0, $force_start_first = false)
+	public function refresh($posts_per_process = 0, $force_default_all = false, $force_start_first = false)
 	{
 		global $wpdb;
 
 		$return = true;
-		$status_key = $this->_generate_uniq_id() . '_refresh';
+		$params_key = $this->_generate_uniq_id() . '_refresh';
 
-		$status = $force_start_first ? false : get_option($status_key, false);
-		delete_option($status_key);
+		$params = $force_start_first ? false : get_option($params_key, false);
+		delete_option($params_key);
 
 		$query = "
 			SELECT %s
-			FROM $wpdb->posts as p
+			FROM {$wpdb->posts} as p
 			WHERE p.post_status IN ('publish', 'draft') AND p.post_type = '{$this->_post_type}'
 		";
 
-		if ($status === false) {
-			$posts_per_page = (int)$posts_per_page;
+		if ($params === false) {
+			$posts_per_process = (int)$posts_per_process;
 			$total = $wpdb->get_var(sprintf($query, 'COUNT(p.ID) as count'));
 
 			if ($total <= 0) {
 				return false;
 			}
 
-			if ($posts_per_page > 0 && $total > $posts_per_page) {
-				$query .= " LIMIT {$posts_per_page}";
-				update_option($status_key, serialize(array('posts_per_page' => $posts_per_page, 'page' => 1, 'force' => (bool)$force)));
+			if ($posts_per_process > 0 && $total > $posts_per_process) {
+				$query .= " LIMIT {$posts_per_process}";
+				update_option($params_key, serialize(array(
+					'posts_per_process' => $posts_per_process,
+					'count' => 1,
+					'force_default_all' => $force_default_all
+				)));
 			}
 
 			$post_ids = $wpdb->get_col(sprintf($query, 'p.ID'));
 			$return = false;
 
-		} else if ($status) {
-			$status = unserialize($status);
+		} else if ($params) {
+			$params = unserialize($params);
 
-			if (!isset($status['posts_per_page'], $status['page'], $status['force'])) {
+			if (!isset($params['posts_per_process'], $params['count'], $params['force_default_all'])) {
 				return false;
 			}
 
-			$posts_per_page = (int)$status['posts_per_page'];
-			$page = (int)$status['page'];
-			$force = (boolean)$status['force'];
+			$posts_per_process = (int)$params['posts_per_process'];
+			$count = (int)$params['count'];
+			$force_default_all = (boolean)$params['force_default_all'];
 
 			$total = $wpdb->get_var(sprintf($query, 'COUNT(p.ID) as count'));
-			$offset = $posts_per_page * $page;
-			$max = $posts_per_page * ($page + 1);
+			$offset = $posts_per_process * $count;
+			$max = $posts_per_process * ($count + 1);
 
 			$query .= " LIMIT {$offset}, {$max}";
 
 			if ($max > $count) {
-				delete_option($status_key);
+				delete_option($params_key);
 				$return = false;
 
 			} else {
-				update_option($status_key, serialize(array('posts_per_page' => $posts_per_page, 'page' => $page + 1, 'force' => (bool)$force)));
+				update_option($params_key, serialize(array(
+					'posts_per_process' => $posts_per_process,
+					'count' => $count + 1,
+					'force_default_all' => $force_default_all
+				)));
 			}
 
 			$post_ids = $wpdb->get_col(sprintf($query, 'p.ID'));
@@ -278,7 +286,7 @@ class ICF_MetaBox
 
 		foreach ((array)$post_ids as $post_id) {
 			foreach ($this->_components as $component) {
-				$component->refresh($post_id, $force);
+				$component->refresh($post_id, $force_default_all);
 			}
 		}
 
