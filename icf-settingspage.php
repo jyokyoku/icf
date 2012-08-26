@@ -112,16 +112,15 @@ abstract class ICF_SettingsPage_Abstract
 		}
 	}
 
-
 	abstract public function register();
 }
 
-class ICF_SettingsPage extends ICF_SettingsPage_Abstract
+class ICF_SettingsPage_Parent extends ICF_SettingsPage_Abstract
 {
 	public $icon_url;
 	public $position;
 
-	protected $_subs = array();
+	protected $_children = array();
 
 	/**
 	 * Constructor
@@ -150,37 +149,42 @@ class ICF_SettingsPage extends ICF_SettingsPage_Abstract
 	}
 
 	/**
-	 * Create the ICF_SettingsPage_Sub object
+	 * Create the ICF_SettingsPage_Child object
 	 *
-	 * @param	string|ICF_Settings_Sub	$slug
-	 * @param	string					$title
-	 * @param	array					$args
-	 * @return	ICF_Settings_Sub
+	 * @param	string|ICF_Settings_Child	$slug
+	 * @param	string						$title
+	 * @param	array						$args
+	 * @return	ICF_SettingsPage_Child
 	 */
-	public function sub($slug, $title = null, $args = array())
+	public function child($slug, $title = null, $args = array())
 	{
-		if (is_object($slug) && is_a($slug, 'ICF_SettingsPage_Sub')) {
-			$sub = $slug;
-			$slug = $sub->get_slug();
+		if (is_object($slug) && is_a($slug, 'ICF_SettingsPage_Child')) {
+			$child = $slug;
+			$slug = $child->get_slug();
 
-			if (isset($this->_subs[$slug])) {
-				if ($this->_subs[$slug] !== $sub) {
-					$this->_subs[$slug] = $sub;
+			if (isset($this->_children[$slug])) {
+				if ($this->_children[$slug] !== $child) {
+					$this->_children[$slug] = $child;
 				}
 
-				return $sub;
+				return $child;
 			}
 
-		} else if (!empty($this->_subs[$slug])) {
-			return $this->_subs[$slug];
+		} else if (!empty($this->_children[$slug])) {
+			return $this->_children[$slug];
 
 		} else {
-			$sub = new ICF_SettingsPage_Sub($this->_slug, $slug, $title, $args);
+			$child = new ICF_SettingsPage_Child($this, $slug, $title, $args);
 		}
 
-		$this->_subs[$slug] = $sub;
+		$this->_children[$slug] = $child;
 
-		return $sub;
+		return $child;
+	}
+
+	public function c($slug, $title = null, $args = array())
+	{
+		return $this->child($slug, $title, $args);
 	}
 
 	public function register()
@@ -192,18 +196,18 @@ class ICF_SettingsPage extends ICF_SettingsPage_Abstract
 	}
 }
 
-class ICF_SettingsPage_Sub extends ICF_SettingsPage_Abstract
+class ICF_SettingsPage_Child extends ICF_SettingsPage_Abstract
 {
 	protected $_parent_slug;
 
 	/**
 	 * Constructor
 	 *
-	 * @param	string|ICF_SettingsPage	$parent_slug
-	 * @param	string					$slug
-	 * @param	string					$title
-	 * @param	string					$menu_title
-	 * @param	array					$args
+	 * @param	string|ICF_SettingsPage_Parent	$parent_slug
+	 * @param	string							$slug
+	 * @param	string							$title
+	 * @param	string							$menu_title
+	 * @param	array							$args
 	 */
 	public function __construct($parent_slug, $slug, $title = null, $args = array())
 	{
@@ -211,8 +215,8 @@ class ICF_SettingsPage_Sub extends ICF_SettingsPage_Abstract
 			'menu_title' => null, 'capability' => 'manage_options', 'template' => null
 		));
 
-		if (is_object($parent_slug) && is_a($object, 'ICF_SettingsPage')) {
-			$this->_parent_slug = $object->get_slug();
+		if (is_object($parent_slug) && is_a($parent_slug, 'ICF_SettingsPage_Parent')) {
+			$this->_parent_slug = $parent_slug->get_slug();
 
 		} else {
 			$parent_alias = array(
@@ -549,7 +553,7 @@ abstract class ICF_SettingsPage_Section_Component_Element_FormField_Abstract ext
 	}
 }
 
-class ICF_SettingsPage_Section_Component_Element_Text extends ICF_SettingsPage_Section_Component_Element_FormField_Abstract
+class ICF_SettingsPage_Section_Component_Element_FormField_Text extends ICF_SettingsPage_Section_Component_Element_FormField_Abstract
 {
 	public function render()
 	{
@@ -563,7 +567,7 @@ class ICF_SettingsPage_Section_Component_Element_Text extends ICF_SettingsPage_S
 	}
 }
 
-class ICF_SettingsPage_Section_Component_Element_Checkbox extends ICF_SettingsPage_Section_Component_Element_FormField_Abstract
+class ICF_SettingsPage_Section_Component_Element_FormField_Checkbox extends ICF_SettingsPage_Section_Component_Element_FormField_Abstract
 {
 	public function register()
 	{
@@ -587,7 +591,7 @@ class ICF_SettingsPage_Section_Component_Element_Checkbox extends ICF_SettingsPa
 	}
 }
 
-class ICF_SettingsPage_Section_Component_Element_Radio extends ICF_SettingsPage_Section_Component_Element_FormField_Abstract
+class ICF_SettingsPage_Section_Component_Element_FormField_Radio extends ICF_SettingsPage_Section_Component_Element_FormField_Abstract
 {
 	public function register()
 	{
@@ -616,7 +620,7 @@ class ICF_SettingsPage_Section_Component_Element_Radio extends ICF_SettingsPage_
 	}
 }
 
-class ICF_SettingsPage_Section_Component_Element_Textarea extends ICF_SettingsPage_Section_Component_Element_FormField_Abstract
+class ICF_SettingsPage_Section_Component_Element_FormField_Textarea extends ICF_SettingsPage_Section_Component_Element_FormField_Abstract
 {
 	public function render()
 	{
@@ -630,7 +634,7 @@ class ICF_SettingsPage_Section_Component_Element_Textarea extends ICF_SettingsPa
 	}
 }
 
-class ICF_SettingsPage_Section_Component_Element_Select extends ICF_SettingsPage_Section_Component_Element_FormField_Abstract
+class ICF_SettingsPage_Section_Component_Element_FormField_Select extends ICF_SettingsPage_Section_Component_Element_FormField_Abstract
 {
 	public function register()
 	{
@@ -659,7 +663,7 @@ class ICF_SettingsPage_Section_Component_Element_Select extends ICF_SettingsPage
 	}
 }
 
-class ICF_SettingsPage_Section_Component_Element_Wysiwyg extends ICF_SettingsPage_Section_Component_Element_FormField_Abstract
+class ICF_SettingsPage_Section_Component_Element_FormField_Wysiwyg extends ICF_SettingsPage_Section_Component_Element_FormField_Abstract
 {
 	public function initialize()
 	{
