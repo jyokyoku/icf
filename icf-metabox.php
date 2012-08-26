@@ -54,7 +54,7 @@ class ICF_MetaBox
 	}
 
 	/**
-	 * Returns the post type of the meta box
+	 * Returns the post type
 	 *
 	 * @return	string
 	 */
@@ -64,7 +64,7 @@ class ICF_MetaBox
 	}
 
 	/**
-	 * Returns the meta box id
+	 * Returns the id
 	 *
 	 * @return	string
 	 */
@@ -74,7 +74,7 @@ class ICF_MetaBox
 	}
 
 	/**
-	 * Create the ICF_MetaBox_Component object
+	 * Creates the ICF_MetaBox_Component
 	 *
 	 * @param	id|ICF_MetaBox_Component	$id
 	 * @param	string						$title
@@ -107,9 +107,12 @@ class ICF_MetaBox
 	}
 
 	/**
-	 * Alias
+	 * Alias of 'component' method
 	 *
-	 * @see	ICF_MetaBox::component
+	 * @param	id|ICF_MetaBox_Component	$id
+	 * @param	string						$title
+	 * @return	ICF_MetaBox_Component
+	 * @see		ICF_MetaBox::component
 	 */
 	public function c($id, $title = null)
 	{
@@ -117,7 +120,7 @@ class ICF_MetaBox
 	}
 
 	/**
-	 * Adds the script that is used by ICF
+	 * Adds the scripts used by ICF
 	 */
 	public function add_scripts()
 	{
@@ -135,7 +138,7 @@ class ICF_MetaBox
 	}
 
 	/**
-	 * Adds the css that is used by ICF
+	 * Adds the stylesheets used by ICF
 	 */
 	public function add_styles()
 	{
@@ -151,7 +154,7 @@ class ICF_MetaBox
 	}
 
 	/**
-	 * Register
+	 * Registers to system
 	 */
 	public function register()
 	{
@@ -161,7 +164,7 @@ class ICF_MetaBox
 	}
 
 	/**
-	 * Display the html
+	 * Displays the rendered html
 	 *
 	 * @param	StdClass	$post
 	 */
@@ -175,7 +178,7 @@ class ICF_MetaBox
 	}
 
 	/**
-	 * Save the meta box data
+	 * Saves the components
 	 *
 	 * @param	int	$post_id
 	 * @return	NULL|int
@@ -312,7 +315,7 @@ class ICF_MetaBox_Component extends ICF_Component
 	}
 
 	/**
-	 * Get the meta box id
+	 * Returns the id
 	 *
 	 * @return	string
 	 */
@@ -322,7 +325,7 @@ class ICF_MetaBox_Component extends ICF_Component
 	}
 
 	/**
-	 * Get the Metabox of this parent
+	 * Returns the MetaBox
 	 *
 	 * @return ICF_MetaBox
 	 */
@@ -332,7 +335,7 @@ class ICF_MetaBox_Component extends ICF_Component
 	}
 
 	/**
-	 * Save the meta box data
+	 * Saves the elements
 	 *
 	 * @param	int		$post_id
 	 */
@@ -346,7 +349,7 @@ class ICF_MetaBox_Component extends ICF_Component
 	}
 
 	/**
-	 * Save the default data of elements when data is not registered
+	 * Saves the default data of elements when data is not registered
 	 *
 	 * @param	int		$post_id
 	 * @param	boolean	$force

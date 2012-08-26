@@ -130,7 +130,7 @@ class ICF_Component extends ICF_Tag
 	}
 
 	/**
-	 * Trigger function of element
+	 * Triggers function of element
 	 *
 	 * @param	ICF_Tag_Element_Interface	$element
 	 * @param	callback					$function

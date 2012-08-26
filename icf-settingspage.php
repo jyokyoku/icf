@@ -39,9 +39,12 @@ abstract class ICF_SettingsPage_Abstract
 	}
 
 	/**
-	 * Create the ICF_SettingsPage_Section object
+	 * Creates the ICF_SettingsPage_Section
 	 *
-	 * @param	string|ICF_SettingsPage_Section	$title
+	 * @param	string|ICF_SettingsPage_Section	$id
+	 * @param	string							$title
+	 * @param	callback						$callback
+	 * @return	ICF_SettingsPage_Section
 	 */
 	public function section($id = null, $title = null, $callback = null)
 	{
@@ -70,9 +73,13 @@ abstract class ICF_SettingsPage_Abstract
 	}
 
 	/**
-	 * Alias
+	 * Alias of 'section' method
 	 *
-	 * @see	ICF_SettingsPage_Abstract::section
+	 * @param	string|ICF_SettingsPage_Section	$id
+	 * @param	string							$title
+	 * @param	callback						$callback
+	 * @return	ICF_SettingsPage_Section
+	 * @see		ICF_SettingsPage_Abstract::section
 	 */
 	public function s($id = null, $title = null, $callback = null)
 	{
@@ -80,7 +87,7 @@ abstract class ICF_SettingsPage_Abstract
 	}
 
 	/**
-	 * Display the html
+	 * Displays the rendered html
 	 */
 	public function display()
 	{
@@ -149,11 +156,11 @@ class ICF_SettingsPage_Parent extends ICF_SettingsPage_Abstract
 	}
 
 	/**
-	 * Create the ICF_SettingsPage_Child object
+	 * Creates the ICF_SettingsPage_Child
 	 *
-	 * @param	string|ICF_Settings_Child	$slug
-	 * @param	string						$title
-	 * @param	array						$args
+	 * @param	string|ICF_SettingsPage_Child	$slug
+	 * @param	string							$title
+	 * @param	array							$args
 	 * @return	ICF_SettingsPage_Child
 	 */
 	public function child($slug, $title = null, $args = array())
@@ -182,6 +189,15 @@ class ICF_SettingsPage_Parent extends ICF_SettingsPage_Abstract
 		return $child;
 	}
 
+	/**
+	 * Alias of 'child' method
+	 *
+	 * @param	string|ICF_SettingsPage_Child	$slug
+	 * @param	string							$title
+	 * @param	array							$args
+	 * @return	ICF_SettingsPage_Child
+	 * @see		ICF_SettingsPage_Parent::child
+	 */
 	public function c($slug, $title = null, $args = array())
 	{
 		return $this->child($slug, $title, $args);
@@ -257,7 +273,7 @@ class ICF_SettingsPage_Child extends ICF_SettingsPage_Abstract
 	}
 
 	/**
-	 * Register
+	 * Registers to system
 	 */
 	public function register()
 	{
@@ -300,7 +316,7 @@ class ICF_SettingsPage_Section
 	}
 
 	/**
-	 * Returns the section id
+	 * Returns the id
 	 *
 	 * @return	string
 	 */
@@ -320,7 +336,7 @@ class ICF_SettingsPage_Section
 	}
 
 	/**
-	 * Create the component
+	 * Creates the component
 	 *
 	 * @param	string|ICF_SettingsPage_Section_Component	$id
 	 * @param	string										$title
@@ -357,9 +373,12 @@ class ICF_SettingsPage_Section
 	}
 
 	/**
-	 * Alias
+	 * Alias of 'component' method
 	 *
-	 * @see	ICF_SettingsPage_Section::component
+	 * @param	string|ICF_SettingsPage_Section_Component	$id
+	 * @param	string										$title
+	 * @return	ICF_SettingsPage_Section_Component
+	 * @see		ICF_SettingsPage_Section::component
 	 */
 	public function c($id, $title = '')
 	{
@@ -367,7 +386,7 @@ class ICF_SettingsPage_Section
 	}
 
 	/**
-	 * Register
+	 * Registers to system
 	 */
 	public function register()
 	{
@@ -378,7 +397,7 @@ class ICF_SettingsPage_Section
 	}
 
 	/**
-	 * Display the html
+	 * Displays the html
 	 */
 	public function display()
 	{
@@ -388,7 +407,7 @@ class ICF_SettingsPage_Section
 	}
 
 	/**
-	 * Add the html of link dialog
+	 * Adds the html of link dialog
 	 */
 	public function load_wpeditor_html()
 	{
@@ -403,7 +422,7 @@ class ICF_SettingsPage_Section
 	}
 
 	/**
-	 * Adds the script that is used by ICF
+	 * Adds the scripts used by ICF
 	 */
 	public function add_scripts()
 	{
@@ -420,7 +439,7 @@ class ICF_SettingsPage_Section
 	}
 
 	/**
-	 * Adds the css that is used by ICF
+	 * Adds the stylesheets used by ICF
 	 */
 	public function add_styles()
 	{
@@ -466,7 +485,7 @@ class ICF_SettingsPage_Section_Component extends ICF_Component
 	}
 
 	/**
-	 * Get the ID
+	 * Returns the ID
 	 *
 	 * @return	string
 	 */
@@ -476,7 +495,7 @@ class ICF_SettingsPage_Section_Component extends ICF_Component
 	}
 
 	/**
-	 * Get the page slug
+	 * Returns the page slug
 	 *
 	 * @return	string
 	 */
@@ -486,7 +505,7 @@ class ICF_SettingsPage_Section_Component extends ICF_Component
 	}
 
 	/**
-	 * Get the section ID
+	 * Returns the section id
 	 *
 	 * @return	string
 	 */
@@ -496,7 +515,7 @@ class ICF_SettingsPage_Section_Component extends ICF_Component
 	}
 
 	/**
-	 * Register
+	 * Registers to system
 	 */
 	public function register()
 	{

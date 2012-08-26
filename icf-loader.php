@@ -45,7 +45,7 @@ if (!class_exists('ICF_Loader')) {
 		}
 
 		/**
-		 * Load the class files
+		 * Loads the class files
 		 */
 		public static function load()
 		{
@@ -232,7 +232,7 @@ if (!class_exists('ICF_Loader')) {
 		}
 
 		/**
-		 * Add the codes of link dialog
+		 * Adds the codes of link dialog
 		 */
 		public function load_wpeditor_html()
 		{
@@ -244,7 +244,7 @@ if (!class_exists('ICF_Loader')) {
 		}
 
 		/**
-		 * Enqueue a script/style
+		 * Enqueues a script/style
 		 *
 		 * @param	array	$queue
 		 * @param	string	$type

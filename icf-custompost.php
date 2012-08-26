@@ -78,7 +78,7 @@ class ICF_CustomPost
 	}
 
 	/**
-	 * Rewrite title watermark
+	 * Rewrites the watermark of title field
 	 *
 	 * @param	string	$title
 	 */
@@ -94,7 +94,7 @@ class ICF_CustomPost
 	}
 
 	/**
-	 * Register the taxonomy
+	 * Registers the taxonomy
 	 *
 	 * @param	string	$taxonomy
 	 * @param	array	$args
@@ -137,9 +137,11 @@ class ICF_CustomPost
 	}
 
 	/**
-	 * Alias
+	 * Alias of 'taxonomy' method
 	 *
-	 * @see	ICF_CustomPost::taxonomy
+	 * @param	string	$taxonomy
+	 * @param	array	$args
+	 * @see		ICF_CustomPost::taxonomy
 	 */
 	public function t($taxonomy, $args = array())
 	{
@@ -147,7 +149,7 @@ class ICF_CustomPost
 	}
 
 	/**
-	 * Create the meta box
+	 * Creates the ICF_MetaBox
 	 *
 	 * @param	string|ICF_MetaBox	$id
 	 * @param	string				$title
@@ -181,9 +183,13 @@ class ICF_CustomPost
 	}
 
 	/**
-	 * Alias
+	 * Alias of 'metabox' method
 	 *
-	 * @see	ICF_CustomPost::metabox
+	 * @param	string|ICF_MetaBox	$id
+	 * @param	string				$title
+	 * @param	array				$args
+	 * @return	ICF_MetaBox
+	 * @see		ICF_CustomPost::metabox
 	 */
 	public function m($id, $title = null, $args = array())
 	{
