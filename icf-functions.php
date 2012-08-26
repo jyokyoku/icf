@@ -13,7 +13,7 @@ function icf_dump()
 {
 	$backtrace = debug_backtrace();
 
-	if (strpos($backtrace[0]['file'], 'icf/icf-functions.php') !== FALSE) {
+	if (strpos($backtrace[0]['file'], 'icf/icf-functions.php') !== false) {
 		$callee = $backtrace[1];
 
 	} else {
@@ -36,6 +36,42 @@ function icf_dump()
 
 	echo "</pre>";
 	echo "</div>";
+}
+
+function icf_log($message = null)
+{
+	$backtrace = debug_backtrace();
+
+	if (strpos($backtrace[0]['file'], 'icf/icf-functions.php') !== false) {
+		$callee = $backtrace[1];
+
+	} else {
+		$callee = $backtrace[0];
+	}
+
+	if (!is_string($message)) {
+		$message = print_r($message, true);
+	}
+
+	$log_dir = ABSPATH . DIRECTORY_SEPARATOR . 'icf-logs';
+
+	if (!is_dir($log_dir)) {
+		if (!@mkdir($log_dir)) {
+			throw Exception('Could not make a log directory.');
+		}
+	}
+
+	$log_file = $log_dir . DIRECTORY_SEPARATOR . date('Y-m-d') . '.txt';
+
+	if (!is_file($log_file)) {
+		if (!@touch($log_file)) {
+			throw Exception('Could not make a log file.');
+		}
+	}
+
+	$time = date('Y-m-d H:i:s');
+
+	file_put_contents($log_file, sprintf("[%s] %s - in %s, line %s\n", $time, $message, $callee['file'], $callee['line']), FILE_APPEND);
 }
 
 function icf_filter(array $array, $key, $default = null)
