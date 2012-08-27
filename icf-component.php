@@ -130,7 +130,7 @@ class ICF_Component extends ICF_Tag
 	}
 
 	/**
-	 * Trigger function of element
+	 * Triggers function of element
 	 *
 	 * @param	ICF_Tag_Element_Interface	$element
 	 * @param	callback					$function
@@ -520,12 +520,18 @@ class ICF_Component_Element_FormField_Wysiwyg extends ICF_Component_Element_Form
 
 	public function render()
 	{
+		$editor = '';
+
 		if (version_compare(get_bloginfo('version'), '3.3', '>=') && function_exists('wp_editor')) {
+			ob_start();
 			wp_editor($this->_value, $this->_args['id'], $this->_args['settings']);
+			$editor = ob_get_clean();
 
 		} else {
 			trigger_error('The TinyMCE has been required for the WordPress 3.3 or above');
 		}
+
+		return $editor;
 	}
 }
 

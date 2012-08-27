@@ -7,7 +7,7 @@
  * @copyright	Copyright(c) 2011 Masayuki Ietomi
  */
 
-$GLOBALS['icf_versions']['1.3.0'] = __FILE__;
+$GLOBALS['icf_versions']['1.3.1'] = __FILE__;
 
 if (!defined('ICF_DEBUG')) {
 	define('ICF_DEBUG', false);
@@ -45,7 +45,7 @@ if (!class_exists('ICF_Loader')) {
 		}
 
 		/**
-		 * Load the class files
+		 * Loads the class files
 		 */
 		public static function load()
 		{
@@ -232,7 +232,7 @@ if (!class_exists('ICF_Loader')) {
 		}
 
 		/**
-		 * Add the codes of link dialog
+		 * Adds the codes of link dialog
 		 */
 		public function load_wpeditor_html()
 		{
@@ -244,7 +244,7 @@ if (!class_exists('ICF_Loader')) {
 		}
 
 		/**
-		 * Enqueue a script/style
+		 * Enqueues a script/style
 		 *
 		 * @param	array	$queue
 		 * @param	string	$type
