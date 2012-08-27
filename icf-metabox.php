@@ -170,7 +170,8 @@ class ICF_MetaBox
 	 */
 	public function display($post)
 	{
-		wp_nonce_field($this->_id, '_' . $this->_id . '_nonce');
+		$uniq_id = $this->_generate_uniq_id();
+		wp_nonce_field($uniq_id, $uniq_id . '_nonce');
 
 		foreach ($this->_components as $component) {
 			$component->display($post);
@@ -194,12 +195,14 @@ class ICF_MetaBox
     		return $post_id;
 		}
 
-		$status_key = $this->_generate_uniq_id() . '_refresh';
-		delete_option($status_key);
+		$uniq_id = $this->_generate_uniq_id();
 
-		$nonce = isset($_POST['_' . $this->_id . '_nonce']) ? $_POST['_' . $this->_id . '_nonce'] : '';
+		$refresh_params_key = $uniq_id . '_refresh';
+		delete_option($refresh_params_key);
 
-		if (!$nonce || !wp_verify_nonce($nonce, $this->_id)) {
+		$nonce = isset($_POST[$uniq_id. '_nonce']) ? $_POST[$uniq_id . '_nonce'] : '';
+
+		if (!$nonce || !wp_verify_nonce($nonce, $uniq_id)) {
 			return $post_id;
 		}
 
