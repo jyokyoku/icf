@@ -105,7 +105,7 @@ class ICF_Component extends ICF_Tag
 		$html = '';
 
 		foreach ($this->_elements as $element) {
-			if ($this->_element_trigger($element, 'before_render') === false) {
+			if ($this->_element_trigger($element, 'before_render', $args) === false) {
 				continue;
 			}
 
