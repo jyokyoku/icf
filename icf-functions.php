@@ -74,6 +74,14 @@ function icf_log($message = null)
 	file_put_contents($log_file, sprintf("[%s] %s - in %s, line %s\n", $time, $message, $callee['file'], $callee['line']), FILE_APPEND);
 }
 
+/**
+ * Returns a value(s) of the specified key(s) of the array.
+ *
+ * @param	array			$array
+ * @param	string|array	$key
+ * @param	mixed			$default
+ * @return	mixed
+ */
 function icf_filter(array $array, $key, $default = null)
 {
 	$keys = is_array($key) ? $key : array($key => $default);
@@ -96,7 +104,15 @@ function icf_filter(array $array, $key, $default = null)
 	return (is_array($key) && count($key) > 1) ? $values : reset($values);
 }
 
-function icf_extract(array &$array, $key)
+/**
+ * Returns a value(s) of the specified key(s) of the array and removes it from the array.
+ *
+ * @param	array	$array
+ * @param	string	$key
+ * @param	string	$_
+ * @return	mixed
+ */
+function icf_extract(array &$array, $key, $_ = null)
 {
 	$args = func_get_args();
 	$keys = array_splice($args, 1);
@@ -115,7 +131,15 @@ function icf_extract(array &$array, $key)
 	return (count($keys) > 1) ? $values : reset($values);
 }
 
-function icf_extract_and_merge(array &$array, $key)
+/**
+ * Returns a merged value of the specified key(s) of array and removes it from array.
+ *
+ * @param	array	$array
+ * @param	string	$key
+ * @param	string	$_
+ * @return	array
+ */
+function icf_extract_and_merge(array &$array, $key, $_ = null)
 {
 	$args = func_get_args();
 	$keys = array_splice($args, 1);
