@@ -243,7 +243,7 @@ abstract class ICF_Component_Element_FormField_Abstract extends ICF_Component_El
 			$component_name .= '_';
 		}
 
-		if (preg_match('/^ICF_' . $component_name . 'Component_Element_([^_]+)$/', get_class($this), $matches)) {
+		if (preg_match('/^ICF_' . $component_name . 'Component_Element_FormField_([a-zA-Z0-9]+)$/', get_class($this), $matches)) {
 			$this->_type = strtolower($matches[1]);
 		}
 
