@@ -178,6 +178,18 @@ abstract class ICF_Component_Element_Abstract implements ICF_Tag_Element_Interfa
 		$this->_component = $component;
 	}
 
+	public function initialize()
+	{
+	}
+
+	public function before_render()
+	{
+	}
+
+	public function after_render()
+	{
+	}
+
 	protected static function _parse_validation_rules($rules)
 	{
 		if (!is_array($rules)) {
