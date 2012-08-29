@@ -1,4 +1,12 @@
 <?php
+/**
+ * Inspire Custom field Framework (ICF)
+ *
+ * @package		ICF
+ * @author		Masayuki Ietomi
+ * @copyright	Copyright(c) 2011 Masayuki Ietomi
+ */
+
 class ICF_Taxonomy
 {
 	protected $_slug;
