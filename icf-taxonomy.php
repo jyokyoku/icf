@@ -49,10 +49,22 @@ class ICF_Taxonomy
 		add_action('created_' . $this->_slug, array($this, 'save'), 10, 2);
 		add_action($this->_slug . '_add_form_fields', array($this, 'display_add_form'), 10, 1);
 		add_action($this->_slug . '_edit_form_fields', array($this, 'display_edit_form'), 10, 2);
-		add_action('admin_init', array($this, 'load_wpeditor_html'), 10);
-		add_action('admin_head', array($this, 'add_local_style'), 10);
-		add_action('admin_print_scripts', array($this, 'add_scripts'), 10);
-		add_action('admin_print_styles', array($this, 'add_styles'), 10);
+
+		if (!has_action('admin_init', array('ICF_Taxonomy', 'load_wpeditor_html'))) {
+			add_action('admin_init', array('ICF_Taxonomy', 'load_wpeditor_html'), 10);
+		}
+
+		if (!has_action('admin_head', array('ICF_Taxonomy', 'add_local_style'))) {
+			add_action('admin_head', array('ICF_Taxonomy', 'add_local_style'), 10);
+		}
+
+		if (!has_action('admin_print_scripts', array('ICF_Taxonomy', 'add_scripts'))) {
+			add_action('admin_print_scripts', array('ICF_Taxonomy', 'add_scripts'), 10);
+		}
+
+		if (!has_action('admin_print_styles', array('ICF_Taxonomy', 'admin_print_styles'))) {
+			add_action('admin_print_styles', array('ICF_Taxonomy', 'add_styles'), 10);
+		}
 	}
 
 	public function get_slug()
@@ -138,7 +150,7 @@ class ICF_Taxonomy
 		echo $html;
 	}
 
-	public function add_local_style()
+	public static function add_local_style()
 	{
 		global $pagenow;
 
@@ -170,7 +182,7 @@ class ICF_Taxonomy
 		}
 	}
 
-	public function add_scripts()
+	public static function add_scripts()
 	{
 		global $pagenow;
 
@@ -179,7 +191,7 @@ class ICF_Taxonomy
 		}
 	}
 
-	public function add_styles()
+	public static function add_styles()
 	{
 		global $pagenow;
 
@@ -188,11 +200,11 @@ class ICF_Taxonomy
 		}
 	}
 
-	public function load_wpeditor_html()
+	public static function load_wpeditor_html()
 	{
 		global $pagenow;
 
-		if ($pagenow == 'edit-tags.php') {
+		if ($pagenow == 'edit-tags.php' && !has_action('admin_print_footer_scripts', array('ICF_Loader', 'load_wpeditor_html'))) {
 			add_action('admin_print_footer_scripts', array('ICF_Loader', 'load_wpeditor_html'));
 		}
 	}
