@@ -129,3 +129,8 @@ function icf_extract_and_merge(array &$array, $key)
 
 	return $values;
 }
+
+function icf_get_taxonomy_meta($term_id, $taxonomy, $key, $default = false)
+{
+	return ICF_Taxonomy::get_option($term_id, $taxonomy, $key, $default);
+}
