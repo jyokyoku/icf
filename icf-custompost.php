@@ -8,6 +8,7 @@
  */
 
 require_once dirname(__FILE__) . '/icf-loader.php';
+require_once dirname(__FILE__) . '/icf-taxonomy.php';
 require_once dirname(__FILE__) . '/icf-metabox.php';
 require_once dirname(__FILE__) . '/icf-inflector.php';
 
@@ -15,6 +16,7 @@ class ICF_CustomPost
 {
 	protected $_post_type;
 	protected $_enter_title_here;
+	protected $_taxonomies = array();
 	protected $_metaboxes = array();
 
 	/**
@@ -98,42 +100,30 @@ class ICF_CustomPost
 	 *
 	 * @param	string	$taxonomy
 	 * @param	array	$args
+	 * @return 	ICF_Taxonomy
+	 * @see		ICF_Taxonomy::__construct
 	 */
-	public function taxonomy($taxonomy, $args = array())
+	public function taxonomy($slug, $args = array())
 	{
-		global $wp_taxonomies;
-		$args = wp_parse_args($args);
+		if (is_object($slug) && is_a($slug, 'ICF_Taxonomy')) {
+			$taxonomy = $slug;
+			$slug = $taxonomy->get_slug();
 
-		if (!isset($wp_taxonomies[$taxonomy])) {
-			if (empty($args['label'])) {
-				$args['label'] = $taxonomy;
+			if (isset($this->_taxonomies[$slug])) {
+				if ($this->_taxonomies[$slug] !== $taxonomy) {
+					$this->_taxonomies[$slug] = $taxonomy;
+				}
 			}
 
-			if (empty($args['labels'])) {
-				$args['labels'] = array(
-					'name' => ICF_Inflector::humanize($this->_pluralize($args['label'])),
-					'singular_name' => ICF_Inflector::humanize($this->_singularize($args['label'])),
-					'search_items' => sprintf(__('Search %s', 'icf'), ICF_Inflector::humanize($this->_singularize($args['label']))),
-					'popular_items' => sprintf(__('Popular %s', 'icf'), ICF_Inflector::humanize($this->_pluralize($args['label']))),
-					'all_items' => sprintf(__('All %s', 'icf'), ICF_Inflector::humanize($this->_pluralize($args['label']))),
-					'parent_item' => sprintf(__('Parent %s', 'icf'), ICF_Inflector::humanize($this->_singularize($args['label']))),
-					'parent_item_colon' => sprintf(__('Parent %s:', 'icf'), ICF_Inflector::humanize($this->_singularize($args['label']))),
-					'edit_item' => sprintf(__('Edit %s', 'icf'), ICF_Inflector::humanize($this->_singularize($args['label']))),
-					'view_item' => sprintf(__('View %s', 'icf'), ICF_Inflector::humanize($this->_singularize($args['label']))),
-					'update_item' => sprintf(__('Update %s', 'icf'), ICF_Inflector::humanize($this->_singularize($args['label']))),
-					'add_new_item' => sprintf(__('Add New %s', 'icf'), ICF_Inflector::humanize($this->_singularize($args['label']))),
-					'new_item_name' => sprintf(__('New %s Name', 'icf'), ICF_Inflector::humanize($this->_singularize($args['label']))),
-					'separate_items_with_commas' => sprintf(__('Separate %s with commas', 'icf'), strtolower($this->_pluralize($args['label']))),
-					'add_or_remove_items' => sprintf(__('Add or remove %s', 'icf'), strtolower($this->_pluralize($args['label']))),
-					'choose_from_most_used' => sprintf(__('Choose from the most used %s', 'icf'), strtolower($this->_pluralize($args['label']))),
-				);
-			}
-
-			register_taxonomy($taxonomy, $this->_post_type, $args);
+		} else if (is_string($slug) && isset($this->_taxonomies[$slug])) {
+			$taxonomy = $this->_taxonomies[$slug];
 
 		} else {
-			register_taxonomy_for_object_type($taxonomy, $this->_post_type);
+			$taxonomy = new ICF_Taxonomy($slug, $this->_post_type, $args);
+			$this->_taxonomies[$slug] = $taxonomy;
 		}
+
+		return $taxonomy;
 	}
 
 	/**
@@ -141,11 +131,12 @@ class ICF_CustomPost
 	 *
 	 * @param	string	$taxonomy
 	 * @param	array	$args
+	 * @return 	ICF_Taxonomy
 	 * @see		ICF_CustomPost::taxonomy
 	 */
-	public function t($taxonomy, $args = array())
+	public function t($slug, $args = array())
 	{
-		return $this->taxonomy($taxonomy, $args);
+		return $this->taxonomy($slug, $args);
 	}
 
 	/**
