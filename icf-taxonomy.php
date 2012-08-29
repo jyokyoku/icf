@@ -6,7 +6,7 @@ class ICF_Taxonomy
 	protected $_args = array();
 	protected $_components = array();
 
-	public function __construct($slug, $post_type, array $args = array())
+	public function __construct($slug, $post_type, $args = array())
 	{
 		global $wp_taxonomies;
 
