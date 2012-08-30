@@ -61,21 +61,14 @@ class ICF_Taxonomy
 		add_action($this->_slug . '_add_form_fields', array($this, 'display_add_form'), 10, 1);
 		add_action($this->_slug . '_edit_form_fields', array($this, 'display_edit_form'), 10, 2);
 
-		if (!has_action('admin_init', array('ICF_Taxonomy', 'load_wpeditor_html'))) {
-			add_action('admin_init', array('ICF_Taxonomy', 'load_wpeditor_html'), 10);
-		}
+		add_action('admin_init', array('ICF_Taxonomy', 'load_wpeditor_html'), 10);
 
 		if (!has_action('admin_head', array('ICF_Taxonomy', 'add_local_style'))) {
 			add_action('admin_head', array('ICF_Taxonomy', 'add_local_style'), 10);
 		}
 
-		if (!has_action('admin_print_scripts', array('ICF_Taxonomy', 'add_scripts'))) {
-			add_action('admin_print_scripts', array('ICF_Taxonomy', 'add_scripts'), 10);
-		}
-
-		if (!has_action('admin_print_styles', array('ICF_Taxonomy', 'admin_print_styles'))) {
-			add_action('admin_print_styles', array('ICF_Taxonomy', 'add_styles'), 10);
-		}
+		add_action('admin_print_scripts', array('ICF_Taxonomy', 'add_scripts'), 10);
+		add_action('admin_print_styles', array('ICF_Taxonomy', 'add_styles'), 10);
 	}
 
 	public function get_slug()

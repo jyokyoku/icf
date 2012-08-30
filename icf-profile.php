@@ -79,22 +79,17 @@ abstract class ICF_Profile_Abstract
 			$component = $id;
 			$id = $component->get_id();
 
-			if (isset($this->_components[$id])) {
-				if ($this->_components[$id] !== $component) {
-					$this->_components[$id] = $component;
-				}
-
-				return $component;
+			if (isset($this->_components[$id]) && $this->_components[$id] !== $component) {
+				$this->_components[$id] = $component;
 			}
 
-		} else if (isset($this->_components[$id])) {
-			return $this->_components[$id];
+		} else if (is_string($id) && isset($this->_components[$id])) {
+			$component = $this->_components[$id];
 
 		} else {
 			$component = new ICF_Profile_Component($this, $id, $title);
+			$this->_components[$id] = $component;
 		}
-
-		$this->_components[$id] = $component;
 
 		return $component;
 	}
