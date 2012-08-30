@@ -348,26 +348,17 @@ class ICF_SettingsPage_Section
 			$component = $id;
 			$id = $component->get_id();
 
-			if (isset($this->_components[$id])) {
-				if ($this->_components[$id] !== $component) {
-					$this->_components[$id] = $component;
-				}
-
-				return $component;
+			if (isset($this->_components[$id]) && $this->_components[$id] !== $component) {
+				$this->_components[$id] = $component;
 			}
 
-		} else if (isset($this->_components[$id])) {
-			return $this->_components[$id];
+		} else if (is_string($id) && isset($this->_components[$id])) {
+			$component = $this->_components[$id];
 
 		} else {
-			if (!$title) {
-				$title = $id;
-			}
-
 			$component = new ICF_SettingsPage_Section_Component($id, $title, $this->_page_slug, $this->_id);
+			$this->_components[] = $component;
 		}
-
-		$this->_components[] = $component;
 
 		return $component;
 	}
@@ -544,6 +535,8 @@ class ICF_SettingsPage_Section_Component extends ICF_Component
 
 abstract class ICF_SettingsPage_Section_Component_Element_FormField_Abstract extends ICF_Component_Element_FormField_Abstract
 {
+	protected $_stored_value = false;
+
 	public function __construct(ICF_SettingsPage_Section_Component $component, $name, $value = null, array $args = array())
 	{
 		parent::__construct($component, $name, $value, $args);
@@ -570,19 +563,38 @@ abstract class ICF_SettingsPage_Section_Component_Element_FormField_Abstract ext
 			}
 		}
 	}
+
+	public function before_render()
+	{
+		$value = get_option($this->_name, false);
+
+		if ($value !== false) {
+			$this->_stored_value = $value;
+		}
+	}
 }
 
 class ICF_SettingsPage_Section_Component_Element_FormField_Text extends ICF_SettingsPage_Section_Component_Element_FormField_Abstract
 {
-	public function render()
+	public function before_render()
 	{
-		$value = get_option($this->_name);
+		parent::before_render();
 
-		if ($value !== false && $value !== '') {
-			$this->_value = $value;
+		if ($this->_stored_value !== false) {
+			$this->_value = $this->_stored_value;
 		}
+	}
+}
 
-		return ICF_Form::text($this->_name, $this->_value, $this->_args);
+class ICF_SettingsPage_Section_Component_Element_FormField_Textarea extends ICF_SettingsPage_Section_Component_Element_FormField_Abstract
+{
+	public function before_render()
+	{
+		parent::before_render();
+
+		if ($this->_stored_value !== false) {
+			$this->_value = $this->_stored_value;
+		}
 	}
 }
 
@@ -597,16 +609,14 @@ class ICF_SettingsPage_Section_Component_Element_FormField_Checkbox extends ICF_
 		}
 	}
 
-	public function render()
+	public function before_render()
 	{
-		$value = get_option($this->_name);
+		parent::before_render();
 
-		if ($value !== false && $value !== '') {
+		if ($this->_stored_value !== false) {
 			unset($this->_args['checked'], $this->_args['selected']);
-			$this->_args['checked'] = ($value == $this->_value);
+			$this->_args['checked'] = ($this->_stored_value == $this->_value);
 		}
-
-		return ICF_Form::checkbox($this->_name, $this->_value, $this->_args);
 	}
 }
 
@@ -626,30 +636,14 @@ class ICF_SettingsPage_Section_Component_Element_FormField_Radio extends ICF_Set
 		}
 	}
 
-	public function render()
+	public function before_render()
 	{
-		$value = get_option($this->_name);
+		parent::before_render();
 
-		if ($value !== false && $value !== '') {
+		if ($this->_stored_value !== false) {
 			unset($this->_args['checked'], $this->_args['selected']);
-			$this->_args['checked'] = in_array($value, (array)$this->_value) ? $value : false;
+			$this->_args['checked'] = in_array($this->_stored_value, (array)$this->_value) ? $this->_stored_value : false;
 		}
-
-		return ICF_Form::radio($this->_name, $this->_value, $this->_args);
-	}
-}
-
-class ICF_SettingsPage_Section_Component_Element_FormField_Textarea extends ICF_SettingsPage_Section_Component_Element_FormField_Abstract
-{
-	public function render()
-	{
-		$value = get_option($this->_name);
-
-		if ($value !== false && $value !== '') {
-			$this->_value = $value;
-		}
-
-		return ICF_Form::textarea($this->_name, $this->_value, $this->_args);
 	}
 }
 
@@ -669,16 +663,14 @@ class ICF_SettingsPage_Section_Component_Element_FormField_Select extends ICF_Se
 		}
 	}
 
-	public function render()
+	public function before_render()
 	{
-		$value = get_option($this->_name);
+		parent::before_render();
 
-		if ($value !== false && $value !== '') {
+		if ($this->_stored_value !== false) {
 			unset($this->_args['checked'], $this->_args['selected']);
-			$this->_args['selected'] = in_array($value, (array)$this->_value) ? $value : false;
+			$this->_args['selected'] = in_array($this->_stored_value, (array)$this->_value) ? $this->_stored_value : false;
 		}
-
-		return ICF_Form::select($this->_name, $this->_value, $this->_args);
 	}
 }
 
@@ -695,14 +687,17 @@ class ICF_SettingsPage_Section_Component_Element_FormField_Wysiwyg extends ICF_S
 		$this->_args['id'] = $this->_name;
 	}
 
+	public function before_render()
+	{
+		parent::before_render();
+
+		if ($this->_stored_value !== false) {
+			$this->_value = $this->_stored_value;
+		}
+	}
+
 	public function render()
 	{
-		$value = get_option($this->_name);
-
-		if ($value !== false && $value !== '') {
-			$this->_value = $value;
-		}
-
 		$editor = '';
 
 		if (version_compare(get_bloginfo('version'), '3.3', '>=') && function_exists('wp_editor')) {

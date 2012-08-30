@@ -247,10 +247,11 @@ abstract class ICF_Component_Element_FormField_Abstract extends ICF_Component_El
 			$this->_type = strtolower($matches[1]);
 		}
 
-		$this->_component = $component;
 		$this->_name = icf_extract($args, 'name');
 		$this->_value = icf_extract($args, 'value');
 		$this->_args = $args;
+
+		parent::__construct($component);
 	}
 
 	public function initialize()
@@ -261,6 +262,15 @@ abstract class ICF_Component_Element_FormField_Abstract extends ICF_Component_El
 		if ($this->_validation && in_array($this->_type, $this->_single_form_types)) {
 			ICF_Tag_Element_Node::add_class($this->_args, implode(' ', $this->_validation));
 		}
+	}
+
+	public function render()
+	{
+		if (!$this->_type || !method_exists('ICF_Form', $this->_type)) {
+			return '';
+		}
+
+		return call_user_func(array('ICF_Form', $this->_type), $this->_name, $this->_value, $this->_args);
 	}
 
 	public function after_render($html = null)
@@ -446,42 +456,22 @@ class ICF_Component_Element_Button_Reset extends ICF_Component_Element_Button_Me
 
 class ICF_Component_Element_FormField_Text extends ICF_Component_Element_FormField_Abstract
 {
-	public function render()
-	{
-		return ICF_Form::text($this->_name, $this->_value, $this->_args);
-	}
 }
 
 class ICF_Component_Element_FormField_Checkbox extends ICF_Component_Element_FormField_Abstract
 {
-	public function render()
-	{
-		return ICF_Form::checkbox($this->_name, $this->_value, $this->_args);
-	}
 }
 
 class ICF_Component_Element_FormField_Radio extends ICF_Component_Element_FormField_Abstract
 {
-	public function render()
-	{
-		return ICF_Form::radio($this->_name, $this->_value, $this->_args);
-	}
 }
 
 class ICF_Component_Element_FormField_Textarea extends ICF_Component_Element_FormField_Abstract
 {
-	public function render()
-	{
-		return ICF_Form::textarea($this->_name, $this->_value, $this->_args);
-	}
 }
 
 class ICF_Component_Element_FormField_Select extends ICF_Component_Element_FormField_Abstract
 {
-	public function render()
-	{
-		return ICF_Form::select($this->_name, $this->_value, $this->_args);
-	}
 }
 
 class ICF_Component_Element_FormField_Quicktag extends ICF_Component_Element_FormField_Abstract

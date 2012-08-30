@@ -214,6 +214,13 @@ abstract class ICF_Profile_Component_Element_FormField_Abstract extends ICF_Comp
 		}
 	}
 
+	public function before_render(WP_User $user = null)
+	{
+		if (isset($user->ID)) {
+			$this->_stored_value = get_the_author_meta($this->_name, $user->ID);
+		}
+	}
+
 	public function save($user_id, $old_user_meta)
 	{
 		if (!isset($_POST[$this->_name])) {
@@ -228,84 +235,64 @@ abstract class ICF_Profile_Component_Element_FormField_Abstract extends ICF_Comp
 
 class ICF_Profile_Component_Element_FormField_Text extends ICF_Profile_Component_Element_FormField_Abstract
 {
-	public function render(WP_User $user = null)
+	public function before_render(WP_User $user = null)
 	{
-		if (isset($user->ID)) {
-			$value = get_the_author_meta($this->_name, $user->ID);
+		parent::before_render($user);
 
-			if ($value !== false && $value !== '') {
-				$this->_value = $value;
-			}
+		if ($this->_stored_value !== false) {
+			$this->_value = $this->_stored_value;
 		}
-
-		return ICF_Form::text($this->_name, $this->_value, $this->_args);
-	}
-}
-
-class ICF_Profile_Component_Element_FormField_Checkbox extends ICF_Profile_Component_Element_FormField_Abstract
-{
-	public function render(WP_User $user = null)
-	{
-		if (isset($user->ID)) {
-			$value = get_the_author_meta($this->_name, $user->ID);
-
-			if ($value !== false && $value != '') {
-				$this->_args['checked'] = ($value == $this->_value);
-				unset($this->_args['selected']);
-			}
-		}
-
-		return ICF_Form::checkbox($this->_name, $this->_value, $this->_args);
-	}
-}
-
-class ICF_Profile_Component_Element_FormField_Radio extends ICF_Profile_Component_Element_FormField_Abstract
-{
-	public function render(WP_User $user = null)
-	{
-		if (isset($user->ID)) {
-			$value = get_the_author_meta($this->_name, $user->ID);
-
-			if ($value !== false && $value !== '') {
-				$this->_args['checked'] = in_array($value, (array)$this->_value) ? $value : false;
-				unset($this->_args['selected']);
-			}
-		}
-
-		return ICF_Form::radio($this->_name, $this->_value, $this->_args);
 	}
 }
 
 class ICF_Profile_Component_Element_FormField_Textarea extends ICF_Profile_Component_Element_FormField_Abstract
 {
-	public function render(WP_User $user = null)
+	public function before_render(WP_User $user = null)
 	{
-		if (isset($user->ID)) {
-			$value = get_the_author_meta($this->_name, $user->ID);
+		parent::before_render($user);
 
-			if ($value !== false && $value !== '') {
-				$this->_value = $value;
-			}
+		if ($this->_stored_value !== false) {
+			$this->_value = $this->_stored_value;
 		}
+	}
+}
 
-		return ICF_Form::textarea($this->_name, $this->_value, $this->_args);
+class ICF_Profile_Component_Element_FormField_Checkbox extends ICF_Profile_Component_Element_FormField_Abstract
+{
+	public function before_render(WP_User $user = null)
+	{
+		parent::before_render($user);
+
+		if ($this->_stored_value !== false) {
+			$this->_args['checked'] = ($this->_stored_value == $this->_value);
+			unset($this->_args['selected']);
+		}
+	}
+}
+
+class ICF_Profile_Component_Element_FormField_Radio extends ICF_Profile_Component_Element_FormField_Abstract
+{
+	public function before_render(WP_User $user = null)
+	{
+		parent::before_render($user);
+
+		if ($this->_stored_value !== false) {
+			$this->_args['checked'] = in_array($this->_stored_value, (array)$this->_value) ? $this->_stored_value : false;
+			unset($this->_args['selected']);
+		}
 	}
 }
 
 class ICF_Profile_Component_Element_FormField_Select extends ICF_Profile_Component_Element_FormField_Abstract
 {
-	public function render(WP_User $user = null)
+	public function before_render(WP_User $user = null)
 	{
-		if (isset($user->ID)) {
-			$value = get_the_author_meta($this->_name, $user->ID);
+		parent::before_render($user);
 
-			if ($value !== false && $value !== '') {
-				$this->_args['selected'] = in_array($value, (array)$this->_value) ? $value : false;
-				unset($this->_args['checked']);
-			}
+		if ($this->_stored_value !== false) {
+			$this->_args['selected'] = in_array($this->_stored_value, (array)$this->_value) ? $this->_stored_value : false;
+			unset($this->_args['checked']);
 		}
-
-		return ICF_Form::select($this->_name, $this->_value, $this->_args);
 	}
 }
 
@@ -322,16 +309,17 @@ class ICF_Profile_Component_Element_FormField_Wysiwyg extends ICF_Profile_Compon
 		$this->_args['id'] = $this->_name;
 	}
 
+	public function before_render(WP_User $user = null)
+	{
+		parent::before_render($user);
+
+		if ($this->_stored_value !== false) {
+			$this->_value = $this->_stored_value;
+		}
+	}
+
 	public function render(WP_User $user = null)
 	{
-		if (isset($user->ID)) {
-			$value = get_the_author_meta($this->_name, $user->ID);
-
-			if ($value !== false && $value !== '') {
-				$this->_value = $value;
-			}
-		}
-
 		$editor = '';
 
 		if (version_compare(get_bloginfo('version'), '3.3', '>=') && function_exists('wp_editor')) {

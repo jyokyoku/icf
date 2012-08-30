@@ -109,10 +109,8 @@ class ICF_CustomPost
 			$taxonomy = $slug;
 			$slug = $taxonomy->get_slug();
 
-			if (isset($this->_taxonomies[$slug])) {
-				if ($this->_taxonomies[$slug] !== $taxonomy) {
-					$this->_taxonomies[$slug] = $taxonomy;
-				}
+			if (isset($this->_taxonomies[$slug]) && $this->_taxonomies[$slug] !== $taxonomy) {
+				$this->_taxonomies[$slug] = $taxonomy;
 			}
 
 		} else if (is_string($slug) && isset($this->_taxonomies[$slug])) {
@@ -153,22 +151,17 @@ class ICF_CustomPost
 			$metabox = $id;
 			$id = $metabox->get_id();
 
-			if (isset($this->_metaboxes[$id])) {
-				if ($this->_metaboxes[$id] !== $metabox) {
-					$this->_metaboxes[$id] = $metabox;
-				}
-
-				return $metabox;
+			if (isset($this->_metaboxes[$id]) && $this->_metaboxes[$id] !== $metabox) {
+				$this->_metaboxes[$id] = $metabox;
 			}
 
-		} else if (isset($this->_metaboxes[$id])) {
-			return $this->_metaboxes[$id];
+		} else if (is_string($id) && isset($this->_metaboxes[$id])) {
+			$metabox = $this->_metaboxes[$id];
 
 		} else {
 			$metabox = new ICF_MetaBox($this->_post_type, $id, $title, $args);
+			$this->_metaboxes[$id] = $metabox;
 		}
-
-		$this->_metaboxes[$id] = $metabox;
 
 		return $metabox;
 	}

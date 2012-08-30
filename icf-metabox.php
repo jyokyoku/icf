@@ -86,22 +86,17 @@ class ICF_MetaBox
 			$component = $id;
 			$id = $component->get_id();
 
-			if (isset($this->_components[$id])) {
-				if ($this->_components[$id] !== $component) {
-					$this->_components[$id] = $component;
-				}
-
-				return $component;
+			if (isset($this->_components[$id]) && $this->_components[$id] !== $component) {
+				$this->_components[$id] = $component;
 			}
 
-		} else if (isset($this->_components[$id])) {
-			return $this->_components[$id];
+		} else if (is_string($id) && isset($this->_components[$id])) {
+			$component = $this->_components[$id];
 
 		} else {
 			$component = new ICF_MetaBox_Component($this, $id, $title);
+			$this->_components[$id] = $component;
 		}
-
-		$this->_components[$id] = $component;
 
 		return $component;
 	}
@@ -387,6 +382,8 @@ class ICF_MetaBox_Component extends ICF_Component
 
 abstract class ICF_MetaBox_Component_Element_FormField_Abstract extends ICF_Component_Element_FormField_Abstract
 {
+	protected $_stored_value = false;
+
 	public function __construct(ICF_MetaBox_Component $component, $name, $value = null, array $args = array())
 	{
 		parent::__construct($component, $name, $value, $args);
@@ -408,14 +405,20 @@ abstract class ICF_MetaBox_Component_Element_FormField_Abstract extends ICF_Comp
 		}
 	}
 
+	public function before_render(stdClass $post = null)
+	{
+		if (isset($post->ID)) {
+			$this->_stored_value = get_post_meta($post->ID, $this->_name, true);
+		}
+	}
+
 	public function save($post_id)
 	{
 		if (!isset($_POST[$this->_name])) {
 			return false;
 		}
 
-		$value = $_POST[$this->_name];
-		update_post_meta($post_id, $this->_name, $value);
+		update_post_meta($post_id, $this->_name, $_POST[$this->_name]);
 
 		return true;
 	}
@@ -430,84 +433,64 @@ abstract class ICF_MetaBox_Component_Element_FormField_Abstract extends ICF_Comp
 
 class ICF_MetaBox_Component_Element_FormField_Text extends ICF_MetaBox_Component_Element_FormField_Abstract
 {
-	public function render(stdClass $post = null)
+	public function before_render(stdClass $post = null)
 	{
-		if (isset($post->ID)) {
-			$value = get_post_meta($post->ID, $this->_name, true);
+		parent::before_render($post);
 
-			if ($value !== false && $value !== '') {
-				$this->_value = $value;
-			}
+		if ($this->_stored_value !== false) {
+			$this->_value = $this->_stored_value;
 		}
-
-		return ICF_Form::text($this->_name, $this->_value, $this->_args);
-	}
-}
-
-class ICF_MetaBox_Component_Element_FormField_Checkbox extends ICF_MetaBox_Component_Element_FormField_Abstract
-{
-	public function render(stdClass $post = null)
-	{
-		if (isset($post->ID)) {
-			$value = get_post_meta($post->ID, $this->_name, true);
-
-			if ($value !== false && $value != '') {
-				$this->_args['checked'] = ($value == $this->_value);
-				unset($this->_args['selected']);
-			}
-		}
-
-		return ICF_Form::checkbox($this->_name, $this->_value, $this->_args);
-	}
-}
-
-class ICF_MetaBox_Component_Element_FormField_Radio extends ICF_MetaBox_Component_Element_FormField_Abstract
-{
-	public function render(stdClass $post = null)
-	{
-		if (isset($post->ID)) {
-			$value = get_post_meta($post->ID, $this->_name, true);
-
-			if ($value !== false && $value !== '') {
-				$this->_args['checked'] = in_array($value, (array)$this->_value) ? $value : false;
-				unset($this->_args['selected']);
-			}
-		}
-
-		return ICF_Form::radio($this->_name, $this->_value, $this->_args);
 	}
 }
 
 class ICF_MetaBox_Component_Element_FormField_Textarea extends ICF_MetaBox_Component_Element_FormField_Abstract
 {
-	public function render(stdClass $post = null)
+	public function before_render(stdClass $post = null)
 	{
-		if (isset($post->ID)) {
-			$value = get_post_meta($post->ID, $this->_name, true);
+		parent::before_render($post);
 
-			if ($value !== false && $value !== '') {
-				$this->_value = $value;
-			}
+		if ($this->_stored_value !== false) {
+			$this->_value = $this->_stored_value;
 		}
+	}
+}
 
-		return ICF_Form::textarea($this->_name, $this->_value, $this->_args);
+class ICF_MetaBox_Component_Element_FormField_Checkbox extends ICF_MetaBox_Component_Element_FormField_Abstract
+{
+	public function before_render(stdClass $post = null)
+	{
+		parent::before_render($post);
+
+		if ($this->_stored_value !== false) {
+			$this->_args['checked'] = ($this->_stored_value == $this->_value);
+			unset($this->_args['selected']);
+		}
+	}
+}
+
+class ICF_MetaBox_Component_Element_FormField_Radio extends ICF_MetaBox_Component_Element_FormField_Abstract
+{
+	public function before_render(stdClass $post = null)
+	{
+		parent::before_render($post);
+
+		if ($this->_stored_value !== false) {
+			$this->_args['checked'] = in_array($this->_stored_value, (array)$this->_value) ? $this->_stored_value : false;
+			unset($this->_args['selected']);
+		}
 	}
 }
 
 class ICF_MetaBox_Component_Element_FormField_Select extends ICF_MetaBox_Component_Element_FormField_Abstract
 {
-	public function render(stdClass $post = null)
+	public function before_render(stdClass $post = null)
 	{
-		if (isset($post->ID)) {
-			$value = get_post_meta($post->ID, $this->_name, true);
+		parent::before_render($post);
 
-			if ($value !== false && $value !== '') {
-				$this->_args['selected'] = in_array($value, (array)$this->_value) ? $value : false;
-				unset($this->_args['checked']);
-			}
+		if ($this->_stored_value !== false) {
+			$this->_args['selected'] = in_array($this->_stored_value, (array)$this->_value) ? $this->_stored_value : false;
+			unset($this->_args['checked']);
 		}
-
-		return ICF_Form::select($this->_name, $this->_value, $this->_args);
 	}
 }
 

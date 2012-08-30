@@ -286,6 +286,8 @@ class ICF_Taxonomy_Component extends ICF_Component
 
 class ICF_Taxonomy_Component_Element_FormField_Abstract extends ICF_Component_Element_FormField_Abstract
 {
+	protected $_stored_value;
+
 	public function __construct(ICF_Taxonomy_Component $component, $name, $value = null, array $args = array())
 	{
 		parent::__construct($component, $name, $value, $args);
@@ -305,43 +307,44 @@ class ICF_Taxonomy_Component_Element_FormField_Abstract extends ICF_Component_El
 	public function before_render(stdClass $tag = null)
 	{
 		if ($tag && !empty($tag->term_id)) {
-			$value = ICF_Taxonomy::get_option($tag->term_id, $this->_component->get_taxonomy()->get_slug(), $this->_name);
-
-			if ($value !== false) {
-				$this->_value = $value;
-			}
+			$this->_stored_value = ICF_Taxonomy::get_option($tag->term_id, $this->_component->get_taxonomy()->get_slug(), $this->_name);
 		}
-	}
-
-	public function render(stdClass $tag = null)
-	{
-		if (!method_exists('ICF_Form', $this->_type)) {
-			return '';
-		}
-
-		return call_user_func(array('ICF_Form', $this->_type), $this->_name, $this->_value, $this->_args);
 	}
 }
 
 class ICF_Taxonomy_Component_Element_FormField_Text extends ICF_Taxonomy_Component_Element_FormField_Abstract
 {
+	public function before_render(stdClass $tag = null)
+	{
+		parent::before_render($tag);
+
+		if ($this->_stored_value !== false) {
+			$this->_value = $this->_stored_value;
+		}
+	}
 }
 
 class ICF_Taxonomy_Component_Element_FormField_Textarea extends ICF_Taxonomy_Component_Element_FormField_Abstract
 {
+	public function before_render(stdClass $tag = null)
+	{
+		parent::before_render($tag);
+
+		if ($this->_stored_value !== false) {
+			$this->_value = $this->_stored_value;
+		}
+	}
 }
 
 class ICF_Taxonomy_Component_Element_FormField_Checkbox extends ICF_Taxonomy_Component_Element_FormField_Abstract
 {
 	public function before_render(stdClass $tag = null)
 	{
-		if ($tag && !empty($tag->term_id)) {
-			$value = ICF_Taxonomy::get_option($tag->term_id, $this->_component->get_taxonomy()->get_slug(), $this->_name);
+		parent::before_render($tag);
 
-			if ($value !== false) {
-				unset($this->_args['checked'], $this->_args['selected']);
-				$this->_args['checked'] = ($value == $this->_value);
-			}
+		if ($this->_stored_value !== false) {
+			unset($this->_args['checked'], $this->_args['selected']);
+			$this->_args['checked'] = ($this->_stored_value == $this->_value);
 		}
 	}
 }
@@ -350,13 +353,11 @@ class ICF_Taxonomy_Component_Element_FormField_Radio extends ICF_Taxonomy_Compon
 {
 	public function before_render(stdClass $tag = null)
 	{
-		if ($tag && !empty($tag->term_id)) {
-			$value = ICF_Taxonomy::get_option($tag->term_id, $this->_component->get_taxonomy()->get_slug(), $this->_name);
+		parent::before_render($tag);
 
-			if ($value !== false) {
-				unset($this->_args['checked'], $this->_args['selected']);
-				$this->_args['checked'] = in_array($value, (array)$this->_value) ? $value : false;
-			}
+		if ($this->_stored_value !== false) {
+			unset($this->_args['checked'], $this->_args['selected']);
+			$this->_args['checked'] = in_array($this->_stored_value, (array)$this->_value) ? $this->_stored_value : false;
 		}
 	}
 }
@@ -365,13 +366,11 @@ class ICF_Taxonomy_Component_Element_FormField_Select extends ICF_Taxonomy_Compo
 {
 	public function before_render(stdClass $tag = null)
 	{
-		if ($tag && !empty($tag->term_id)) {
-			$value = ICF_Taxonomy::get_option($tag->term_id, $this->_component->get_taxonomy()->get_slug(), $this->_name);
+		parent::before_render($tag);
 
-			if ($value !== false) {
-				unset($this->_args['checked'], $this->_args['selected']);
-				$this->_args['selected'] = in_array($value, (array)$this->_value) ? $value : false;
-			}
+		if ($this->_stored_value !== false) {
+			unset($this->_args['checked'], $this->_args['selected']);
+			$this->_args['selected'] = in_array($this->_stored_value, (array)$this->_value) ? $this->_stored_value : false;
 		}
 	}
 }
@@ -387,6 +386,15 @@ class ICF_Taxonomy_Component_Element_FormField_Wysiwyg extends ICF_Taxonomy_Comp
 		}
 
 		$this->_args['id'] = $this->_name;
+	}
+
+	public function before_render(stdClass $tag = null)
+	{
+		parent::before_render($tag);
+
+		if ($this->_stored_value !== false) {
+			$this->_value = $this->_stored_value;
+		}
 	}
 
 	public function render()
