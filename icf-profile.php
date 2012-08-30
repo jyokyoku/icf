@@ -218,7 +218,7 @@ abstract class ICF_Profile_Component_Element_FormField_Abstract extends ICF_Comp
 
 	public function before_render(WP_User $user = null)
 	{
-		if (isset($user->ID)) {
+		if (isset($user->ID) && $this->exists($user->ID)) {
 			$this->_stored_value = get_the_author_meta($this->_name, $user->ID);
 		}
 	}
@@ -232,6 +232,18 @@ abstract class ICF_Profile_Component_Element_FormField_Abstract extends ICF_Comp
 		update_user_meta($user_id, $this->_name, $_POST[$this->_name]);
 
 		return true;
+	}
+
+	public function exists($user_id = false) {
+		if (!$user_id) {
+			global $authordata;
+			$user_id = isset($authordata->ID) ? $authordata->ID : 0;
+
+		} else {
+			$authordata = get_userdata($user_id);
+		}
+
+		return isset($authordata->{$this->_name});
 	}
 }
 

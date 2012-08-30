@@ -407,7 +407,7 @@ abstract class ICF_MetaBox_Component_Element_FormField_Abstract extends ICF_Comp
 
 	public function before_render(stdClass $post = null)
 	{
-		if (isset($post->ID)) {
+		if (isset($post->ID) && $this->exists($post->ID)) {
 			$this->_stored_value = get_post_meta($post->ID, $this->_name, true);
 		}
 	}
@@ -428,6 +428,28 @@ abstract class ICF_MetaBox_Component_Element_FormField_Abstract extends ICF_Comp
 		if ($force || get_post_meta($post_id, $this->_name, true) === false) {
 			update_post_meta($post_id, $this->_name, $this->_value);
 		}
+	}
+
+	public function exists($post_id)
+	{
+		if (!($post_id = absint($post_id)) || !$this->_name) {
+			return false;
+		}
+
+		$check = apply_filters('get_post_metadata', null, $post_id, $this->_name, true);
+
+		if (null !== $check) {
+			return true;
+		}
+
+		$meta_cache = wp_cache_get($post_id, 'postmeta');
+
+		if (!$meta_cache) {
+			$meta_cache = update_meta_cache('post', array($post_id));
+			$meta_cache = $meta_cache[$post_id];
+		}
+
+		return isset($meta_cache[$this->_name]);
 	}
 }
 
