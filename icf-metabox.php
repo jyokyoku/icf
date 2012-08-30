@@ -442,7 +442,7 @@ abstract class ICF_MetaBox_Component_Element_FormField_Abstract extends ICF_Comp
 			return true;
 		}
 
-		$meta_cache = wp_cache_get($post_id, 'postmeta');
+		$meta_cache = wp_cache_get($post_id, 'post_meta');
 
 		if (!$meta_cache) {
 			$meta_cache = update_meta_cache('post', array($post_id));
