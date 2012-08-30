@@ -17,13 +17,17 @@ abstract class ICF_Profile_Abstract
 	public function __construct()
 	{
 		add_action('profile_update', array($this, 'save'), 10, 2);
-		add_action('admin_init', array($this, 'load_wpeditor_html'), 10);
-		add_action('admin_head', array($this, 'add_local_style'), 10);
-		add_action('admin_print_scripts', array($this, 'add_scripts'), 10);
-		add_action('admin_print_styles', array($this, 'add_styles'), 10);
+		add_action('admin_init', array('ICF_Profile_Abstract', 'load_wpeditor_html'), 10);
+
+		if (!has_action('admin_head', array('ICF_Profile_Abstract', 'add_local_style'))) {
+			add_action('admin_head', array('ICF_Profile_Abstract', 'add_local_style'), 10);
+		}
+
+		add_action('admin_print_scripts', array('ICF_Profile_Abstract', 'add_scripts'), 10);
+		add_action('admin_print_styles', array('ICF_Profile_Abstract', 'add_styles'), 10);
 	}
 
-	public function add_local_style()
+	public static function add_local_style()
 	{
 		global $pagenow;
 
@@ -39,7 +43,7 @@ abstract class ICF_Profile_Abstract
 		}
 	}
 
-	public function add_scripts()
+	public static function add_scripts()
 	{
 		global $pagenow;
 
@@ -48,7 +52,7 @@ abstract class ICF_Profile_Abstract
 		}
 	}
 
-	public function add_styles()
+	public static function add_styles()
 	{
 		global $pagenow;
 
@@ -57,11 +61,14 @@ abstract class ICF_Profile_Abstract
 		}
 	}
 
-	public function load_wpeditor_html()
+	public static function load_wpeditor_html()
 	{
 		global $pagenow;
 
-		if ($pagenow == 'profile.php' || $pagenow == 'user-edit.php') {
+		if (
+			($pagenow == 'profile.php' || $pagenow == 'user-edit.php')
+			&& !has_action('admin_print_footer_scripts', array('ICF_Loader', 'load_wpeditor_html'))
+		) {
 			add_action('admin_print_footer_scripts', array('ICF_Loader', 'load_wpeditor_html'));
 		}
 	}
