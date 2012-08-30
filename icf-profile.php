@@ -196,6 +196,8 @@ class ICF_Profile_Component extends ICF_Component
 
 abstract class ICF_Profile_Component_Element_FormField_Abstract extends ICF_Component_Element_FormField_Abstract
 {
+	protected $_stored_value = false;
+
 	public function __construct(ICF_Profile_Component $component, $name, $value = null, array $args = array())
 	{
 		parent::__construct($component, $name, $value, $args);
