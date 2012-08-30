@@ -238,9 +238,7 @@ if (!class_exists('ICF_Loader')) {
 		{
 			include_once ABSPATH . WPINC . '/class-wp-editor.php';
 
-			if (!has_action('admin_print_footer_scripts', array(_WP_Editors, 'editor_js'))) {
-				_WP_Editors::wp_link_dialog();
-			}
+			_WP_Editors::wp_link_dialog();
 		}
 
 		/**
