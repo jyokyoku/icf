@@ -19,6 +19,7 @@ class ICF_MetaBox
 
 	protected $_screen;
 	protected $_id;
+	protected $_is_post = false;
 	protected $_components = array();
 
 	/**
@@ -37,6 +38,7 @@ class ICF_MetaBox
 
 		$this->_screen = $screen;
 		$this->_id = $id;
+		$this->_is_post = !is_null(get_post_type_object($this->_screen));
 
 		$this->title = empty($title) ? $id : $title;
 		$this->context = $args['context'];
