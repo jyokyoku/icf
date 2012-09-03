@@ -17,25 +17,25 @@ class ICF_MetaBox
 	public $priority;
 	public $capability;
 
-	protected $_post_type;
+	protected $_screen;
 	protected $_id;
 	protected $_components = array();
 
 	/**
 	 * Constructor
 	 *
-	 * @param	string	$post_type
+	 * @param	string	$screen
 	 * @param	string	$id
 	 * @param	string	$title
 	 * @param	array	$args
 	 */
-	public function __construct($post_type, $id, $title = null, $args = array())
+	public function __construct($screen, $id, $title = null, $args = array())
 	{
 		$args = wp_parse_args($args, array(
 			'context' => 'normal', 'priority' => 'default', 'capability' => null, 'register' => true
 		));
 
-		$this->_post_type = $post_type;
+		$this->_screen = $screen;
 		$this->_id = $id;
 
 		$this->title = empty($title) ? $id : $title;
@@ -58,9 +58,9 @@ class ICF_MetaBox
 	 *
 	 * @return	string
 	 */
-	public function get_post_type()
+	public function get_screen()
 	{
-		return $this->_post_type;
+		return $this->_screen;
 	}
 
 	/**
@@ -122,9 +122,9 @@ class ICF_MetaBox
 		global $pagenow, $wp_scripts, $post;
 
 		if (
-			(isset($_GET['post_type']) && $_GET['post_type'] == $this->_post_type)
-			|| (!isset($_GET['post_type']) && $pagenow == 'post-new.php' && $this->_post_type == 'post')
-			|| (isset($post) && $post->post_type == $this->_post_type)
+			(isset($_GET['post_type']) && $_GET['post_type'] == $this->_screen)
+			|| (!isset($_GET['post_type']) && $pagenow == 'post-new.php' && $this->_screen == 'post')
+			|| (isset($post) && $post->post_type == $this->_screen)
 		) {
 			ICF_Loader::register_javascript(array(
 				'icf-metabox' => array(ICF_Loader::get_latest_version_url() . '/js/metabox.js', array('icf-common'), null, true)
@@ -140,9 +140,9 @@ class ICF_MetaBox
 		global $pagenow, $post;
 
 		if (
-			(isset($_GET['post_type']) && $_GET['post_type'] == $this->_post_type)
-			|| (!isset($_GET['post_type']) && $pagenow == 'post-new.php' && $this->_post_type == 'post')
-			|| (isset($post) && $post->post_type == $this->_post_type)
+			(isset($_GET['post_type']) && $_GET['post_type'] == $this->_screen)
+			|| (!isset($_GET['post_type']) && $pagenow == 'post-new.php' && $this->_screen == 'post')
+			|| (isset($post) && $post->post_type == $this->_screen)
 		) {
 			ICF_Loader::register_css();
 		}
@@ -154,7 +154,7 @@ class ICF_MetaBox
 	public function register()
 	{
 		if (empty($this->capability) || (!empty($this->capability) && current_user_can($this->capability))) {
-			add_meta_box($this->_id, $this->title, array($this, 'display'), $this->_post_type, $this->context, $this->priority);
+			add_meta_box($this->_id, $this->title, array($this, 'display'), $this->_screen, $this->context, $this->priority);
 		}
 	}
 
@@ -184,7 +184,7 @@ class ICF_MetaBox
 		if (
 			defined('DOING_AUTOSAVE') && DOING_AUTOSAVE
 			|| empty($_POST['post_type'])
-			|| $_POST['post_type'] != $this->_post_type
+			|| $_POST['post_type'] != $this->_screen
 			|| (!empty($this->capability) && !current_user_can($this->capability, $post_id))
 		) {
     		return $post_id;
@@ -227,7 +227,7 @@ class ICF_MetaBox
 		$query = "
 			SELECT %s
 			FROM {$wpdb->posts} as p
-			WHERE p.post_status IN ('publish', 'draft') AND p.post_type = '{$this->_post_type}'
+			WHERE p.post_status IN ('publish', 'draft') AND p.post_type = '{$this->_screen}'
 		";
 
 		if ($params === false) {
