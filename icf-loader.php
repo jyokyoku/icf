@@ -236,9 +236,10 @@ if (!class_exists('ICF_Loader')) {
 		 */
 		public function load_wpeditor_html()
 		{
-			include_once ABSPATH . WPINC . '/class-wp-editor.php';
-
-			_WP_Editors::wp_link_dialog();
+			if (version_compare(get_bloginfo('version'), '3.3', '>=')) {
+				include_once ABSPATH . WPINC . '/class-wp-editor.php';
+				_WP_Editors::wp_link_dialog();
+			}
 		}
 
 		/**
