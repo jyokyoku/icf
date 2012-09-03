@@ -9,6 +9,7 @@
 
 require_once dirname(__FILE__) . '/icf-loader.php';
 require_once dirname(__FILE__) . '/icf-component.php';
+require_once dirname(__FILE__) . '/icf-metabox.php';
 
 abstract class ICF_SettingsPage_Abstract
 {
@@ -16,9 +17,13 @@ abstract class ICF_SettingsPage_Abstract
 	public $menu_title;
 	public $capability;
 	public $template;
+	public $before_template;
+	public $after_template;
+	public $embed_form = true;
 
 	protected $_slug;
 	protected $_sections = array();
+	protected $_metaboxes = array();
 
 	/**
 	 * Constructor
@@ -87,11 +92,70 @@ abstract class ICF_SettingsPage_Abstract
 	}
 
 	/**
+	 * Craetes the ICF_MetaBox
+	 *
+	 * @param	string|ICF_MetaBox	$id
+	 * @param	string				$title
+	 * @return	ICF_MetaBox
+	 */
+	public function metabox($id, $title = '')
+	{
+		if (is_object($id) && is_a($id, 'ICF_MetaBox')) {
+			$metabox = $id;
+			$id = $metabox->get_id();
+
+			if (isset($this->_metaboxes[$id]) && $this->_metaboxes[$id] !== $metabox) {
+				$this->_metaboxes[$id] = $metabox;
+			}
+
+		} if (is_string($id) && isset($this->_metaboxes[$id])) {
+			$metabox = $this->_metaboxes[$id];
+
+		} else {
+			$metabox = new ICF_MetaBox($this->_slug, $id, $title);
+			$this->_metaboxes[$id] = $metabox;
+		}
+
+		return $metabox;
+	}
+
+	/**
+	 * Alias of 'metabox' method
+	 *
+	 * @param	string|ICF_MetaBox	$id
+	 * @param	string				$title
+	 * @return	ICF_MetaBox
+	 * @see		ICF_SettingsPage_Abstract::metabox
+	 */
+	public function m($id, $title = '')
+	{
+		return $this->metabox($id, $title);
+	}
+
+	/**
 	 * Displays the rendered html
 	 */
 	public function display()
 	{
 		global $wp_settings_fields;
+
+		if ($this->before_template) {
+			echo $this->before_template;
+
+		} else if ($this->before_template === null) {
+?>
+<div class="wrap">
+<h2><?php echo esc_html($this->title) ?></h2>
+<?php
+		}
+
+		if ($this->embed_form) {
+?>
+<form method="post" action="options.php" id="<?php echo $this->_slug ?>_form">
+<?php
+			require ABSPATH . 'wp-admin/options-head.php';
+			$this->display_hidden_fields();
+		}
 
 		if ($this->template && is_file($this->template) && is_readable($this->template)) {
 			@include $this->template;
@@ -100,23 +164,82 @@ abstract class ICF_SettingsPage_Abstract
 			call_user_func_array($this->template, array($this));
 
 		} else {
-			require ABSPATH . 'wp-admin/options-head.php';
+			if (!empty($wp_settings_fields[$this->_slug]['default'])) {
 ?>
-<div class="wrap">
-<h2><?php echo esc_html($this->title) ?></h2>
-<form method="post" action="options.php" id="<?php echo $this->_slug ?>_form">
-<?php settings_fields($this->_slug) . PHP_EOL; ?>
-<?php if (!empty($wp_settings_fields[$this->_slug]['default'])): ?>
 <table class="form-table">
-<?php do_settings_fields($this->_slug, 'default') . PHP_EOL; ?>
+<?php $this->display_settings_fields('default') ?>
 </table>
-<?php endif ?>
-<?php do_settings_sections($this->_slug) . PHP_EOL; ?>
-<?php submit_button() . PHP_EOL; ?>
-</form>
+<?php
+			}
+
+			$this->display_settings_sections();
+?>
+<div id="poststuff">
+<?php
+			$this->display_metaboxes('normal');
+			$this->display_metaboxes('advanced');
+?>
 </div>
 <?php
 		}
+
+		if ($this->embed_form) {
+			submit_button();
+?>
+</form>
+<?php
+		}
+
+		if ($this->after_template) {
+			echo $this->after_template;
+
+		} else if ($this->after_template === null) {
+?>
+</div>
+<?php
+		}
+	}
+
+	/**
+	 * Wrapper of 'settings_fields' function
+	 *
+	 * @see	settings_fields
+	 */
+	public function display_hidden_fields()
+	{
+		settings_fields($this->_slug);
+	}
+
+	/**
+	 * Wrapper of 'do_settings_sections' function
+	 *
+	 * @see	do_settings_sections
+	 */
+	public function display_settings_sections()
+	{
+		do_settings_sections($this->_slug);
+	}
+
+	/**
+	 * Wrapper of 'do_settings_fields' function
+	 *
+	 * @param	string	$section
+	 * @see		do_settings_fields
+	 */
+	public function display_settings_fields($section = 'default')
+	{
+		do_settings_fields($this->_slug, $section);
+	}
+
+	/**
+	 * Wrapper of 'do_meta_boxes' function
+	 *
+	 * @param	string	$context
+	 * @see		do_meta_boxes
+	 */
+	public function display_metaboxes($context = 'normal')
+	{
+		do_meta_boxes($this->_slug, $context, $this);
 	}
 
 	abstract public function register();

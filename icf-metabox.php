@@ -45,6 +45,7 @@ class ICF_MetaBox
 		$this->priority = $args['priority'];
 		$this->capability = $args['capability'];
 
+		add_action('admin_init', array($this, 'load_wpeditor_html'));
 		add_action('admin_print_scripts', array($this, 'add_scripts'));
 		add_action('admin_print_styles', array($this, 'add_styles'));
 
@@ -52,7 +53,9 @@ class ICF_MetaBox
 			add_action('admin_menu', array($this, 'register'));
 		}
 
-		add_action('save_post', array($this, 'save'));
+		if ($this->_is_post) {
+			add_action('save_post', array($this, 'save_post_meta'));
+		}
 	}
 
 	/**
@@ -73,6 +76,14 @@ class ICF_MetaBox
 	public function get_id()
 	{
 		return $this->_id;
+	}
+
+	/**
+	 * Returns it belongs post type
+	 */
+	public function is_post()
+	{
+		return $this->_is_post;
 	}
 
 	/**
@@ -117,16 +128,27 @@ class ICF_MetaBox
 	}
 
 	/**
+	 * Adds the html of link dialog
+	 */
+	public function load_wpeditor_html()
+	{
+		global $pagenow, $plugin_page;
+
+		if ($pagenow == 'admin.php' && $plugin_page == $this->_screen) {
+			add_action('admin_print_footer_scripts', array('ICF_Loader', 'load_wpeditor_html'));
+		}
+	}
+
+	/**
 	 * Adds the scripts used by ICF
 	 */
 	public function add_scripts()
 	{
-		global $pagenow, $wp_scripts, $post;
+		global $pagenow, $typenow, $plugin_page;
 
 		if (
-			(isset($_GET['post_type']) && $_GET['post_type'] == $this->_screen)
-			|| (!isset($_GET['post_type']) && $pagenow == 'post-new.php' && $this->_screen == 'post')
-			|| (isset($post) && $post->post_type == $this->_screen)
+			(in_array($pagenow, array('post.php', 'post-new.php')) && $typenow == $this->_screen)
+			|| ($pagenow == 'admin.php' && $plugin_page == $this->_screen)
 		) {
 			ICF_Loader::register_javascript(array(
 				'icf-metabox' => array(ICF_Loader::get_latest_version_url() . '/js/metabox.js', array('icf-common'), null, true)
@@ -139,12 +161,11 @@ class ICF_MetaBox
 	 */
 	public function add_styles()
 	{
-		global $pagenow, $post;
+		global $pagenow, $typenow, $plugin_page;
 
 		if (
-			(isset($_GET['post_type']) && $_GET['post_type'] == $this->_screen)
-			|| (!isset($_GET['post_type']) && $pagenow == 'post-new.php' && $this->_screen == 'post')
-			|| (isset($post) && $post->post_type == $this->_screen)
+			(in_array($pagenow, array('post.php', 'post-new.php')) && $typenow == $this->_screen)
+			|| ($pagenow == 'admin.php' && $plugin_page == $this->_screen)
 		) {
 			ICF_Loader::register_css();
 		}
@@ -163,25 +184,35 @@ class ICF_MetaBox
 	/**
 	 * Displays the rendered html
 	 *
-	 * @param	StdClass	$post
+	 * @param	mixed	$object
 	 */
-	public function display($post)
+	public function display($object = null)
 	{
-		$uniq_id = $this->_generate_uniq_id();
-		wp_nonce_field($uniq_id, $uniq_id . '_nonce');
+		if (
+			!$this->_is_post
+			|| (
+				$object
+				&& is_object($object)
+				&& isset($object->ID, $object->post_type)
+				&& $object->post_type == $this->_screen
+			)
+		) {
+			$uniq_id = $this->_generate_uniq_id();
+			wp_nonce_field($uniq_id, $uniq_id . '_nonce');
 
-		foreach ($this->_components as $component) {
-			$component->display($post);
+			foreach ($this->_components as $component) {
+				$component->display($object);
+			}
 		}
 	}
 
 	/**
-	 * Saves the components
+	 * Saves the components for post meta.
 	 *
 	 * @param	int	$post_id
 	 * @return	NULL|int
 	 */
-	public function save($post_id)
+	public function save_post_meta($post_id)
 	{
 		if (
 			defined('DOING_AUTOSAVE') && DOING_AUTOSAVE
@@ -204,93 +235,8 @@ class ICF_MetaBox
 		}
 
 		foreach ($this->_components as $component) {
-			$component->save($post_id);
+			$component->save_post_meta($post_id);
 		}
-	}
-
-	/**
-	 * Saves the default data of components when data is not registered
-	 *
-	 * @param	int		$posts_per_process
-	 * @param	int		$force_default_all
-	 * @param	boolean	$force_start_first
-	 * @return	boolean
-	 */
-	public function refresh($posts_per_process = 0, $force_default_all = false, $force_start_first = false)
-	{
-		global $wpdb;
-
-		$return = true;
-		$params_key = $this->_generate_uniq_id() . '_refresh';
-
-		$params = $force_start_first ? false : get_option($params_key, false);
-		delete_option($params_key);
-
-		$query = "
-			SELECT %s
-			FROM {$wpdb->posts} as p
-			WHERE p.post_status IN ('publish', 'draft') AND p.post_type = '{$this->_screen}'
-		";
-
-		if ($params === false) {
-			$posts_per_process = (int)$posts_per_process;
-			$total = $wpdb->get_var(sprintf($query, 'COUNT(p.ID) as count'));
-
-			if ($total <= 0) {
-				return false;
-			}
-
-			if ($posts_per_process > 0 && $total > $posts_per_process) {
-				$query .= " LIMIT {$posts_per_process}";
-				update_option($params_key, serialize(array(
-					'posts_per_process' => $posts_per_process,
-					'count' => 1,
-					'force_default_all' => $force_default_all
-				)));
-			}
-
-			$post_ids = $wpdb->get_col(sprintf($query, 'p.ID'));
-			$return = false;
-
-		} else if ($params) {
-			$params = unserialize($params);
-
-			if (!isset($params['posts_per_process'], $params['count'], $params['force_default_all'])) {
-				return false;
-			}
-
-			$posts_per_process = (int)$params['posts_per_process'];
-			$count = (int)$params['count'];
-			$force_default_all = (boolean)$params['force_default_all'];
-
-			$total = $wpdb->get_var(sprintf($query, 'COUNT(p.ID) as count'));
-			$offset = $posts_per_process * $count;
-			$max = $posts_per_process * ($count + 1);
-
-			$query .= " LIMIT {$offset}, {$max}";
-
-			if ($max > $count) {
-				delete_option($params_key);
-				$return = false;
-
-			} else {
-				update_option($params_key, serialize(array(
-					'posts_per_process' => $posts_per_process,
-					'count' => $count + 1,
-					'force_default_all' => $force_default_all
-				)));
-			}
-
-			$post_ids = $wpdb->get_col(sprintf($query, 'p.ID'));
-		}
-
-		foreach ((array)$post_ids as $post_id) {
-			foreach ($this->_components as $component) {
-				$component->refresh($post_id, $force_default_all);
-			}
-		}
-
-		return $return;
 	}
 
 	protected function _generate_uniq_id()
@@ -320,6 +266,10 @@ class ICF_MetaBox_Component extends ICF_Component
 		$this->_id = $id;
 
 		$this->title = (empty($title) && $title !== false) ? $id : $title;
+
+		if (!$this->_metabox->is_post()) {
+			add_action('admin_menu', array($this, 'register_option'));
+		}
 	}
 
 	/**
@@ -343,30 +293,27 @@ class ICF_MetaBox_Component extends ICF_Component
 	}
 
 	/**
-	 * Saves the elements
+	 * Saves the elements for post meta
 	 *
 	 * @param	int		$post_id
 	 */
-	public function save($post_id)
+	public function save_post_meta($post_id)
 	{
 		foreach ($this->_elements as $element) {
 			if (is_subclass_of($element, 'ICF_MetaBox_Component_Element_FormField_Abstract')) {
-				$element->save($post_id);
+				$element->save_post_meta($post_id);
 			}
 		}
 	}
 
 	/**
-	 * Saves the default data of elements when data is not registered
-	 *
-	 * @param	int		$post_id
-	 * @param	boolean	$force
+	 * Registers the elements
 	 */
-	public function refresh($post_id, $force = false)
+	public function register_option()
 	{
 		foreach ($this->_elements as $element) {
 			if (is_subclass_of($element, 'ICF_MetaBox_Component_Element_FormField_Abstract')) {
-				$element->refresh($post_id, $force);
+				$element->register_option();
 			}
 		}
 	}
@@ -407,14 +354,27 @@ abstract class ICF_MetaBox_Component_Element_FormField_Abstract extends ICF_Comp
 		}
 	}
 
-	public function before_render(stdClass $post = null)
+	public function before_render()
 	{
-		if (isset($post->ID) && $this->exists($post->ID)) {
-			$this->_stored_value = get_post_meta($post->ID, $this->_name, true);
+		$args = func_get_args();
+
+		if ($this->_component->get_metabox()->is_post()) {
+			$post = array_shift($args);
+
+			if (
+				isset($post->ID, $post->post_type)
+				&& $post->post_type == $this->_component->get_metabox()->get_screen()
+				&& $this->exists_post_meta($post->ID)
+			) {
+				$this->_stored_value = get_post_meta($post->ID, $this->_name, true);
+			}
+
+		} else {
+			$this->_stored_value = get_option($this->_name, false);
 		}
 	}
 
-	public function save($post_id)
+	public function save_post_meta($post_id)
 	{
 		if (!isset($_POST[$this->_name])) {
 			return false;
@@ -425,14 +385,16 @@ abstract class ICF_MetaBox_Component_Element_FormField_Abstract extends ICF_Comp
 		return true;
 	}
 
-	public function refresh($post_id, $force = false)
+	public function register_option()
 	{
-		if ($force || get_post_meta($post_id, $this->_name, true) === false) {
-			update_post_meta($post_id, $this->_name, $this->_value);
+		register_setting($this->_component->get_metabox()->get_screen(), $this->_name);
+
+		if (get_option($this->_name) === false && $this->_value) {
+			update_option($this->_name, $this->_value);
 		}
 	}
 
-	public function exists($post_id)
+	public function exists_post_meta($post_id)
 	{
 		if (!($post_id = absint($post_id)) || !$this->_name) {
 			return false;
@@ -457,9 +419,10 @@ abstract class ICF_MetaBox_Component_Element_FormField_Abstract extends ICF_Comp
 
 class ICF_MetaBox_Component_Element_FormField_Text extends ICF_MetaBox_Component_Element_FormField_Abstract
 {
-	public function before_render(stdClass $post = null)
+	public function before_render()
 	{
-		parent::before_render($post);
+		$args = func_get_args();
+		call_user_func_array(array($this, 'parent::before_render'), $args);
 
 		if ($this->_stored_value !== false) {
 			$this->_value = $this->_stored_value;
@@ -469,9 +432,10 @@ class ICF_MetaBox_Component_Element_FormField_Text extends ICF_MetaBox_Component
 
 class ICF_MetaBox_Component_Element_FormField_Textarea extends ICF_MetaBox_Component_Element_FormField_Abstract
 {
-	public function before_render(stdClass $post = null)
+	public function before_render()
 	{
-		parent::before_render($post);
+		$args = func_get_args();
+		call_user_func_array(array($this, 'parent::before_render'), $args);
 
 		if ($this->_stored_value !== false) {
 			$this->_value = $this->_stored_value;
@@ -481,9 +445,10 @@ class ICF_MetaBox_Component_Element_FormField_Textarea extends ICF_MetaBox_Compo
 
 class ICF_MetaBox_Component_Element_FormField_Checkbox extends ICF_MetaBox_Component_Element_FormField_Abstract
 {
-	public function before_render(stdClass $post = null)
+	public function before_render()
 	{
-		parent::before_render($post);
+		$args = func_get_args();
+		call_user_func_array(array($this, 'parent::before_render'), $args);
 
 		if ($this->_stored_value !== false) {
 			$this->_args['checked'] = ($this->_stored_value == $this->_value);
@@ -494,9 +459,10 @@ class ICF_MetaBox_Component_Element_FormField_Checkbox extends ICF_MetaBox_Compo
 
 class ICF_MetaBox_Component_Element_FormField_Radio extends ICF_MetaBox_Component_Element_FormField_Abstract
 {
-	public function before_render(stdClass $post = null)
+	public function before_render()
 	{
-		parent::before_render($post);
+		$args = func_get_args();
+		call_user_func_array(array($this, 'parent::before_render'), $args);
 
 		if ($this->_stored_value !== false) {
 			$this->_args['checked'] = in_array($this->_stored_value, (array)$this->_value) ? $this->_stored_value : false;
@@ -507,9 +473,10 @@ class ICF_MetaBox_Component_Element_FormField_Radio extends ICF_MetaBox_Componen
 
 class ICF_MetaBox_Component_Element_FormField_Select extends ICF_MetaBox_Component_Element_FormField_Abstract
 {
-	public function before_render(stdClass $post = null)
+	public function before_render()
 	{
-		parent::before_render($post);
+		$args = func_get_args();
+		call_user_func_array(array($this, 'parent::before_render'), $args);
 
 		if ($this->_stored_value !== false) {
 			$this->_args['selected'] = in_array($this->_stored_value, (array)$this->_value) ? $this->_stored_value : false;
