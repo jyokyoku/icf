@@ -8,6 +8,7 @@
  */
 
 require_once dirname(__FILE__) . '/icf-loader.php';
+require_once dirname(__FILE__) . '/icf-component.php';
 require_once dirname(__FILE__) . '/icf-inflector.php';
 
 class ICF_Taxonomy
