@@ -15,11 +15,11 @@ if (!is_file($icf_loader) || !is_readable($icf_loader)) {
 $loaded = false;
 $i = 0;
 $search_depth = 3;
-$dirname = $icf_dir;
+$config_dir = $icf_dir;
 
-while ($dirname !== '/' && count($dirname) > 0 && $i < $search_depth) {
-	$dirname = dirname($dirname);
-	$config = $dirname . '/timthumb-config.php';
+while ($config_dir !== '/' && count($config_dir) > 0 && $i < $search_depth) {
+	$config_dir = dirname($config_dir);
+	$config = $config_dir . '/timthumb-config.php';
 
 	if (is_file($config) && is_readable($config)) {
 		include_once $config;
@@ -31,6 +31,16 @@ while ($dirname !== '/' && count($dirname) > 0 && $i < $search_depth) {
 }
 
 if (!$loaded && !defined('FILE_CACHE_DIRECTORY')) {
-	$dirname = dirname($icf_dir);
-	define('FILE_CACHE_DIRECTORY', $dirname . '/cache');
+	if (($pos = strrpos($icf_dir, 'wp-content')) !== false) {
+		$content_dirs[] = rtrim(substr($icf_dir, 0, $pos), '/') . '/wp-content';
+	}
+
+	$content_dirs[] = dirname($icf_dir);
+
+	foreach ($content_dirs as $content_dir) {
+		if (is_dir($content_dir) && is_writable($content_dir)) {
+			define('FILE_CACHE_DIRECTORY', $content_dir . '/timthumb-cache');
+			break;
+		}
+	}
 }
