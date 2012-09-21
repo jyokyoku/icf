@@ -13,9 +13,13 @@ require_once dirname(__FILE__) . '/icf-component.php';
 abstract class ICF_Profile_Abstract
 {
 	protected $_components = array();
+	protected $_profile_page = true;
 
-	public function __construct()
+	public function __construct($args = array())
 	{
+		$args = wp_parse_args($args, array('profile_page' => true));
+		$this->_profile_page = icf_filter($args, 'profile_page');
+
 		add_action('profile_update', array($this, 'save'), 10, 2);
 		add_action('admin_init', array('ICF_Profile_Abstract', 'load_wpeditor_html'), 10);
 
@@ -101,6 +105,10 @@ abstract class ICF_Profile_Abstract
 
 	public function save($user_id, $old_user_meta)
 	{
+		if (defined('IS_PROFILE_PAGE') && IS_PROFILE_PAGE && !$this->_profile_page) {
+			return false;
+		}
+
 		foreach ($this->_components as $component) {
 			$component->save($user_id, $old_user_meta);
 		}
@@ -108,6 +116,10 @@ abstract class ICF_Profile_Abstract
 
 	public function display(WP_User $user)
 	{
+		if (defined('IS_PROFILE_PAGE') && IS_PROFILE_PAGE && !$this->_profile_page) {
+			return false;
+		}
+
 		foreach ($this->_components as $component) {
 			$component->display($user);
 		}
@@ -116,9 +128,9 @@ abstract class ICF_Profile_Abstract
 
 class ICF_Profile_PersonalOptions extends ICF_Profile_Abstract
 {
-	public function __construct()
+	public function __construct($args = array())
 	{
-		parent::__construct();
+		parent::__construct($args);
 
 		add_action('personal_options', array($this, 'display'), 10, 1);
 	}
@@ -126,9 +138,9 @@ class ICF_Profile_PersonalOptions extends ICF_Profile_Abstract
 
 class ICF_Profile_UserProfile extends ICF_Profile_Abstract
 {
-	public function __construct($title = null)
+	public function __construct($title = null, $args = array())
 	{
-		parent::__construct();
+		parent::__construct($args);
 
 		$this->title = $title;
 
@@ -138,6 +150,10 @@ class ICF_Profile_UserProfile extends ICF_Profile_Abstract
 
 	public function display(WP_User $user)
 	{
+		if (defined('IS_PROFILE_PAGE') && IS_PROFILE_PAGE && !$this->_profile_page) {
+			return false;
+		}
+
 		if ($this->title) {
 			echo ICF_Tag::create('h3', null, $this->title);
 		}
