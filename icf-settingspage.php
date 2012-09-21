@@ -96,9 +96,10 @@ abstract class ICF_SettingsPage_Abstract
 	 *
 	 * @param	string|ICF_MetaBox	$id
 	 * @param	string				$title
+	 * @param	array				$args
 	 * @return	ICF_MetaBox
 	 */
-	public function metabox($id, $title = '')
+	public function metabox($id, $title = '', $args = array())
 	{
 		if (is_object($id) && is_a($id, 'ICF_MetaBox')) {
 			$metabox = $id;
@@ -112,7 +113,7 @@ abstract class ICF_SettingsPage_Abstract
 			$metabox = $this->_metaboxes[$id];
 
 		} else {
-			$metabox = new ICF_MetaBox($this->_slug, $id, $title);
+			$metabox = new ICF_MetaBox($this->_slug, $id, $title, $args);
 			$this->_metaboxes[$id] = $metabox;
 		}
 
@@ -124,12 +125,13 @@ abstract class ICF_SettingsPage_Abstract
 	 *
 	 * @param	string|ICF_MetaBox	$id
 	 * @param	string				$title
+	 * @param	array				$args
 	 * @return	ICF_MetaBox
 	 * @see		ICF_SettingsPage_Abstract::metabox
 	 */
-	public function m($id, $title = '')
+	public function m($id, $title = '', $args = array())
 	{
-		return $this->metabox($id, $title);
+		return $this->metabox($id, $title, $args);
 	}
 
 	/**
