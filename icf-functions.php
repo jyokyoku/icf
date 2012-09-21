@@ -158,3 +158,74 @@ function icf_get_taxonomy_meta($term_id, $taxonomy, $key, $default = false)
 {
 	return ICF_Taxonomy::get_option($term_id, $taxonomy, $key, $default);
 }
+
+function icf_timthumb($file, $width = null, $height = null, $attr = array())
+{
+	if (is_array($width) && empty($height) && empty($attr))
+	{
+		$attr = $width;
+		$width = null;
+	}
+
+	$defaults = array(
+		'q' => null,
+		'a' => null,
+		'zc' => null,
+		'f' => array(),
+		's' => null,
+		'w' => null,
+		'h' => null
+	);
+
+	$attr = array_intersect_key(wp_parse_args($attr, $defaults), $defaults);
+	$timthumb = ICF_Loader::get_latest_version_url() . '/vendors/timthumb.php';
+	$attr['src'] = $file;
+
+	if ($width) {
+		$attr['w'] = $width;
+	}
+
+	if ($height) {
+		$attr['h'] = $height;
+	}
+
+	foreach ($attr as $property => $value) {
+		switch ($property) {
+			case 'zc':
+			case 'q':
+			case 's':
+			case 'w':
+			case 'h':
+				if (!is_numeric($value)) {
+					unset($$attr[$property]);
+					continue;
+				}
+
+				$attr[$property] = (int) $value;
+				break;
+
+			case 'f':
+				if (!is_array($value)) {
+					unset($$attr[$property]);
+					$value = array($value);
+				}
+
+				$filters = array();
+
+				foreach ($value as $filter_name => $filter_args)
+				{
+					$filter_args = is_array($filter_args) ? implode(',', array_map('trim', $filter_args)) : trim(filter_args);
+					$filters[] = implode(',', array(trim($filter_name), $filter_args));
+				}
+
+				$attr[$property] = implode('|', $filters);
+				break;
+
+			default:
+				$attr[$property] = (string) $value;
+				break;
+		}
+	}
+
+	return $timthumb . '?' . http_build_query(array_filter($attr));
+}
