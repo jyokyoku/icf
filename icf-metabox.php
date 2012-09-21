@@ -445,6 +445,15 @@ class ICF_MetaBox_Component_Element_FormField_Textarea extends ICF_MetaBox_Compo
 
 class ICF_MetaBox_Component_Element_FormField_Checkbox extends ICF_MetaBox_Component_Element_FormField_Abstract
 {
+	public function register_option()
+	{
+		register_setting($this->_component->get_metabox()->get_screen(), $this->_name);
+
+		if (get_option($this->_name) === false && $this->_value && !empty($this->_args['checked'])) {
+			update_option($this->_name, $this->_value);
+		}
+	}
+
 	public function before_render()
 	{
 		$args = func_get_args();
@@ -459,6 +468,20 @@ class ICF_MetaBox_Component_Element_FormField_Checkbox extends ICF_MetaBox_Compo
 
 class ICF_MetaBox_Component_Element_FormField_Radio extends ICF_MetaBox_Component_Element_FormField_Abstract
 {
+	public function register()
+	{
+		register_setting($this->_component->get_metabox()->get_screen(), $this->_name);
+
+		if (
+			get_option($this->_name) === false
+			&& $this->_value
+			&& !empty($this->_args['checked'])
+			&& in_array($this->_args['checked'], array_values((array)$this->_value))
+		) {
+			update_option($this->_name, $this->_args['checked']);
+		}
+	}
+
 	public function before_render()
 	{
 		$args = func_get_args();
@@ -473,6 +496,20 @@ class ICF_MetaBox_Component_Element_FormField_Radio extends ICF_MetaBox_Componen
 
 class ICF_MetaBox_Component_Element_FormField_Select extends ICF_MetaBox_Component_Element_FormField_Abstract
 {
+	public function register()
+	{
+		register_setting($this->_component->get_metabox()->get_screen(), $this->_name);
+
+		if (
+			get_option($this->_name) === false
+			&& $this->_value
+			&& !empty($this->_args['selected'])
+			&& in_array($this->_args['selected'], array_values((array)$this->_value))
+		) {
+			update_option($this->_name, $this->_args['selected']);
+		}
+	}
+
 	public function before_render()
 	{
 		$args = func_get_args();
