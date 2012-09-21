@@ -97,9 +97,8 @@ class ICF_Component extends ICF_Tag
 
 	public function render($arg1 = null, $arg2 = null)
 	{
-		if ($this->_stack) {
-			$this->all_close();
-		}
+		$this->all_close();
+		$this->capture_all_end();
 
 		$args = func_get_args();
 		$html = '';

@@ -12,6 +12,7 @@ require_once dirname(__FILE__) . '/icf-loader.php';
 class ICF_Tag
 {
 	protected $_stack = array();
+	protected $_capture_stack = array();
 	protected $_elements = array();
 
 	public function __call($method, $args)
@@ -61,6 +62,45 @@ class ICF_Tag
 		return $this;
 	}
 
+	public function capture()
+	{
+		ob_start();
+		$this->_capture_stack[] = true;
+
+		return $this;
+	}
+
+	public function capture_end()
+	{
+		if (count($this->_capture_stack) > 0) {
+			array_pop($this->_capture_stack);
+			$this->html(ob_get_clean());
+		}
+
+		return $this;
+	}
+
+	public function capture_all_end()
+	{
+		while ($this->_capture_stack) {
+			$this->capture_end();
+		}
+	}
+
+	public function func($callback)
+	{
+		$args = func_get_args();
+		$args = array_splice($args, 1);
+
+		if (is_callable($callback)) {
+			if ($result = call_user_func_array($callback, $args)) {
+				$this->html($result);
+			}
+		}
+
+		return $this;
+	}
+
 	public function all_close()
 	{
 		while ($this->_stack) {
@@ -72,6 +112,7 @@ class ICF_Tag
 
 	public function clear()
 	{
+		$this->capture_all_end();
 		$this->clear_stack();
 		$this->clear_elements();
 
@@ -101,9 +142,8 @@ class ICF_Tag
 
 	public function render()
 	{
-		if ($this->_stack) {
-			$this->all_close();
-		}
+		$this->all_close();
+		$this->capture_all_end();
 
 		$html = '';
 
