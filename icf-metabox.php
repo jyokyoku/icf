@@ -323,7 +323,7 @@ class ICF_MetaBox_Component extends ICF_Component
 		$args = func_get_args();
 
 		$html  = $this->title ? ICF_Tag::create('p', null, ICF_Tag::create('strong', null, $this->title)) : '';
-		$html .= call_user_func_array(array(parent, 'render'), $args);
+		$html .= call_user_func_array(array($this, 'parent::render'), $args);
 
 		return $html;
 	}
