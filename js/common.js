@@ -29,7 +29,7 @@
 						});
 					}
 
-				} else if (!document.selection) { // IE
+				} else if (document.selection) { // IE
 					var ranges = [];
 
 					$element.each(function(){
