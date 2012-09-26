@@ -487,7 +487,7 @@ class ICF_Component_Element_FormField_Quicktag extends ICF_Component_Element_For
 			}
 
 			ICF_Tag_Element_Node::add_class($this->_args, 'icf-quicktag wp-editor-area');
-			$this->_args['id'] = 'icf-quicktag-' . md5(uniqid(mt_rand()));
+			$this->_args['id'] = 'icf-quicktag-' . sha1($this->_name);
 
 			$this->_component
 				->div(array('class' => 'wp-editor-container'))
