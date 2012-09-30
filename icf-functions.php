@@ -229,3 +229,8 @@ function icf_timthumb($file, $width = null, $height = null, $attr = array())
 
 	return $timthumb . '?' . http_build_query(array_filter($attr));
 }
+
+function icf_html_tag($tag, $attributes = array(), $content = null)
+{
+	return ICF_Tag::create($tag, $attributes, $content);
+}
