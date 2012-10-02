@@ -1,5 +1,5 @@
 <?php
-$icf_dir = str_replace('\\', '/', __DIR__);
+$icf_dir = str_replace('\\', '/', dirname(__FILE__));
 
 if (($pos = strrpos($icf_dir, 'icf')) === false) {
 	exit();
