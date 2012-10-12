@@ -154,9 +154,9 @@ function icf_extract_and_merge(array &$array, $key, $_ = null)
 	return $values;
 }
 
-function icf_get_taxonomy_meta($term_id, $taxonomy, $key, $default = false)
+function icf_get_taxonomy_meta($term, $taxonomy, $key, $default = false)
 {
-	return ICF_Taxonomy::get_option($term_id, $taxonomy, $key, $default);
+	return ICF_Taxonomy::get_option($term, $taxonomy, $key, $default);
 }
 
 function icf_timthumb($file, $width = null, $height = null, $attr = array())

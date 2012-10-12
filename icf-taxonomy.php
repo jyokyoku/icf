@@ -219,9 +219,22 @@ class ICF_Taxonomy
 		return 'term_meta_' . $taxonomy . '_' . $term_id;
 	}
 
-	public static function get_option($term_id, $taxonomy, $key, $default = false)
+	public static function get_option($term, $taxonomy, $key, $default = false)
 	{
-		$values = get_option(self::get_option_key($term_id, $taxonomy), false);
+		if (!is_object($term)) {
+			if (is_numeric($term)) {
+				$term = get_term($term, $taxonomy);
+
+			} else {
+				$term = get_term_by('slug', $term, $taxonomy);
+			}
+		}
+
+		if (!is_object($term) || is_wp_error($term)) {
+			return $default;
+		}
+
+		$values = get_option(self::get_option_key($term->term_id, $taxonomy), false);
 
 		if ($values === false || !is_array($values) || !isset($values[$key])) {
 			return $default;
