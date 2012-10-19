@@ -29,6 +29,7 @@ class ICF_CustomPost
 	{
 		$this->_post_type = $post_type;
 		$args = wp_parse_args($args);
+		$auto_inflection = icf_extract($args, array('auto_inflection', true));
 
 		if (empty($args['label'])) {
 			$args['label'] = $post_type;
@@ -36,18 +37,18 @@ class ICF_CustomPost
 
 		if (empty($args['labels'])) {
 			$args['labels'] = array(
-				'name' => ICF_Inflector::humanize($this->_pluralize($args['label'])),
-				'singular_name' => ICF_Inflector::humanize($this->_singularize($args['label'])),
+				'name' => ICF_Inflector::humanize($auto_inflection ? $this->_pluralize($args['label']) : $args['label']),
+				'singular_name' => ICF_Inflector::humanize($auto_inflection ? $this->_singularize($args['label']) : $args['label']),
 				'add_new' => __('Add New', 'icf'),
-				'add_new_item' => sprintf(__('Add New %s', 'icf'), ICF_Inflector::humanize($this->_singularize($args['label']))),
-				'edit_item' => sprintf(__('Edit %s', 'icf'), ICF_Inflector::humanize($this->_singularize($args['label']))),
-				'new_item' => sprintf(__('New %s', 'icf'), ICF_Inflector::humanize($this->_singularize($args['label']))),
-				'view_item' => sprintf(__('View %s', 'icf'), ICF_Inflector::humanize($this->_singularize($args['label']))),
-				'search_items' => sprintf(__('Search %s', 'icf'), ICF_Inflector::humanize($this->_pluralize($args['label']))),
-				'not_found' => sprintf(__('No %s found.', 'icf'), strtolower($this->_pluralize($args['label']))),
-				'not_found_in_trash' => sprintf(__('No %s found in Trash.', 'icf'), strtolower($this->_pluralize($args['label']))),
-				'parent_item_colon' => sprintf(__('Parent %s:', 'icf'), ICF_Inflector::humanize($this->_singularize($args['label']))),
-				'all_items' => sprintf(__('All %s', 'icf'), ICF_Inflector::humanize($this->_pluralize($args['label'])))
+				'add_new_item' => sprintf(__('Add New %s', 'icf'), ICF_Inflector::humanize($auto_inflection ? $this->_singularize($args['label']) : $args['label'])),
+				'edit_item' => sprintf(__('Edit %s', 'icf'), ICF_Inflector::humanize($auto_inflection ? $this->_singularize($args['label']) : $args['label'])),
+				'new_item' => sprintf(__('New %s', 'icf'), ICF_Inflector::humanize($auto_inflection ? $this->_singularize($args['label']) : $args['label'])),
+				'view_item' => sprintf(__('View %s', 'icf'), ICF_Inflector::humanize($auto_inflection ? $this->_singularize($args['label']) : $args['label'])),
+				'search_items' => sprintf(__('Search %s', 'icf'), ICF_Inflector::humanize($auto_inflection ? $this->_pluralize($args['label']) : $args['label'])),
+				'not_found' => sprintf(__('No %s found.', 'icf'), strtolower($auto_inflection ? $this->_pluralize($args['label']) : $args['label'])),
+				'not_found_in_trash' => sprintf(__('No %s found in Trash.', 'icf'), strtolower($auto_inflection ? $this->_pluralize($args['label']) : $args['label'])),
+				'parent_item_colon' => sprintf(__('Parent %s:', 'icf'), ICF_Inflector::humanize($auto_inflection ? $this->_singularize($args['label']) : $args['label'])),
+				'all_items' => sprintf(__('All %s', 'icf'), ICF_Inflector::humanize($auto_inflection ? $this->_pluralize($args['label']) : $args['label']))
 			);
 		}
 
