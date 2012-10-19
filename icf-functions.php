@@ -119,12 +119,27 @@ function icf_extract(array &$array, $key, $_ = null)
 	$values = array();
 
 	foreach ($keys as $key) {
+		$default = null;
+
+		if (is_array($key)) {
+			if (count($key) > 1) {
+				list($key, $default) = array_values($key);
+
+			} else {
+				$key = reset($key);
+			}
+		}
+
+		if (!$key) {
+			continue;
+		}
+
 		if (isset($array[$key])) {
 			$values[] = $array[$key];
 			unset($array[$key]);
 
 		} else {
-			$values[] = null;
+			$values[] = $default;
 		}
 	}
 
