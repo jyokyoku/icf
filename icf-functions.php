@@ -169,7 +169,7 @@ function icf_extract_and_merge(array &$array, $key, $_ = null)
 	return $values;
 }
 
-function icf_get_taxonomy_meta($term, $taxonomy, $key, $default = false)
+function icf_get_term_meta($term, $taxonomy, $key, $default = false)
 {
 	return ICF_Taxonomy::get_option($term, $taxonomy, $key, $default);
 }
