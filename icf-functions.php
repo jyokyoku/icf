@@ -169,11 +169,6 @@ function icf_extract_and_merge(array &$array, $key, $_ = null)
 	return $values;
 }
 
-function icf_get_term_meta($term, $taxonomy, $key, $default = false)
-{
-	return ICF_Taxonomy::get_option($term, $taxonomy, $key, $default);
-}
-
 function icf_timthumb($file, $width = null, $height = null, $attr = array())
 {
 	if (is_array($width) && empty($height) && empty($attr))
@@ -248,4 +243,95 @@ function icf_timthumb($file, $width = null, $height = null, $attr = array())
 function icf_html_tag($tag, $attributes = array(), $content = null)
 {
 	return ICF_Tag::create($tag, $attributes, $content);
+}
+
+function icf_get_term_meta($term, $taxonomy, $key, $default = false)
+{
+	return ICF_Taxonomy::get_option($term, $taxonomy, $key, $default);
+}
+
+function icf_get_post_meta($post, $key, $attr = array())
+{
+	$post_id = null;
+
+	if (is_object($post) && isset($post->ID)) {
+		$post_id = $post->ID;
+
+	} else if (is_numeric($post)) {
+		$post_id = (int)$post;
+	}
+
+	if (is_bool($attr) || preg_match('|^[0|1]$|', $attr)) {
+		$attr = array('single' => (bool)$attr);
+	}
+
+	$attr = wp_parse_args($attr, array(
+		'single'  => false,
+		'before'  => '',
+		'after'   => '',
+		'default' => ''
+	));
+
+	if (!$post_id || !($meta_value = get_post_meta($post_id, $key, $attr['single']))) {
+		return $attr['single'] ? $attr['default'] ? $attr['before'] . $attr['default'] . $attr['after'] : $attr['default'] : array();
+	}
+
+	if ($attr['single']) {
+		return $attr['before'] . $meta_value . $attr['after'];
+	}
+
+	return $meta_value;
+}
+
+function icf_get_option($key, $attr = array())
+{
+	if (!is_array($attr)) {
+		$attr = array('default' => $attr);
+	}
+
+	$attr = wp_parse_args($attr, array(
+		'default' => false,
+		'before'  => '',
+		'after'   => ''
+	));
+
+	if (($option = get_option($key, false)) === false) {
+		return $attr['default'] ? $attr['before'] . $attr['default'] . $attr['after'] : $attr['default'];
+	}
+
+	return $attr['before'] . $option . $attr['after'];
+}
+
+function icf_get_iteration_option($key, $min, $max, $attr = array())
+{
+	$options = array();
+
+	if (!is_numeric($min) || !is_numeric($max) || $min >= $max) {
+		return $options;
+	}
+
+	for ($i = $min; $i <= $max; $i++) {
+		if ($option = icf_get_option($key . $i, $attr)) {
+			$options[] = $option;
+		}
+	}
+
+	return $options;
+}
+
+function icf_get_iteration_post_meta($post, $key, $min, $max, $attr = array())
+{
+	$post_metas = array();
+
+	if (!is_numeric($min) || !is_numeric($max) || $min >= $max) {
+		return $post_metas;
+	}
+
+	for ($i = $min; $i <= $max; $i++) {
+		if ($post_meta = icf_get_post_meta($post_id, $key . $i, $attr)) {
+			$post_metas[] = $post_meta;
+		}
+	}
+
+	return $post_metas;
 }
