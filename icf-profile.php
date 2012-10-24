@@ -39,7 +39,6 @@ abstract class ICF_Profile_Abstract
 			$this->_capability = array($this->capability);
 		}
 
-		add_action('profile_update', array($this, 'save'), 10, 2);
 		add_action('admin_init', array('ICF_Profile_Abstract', 'load_wpeditor_html'), 10);
 
 		if (!has_action('admin_head', array('ICF_Profile_Abstract', 'add_local_style'))) {
@@ -174,6 +173,7 @@ class ICF_Profile_PersonalOptions extends ICF_Profile_Abstract
 	{
 		parent::__construct($args);
 
+		add_action('profile_update', array($this, 'save'), 10, 2);
 		add_action('personal_options', array($this, 'display'), 10, 1);
 	}
 }
@@ -186,6 +186,7 @@ class ICF_Profile_UserProfile extends ICF_Profile_Abstract
 
 		$this->title = $title;
 
+		add_action('profile_update', array($this, 'save'), 10, 2);
 		add_action('show_user_profile', array($this, 'display'), 10, 1);
 		add_action('edit_user_profile', array($this, 'display'), 10, 1);
 	}
@@ -203,6 +204,123 @@ class ICF_Profile_UserProfile extends ICF_Profile_Abstract
 		echo '<table class="form-table">';
 		parent::display($user);
 		echo '</table>';
+	}
+}
+
+class ICF_Profile_Page extends ICF_Profile_Abstract
+{
+	public $title;
+	public $menu_title;
+	public $capability;
+	public $icon_url;
+	public $position;
+	public $embed_form = true;
+
+	protected $_slug;
+
+	public function __construct($slug, $title = '', $args = array())
+	{
+		parent::__construct($args);
+
+		$args = wp_parse_args($args, array(
+			'menu_title' => null, 'capability' => 'manage_options',
+			'icon_url' => null, 'position' => null, 'template' => null
+		));
+
+		$this->_slug = $slug;
+
+		$this->title = empty($title) ? $this->_slug : $title;
+		$this->menu_title = empty($args['menu_title']) ? $this->title : $args['menu_title'];
+		$this->capability = $args['capability'];
+		$this->icon_url = $args['icon_url'];
+		$this->position = $args['position'];
+		$this->template = $args['template'];
+
+		add_action('admin_init', array($this, 'save'));
+		add_action('admin_menu', array($this, 'register'));
+	}
+
+	public function display()
+	{
+		if (!$this->_is_arrowed()) {
+			wp_die(__('<strong>ERROR</strong>: profile page not found.'));
+		}
+
+		if ($this->before_template) {
+			echo $this->before_template;
+
+		} else if ($this->before_template === null) {
+?>
+<div class="wrap">
+<h2><?php echo esc_html($this->title) ?></h2>
+<?php
+		}
+
+		if ($this->embed_form) {
+?>
+<form method="post" action="<?php echo admin_url('admin.php') ?>" id="<?php echo $this->_slug ?>_form">
+<?php
+			require ABSPATH . 'wp-admin/options-head.php';
+			echo '<input type="hidden" name="action" value="update" />';
+			wp_nonce_field($this->_slug . '-profile-page');
+		}
+
+		if ($this->template && is_file($this->template) && is_readable($this->template)) {
+			@include $this->template;
+
+		} else if ($this->template && is_callable($this->template)) {
+			call_user_func_array($this->template, array($this));
+
+		} else {
+			echo '<table class="form-table">';
+			parent::display($this->_current_user);
+			echo '</table>';
+		}
+
+		if ($this->embed_form) {
+			submit_button();
+?>
+</form>
+<?php
+		}
+
+		if ($this->after_template) {
+			echo $this->after_template;
+
+		} else if ($this->after_template === null) {
+?>
+</div>
+<?php
+		}
+	}
+
+	public function register()
+	{
+		if ($this->_is_arrowed()) {
+			add_menu_page(
+				$this->title, $this->menu_title, $this->capability, $this->_slug,
+				array($this, 'display'), $this->icon_url, $this->position
+			);
+		}
+	}
+
+	public function save()
+	{
+		$action = icf_filter($_REQUEST, 'action');
+
+		if (!$this->_is_arrowed() || empty($action)) {
+			return false;
+		}
+
+		if ($action == 'update') {
+			$user_id = get_current_user_id();
+			$old_user_data = WP_User::get_data_by('id', $user_id);
+
+			parent::save($user_id, $old_user_data);
+
+			$goback = add_query_arg('updated', 'true',  wp_get_referer());
+			wp_redirect($goback);
+		}
 	}
 }
 
