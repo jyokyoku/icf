@@ -14,11 +14,30 @@ abstract class ICF_Profile_Abstract
 {
 	protected $_components = array();
 	protected $_profile_page = true;
+	protected $_role = array();
+	protected $_capability = array();
+	protected $_current_user;
 
 	public function __construct($args = array())
 	{
-		$args = wp_parse_args($args, array('profile_page' => true));
-		$this->_profile_page = icf_filter($args, 'profile_page');
+		$args = wp_parse_args($args, array(
+			'profile_page' => true,
+			'role' => array(),
+			'capablity' => array()
+		));
+
+		$this->_current_user = get_user_by('id', get_current_user_id());
+		$this->_profile_page = $args['profile_page'];
+		$this->_role = $args['role'];
+		$this->_capability = $args['capablity'];
+
+		if ($this->_role && !is_array($this->_role)) {
+			$this->_role = array($this->_role);
+		}
+
+		if ($this->_capability && !is_array($this->_capability)) {
+			$this->_capability = array($this->capability);
+		}
 
 		add_action('profile_update', array($this, 'save'), 10, 2);
 		add_action('admin_init', array('ICF_Profile_Abstract', 'load_wpeditor_html'), 10);
@@ -105,7 +124,7 @@ abstract class ICF_Profile_Abstract
 
 	public function save($user_id, $old_user_meta)
 	{
-		if (defined('IS_PROFILE_PAGE') && IS_PROFILE_PAGE && !$this->_profile_page) {
+		if (!$this->_is_arrowed()) {
 			return false;
 		}
 
@@ -116,13 +135,36 @@ abstract class ICF_Profile_Abstract
 
 	public function display(WP_User $user)
 	{
-		if (defined('IS_PROFILE_PAGE') && IS_PROFILE_PAGE && !$this->_profile_page) {
+		if (!$this->_is_arrowed()) {
 			return false;
 		}
 
 		foreach ($this->_components as $component) {
 			$component->display($user);
 		}
+	}
+
+	protected function _is_arrowed()
+	{
+		if (defined('IS_PROFILE_PAGE') && IS_PROFILE_PAGE && !$this->_profile_page) {
+			return false;
+		}
+
+		if ($this->_role) {
+			foreach ($this->_role as $role) {
+				if (!in_array($role, $this->_current_user->roles)) {
+					return false;
+				}
+			}
+		}
+
+		if ($this->capability) {
+			if (!current_user_can($this->capability)) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 }
 
@@ -150,7 +192,7 @@ class ICF_Profile_UserProfile extends ICF_Profile_Abstract
 
 	public function display(WP_User $user)
 	{
-		if (defined('IS_PROFILE_PAGE') && IS_PROFILE_PAGE && !$this->_profile_page) {
+		if (!$this->_is_arrowed()) {
 			return false;
 		}
 
