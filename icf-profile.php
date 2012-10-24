@@ -12,7 +12,7 @@ require_once dirname(__FILE__) . '/icf-component.php';
 
 abstract class ICF_Profile_Abstract
 {
-	protected $_components = array();
+	protected $_sections = array();
 	protected $_profile_page = true;
 	protected $_role = array();
 	protected $_capability = array();
@@ -95,30 +95,34 @@ abstract class ICF_Profile_Abstract
 		}
 	}
 
-	public function component($id, $title = null)
+	public function section($id = null, $title = null)
 	{
-		if (is_object($id) && is_a($id, 'ICF_Profile_Component')) {
-			$component = $id;
-			$id = $component->get_id();
-
-			if (isset($this->_components[$id]) && $this->_components[$id] !== $component) {
-				$this->_components[$id] = $component;
-			}
-
-		} else if (is_string($id) && isset($this->_components[$id])) {
-			$component = $this->_components[$id];
-
-		} else {
-			$component = new ICF_Profile_Component($this, $id, $title);
-			$this->_components[$id] = $component;
+		if (empty($id)) {
+			$id = 'default';
 		}
 
-		return $component;
+		if (is_object($id) && is_a($id, 'ICF_Profile_Section')) {
+			$section = $id;
+			$id = $section->get_id();
+
+			if (isset($this->_sections[$id]) && $this->_sections[$id] !== $section) {
+				$this->_sections[$id] = $section;
+			}
+
+		} else if (is_string($id) && isset($this->_sections[$id])) {
+			$section = $this->_sections[$id];
+
+		} else {
+			$section = new ICF_Profile_Section($this, $id, $title);
+			$this->_sections[$id] = $section;
+		}
+
+		return $section;
 	}
 
-	public function c($id, $title = null)
+	public function s($id = null, $title = null)
 	{
-		return $this->component($id, $title);
+		return $this->section($id, $title);
 	}
 
 	public function save($user_id, $old_user_meta)
@@ -127,20 +131,29 @@ abstract class ICF_Profile_Abstract
 			return false;
 		}
 
-		foreach ($this->_components as $component) {
-			$component->save($user_id, $old_user_meta);
+		foreach ($this->_sections as $section) {
+			$section->save($user_id, $old_user_meta);
 		}
 	}
 
-	public function display(WP_User $user)
+	public function render(WP_User $user)
 	{
 		if (!$this->_is_arrowed()) {
 			return false;
 		}
 
-		foreach ($this->_components as $component) {
-			$component->display($user);
+		$html = '';
+
+		foreach ($this->_sections as $section) {
+			$html .= $section->render($user);
 		}
+
+		return $html;
+	}
+
+	public function display(WP_User $user)
+	{
+		echo $this->render($user);
 	}
 
 	protected function _is_arrowed()
@@ -169,22 +182,56 @@ abstract class ICF_Profile_Abstract
 
 class ICF_Profile_PersonalOptions extends ICF_Profile_Abstract
 {
+	protected $_section;
+
 	public function __construct($args = array())
 	{
 		parent::__construct($args);
 
+		$this->_section = $this->section();
+
 		add_action('profile_update', array($this, 'save'), 10, 2);
 		add_action('personal_options', array($this, 'display'), 10, 1);
+	}
+
+	public function component($id, $title = null)
+	{
+		return $this->_section->c($id, $title);
+	}
+
+	public function c($id, $title = null)
+	{
+		return $this->component($id, $title);
+	}
+
+	public function display(WP_User $user)
+	{
+		if (!$this->_is_arrowed()) {
+			return false;
+		}
+
+		$html = '';
+
+		foreach ($this->_sections as $section) {
+			foreach ($section->get_components() as $component) {
+				$html .= $component->render($user);
+			}
+		}
+
+		echo $html;
 	}
 }
 
 class ICF_Profile_UserProfile extends ICF_Profile_Abstract
 {
+	protected $_section;
+
 	public function __construct($title = null, $args = array())
 	{
 		parent::__construct($args);
 
 		$this->title = $title;
+		$this->_section = $this->section();
 
 		add_action('profile_update', array($this, 'save'), 10, 2);
 		add_action('show_user_profile', array($this, 'display'), 10, 1);
@@ -198,12 +245,22 @@ class ICF_Profile_UserProfile extends ICF_Profile_Abstract
 		}
 
 		if ($this->title) {
-			echo ICF_Tag::create('h3', null, $this->title);
+			echo '<h3>' . $this->title . '</h3>';
 		}
 
-		echo '<table class="form-table">';
-		parent::display($user);
-		echo '</table>';
+		foreach ($this->_sections as $section) {
+			echo $section->display($user);
+		}
+	}
+
+	public function component($id, $title = null)
+	{
+		return $this->_section->c($id, $title);
+	}
+
+	public function c($id, $title = null)
+	{
+		return $this->component($id, $title);
 	}
 }
 
@@ -272,9 +329,7 @@ class ICF_Profile_Page extends ICF_Profile_Abstract
 			call_user_func_array($this->template, array($this));
 
 		} else {
-			echo '<table class="form-table">';
 			parent::display($this->_current_user);
-			echo '</table>';
 		}
 
 		if ($this->embed_form) {
@@ -324,21 +379,20 @@ class ICF_Profile_Page extends ICF_Profile_Abstract
 	}
 }
 
-class ICF_Profile_Component extends ICF_Component
+class ICF_Profile_Section
 {
 	public $title;
 
-	protected $_profile;
 	protected $_id;
+	protected $_profile;
+	protected $_components = array();
 
-	public function __construct(ICF_Profile_Abstract $profile, $id, $title = '')
+	public function __construct(ICF_Profile_Abstract $profile, $id = null, $title = null)
 	{
-		parent::__construct();
-
 		$this->_profile = $profile;
-		$this->_id = $id;
+		$this->_id = empty($id) ? 'default' : $id;
 
-		$this->title = (empty($title) && $title !== false) ? $id : $title;
+		$this->title = empty($title) ? $this->_id : $title;
 	}
 
 	public function get_id()
@@ -351,10 +405,100 @@ class ICF_Profile_Component extends ICF_Component
 		return $this->_profile;
 	}
 
+	public function get_components()
+	{
+		return $this->_components;
+	}
+
+	public function component($id, $title = null)
+	{
+		if (is_object($id) && is_a($id, 'ICF_Profile_Section_Component')) {
+			$component = $id;
+			$id = $component->get_id();
+
+			if (isset($this->_components[$id]) && $this->_components[$id] !== $component) {
+				$this->_components[$id] = $component;
+			}
+
+		} else if (is_string($id) && isset($this->_components[$id])) {
+			$component = $this->_components[$id];
+
+		} else {
+			$component = new ICF_Profile_Section_Component($this, $id, $title);
+			$this->_components[$id] = $component;
+		}
+
+		return $component;
+	}
+
+	public function c($id, $title = null)
+	{
+		return $this->component($id, $title);
+	}
+
+	public function save($user_id, $old_user_meta)
+	{
+		foreach ($this->_components as $component) {
+			$component->save($user_id, $old_user_meta);
+		}
+	}
+
+	public function render(WP_User $user)
+	{
+		$html = '';
+
+		if ($this->title !== 'default') {
+			$html .= '<h3>' . $this->title . '</h3>';
+		}
+
+		$html .= '<table class="form-table">';
+
+		foreach ($this->_components as $component) {
+			$html .= $component->render($user);
+		}
+
+		$html .= '</table>';
+
+		return $html;
+	}
+
+	public function display(WP_User $user)
+	{
+		echo $this->render($user);
+	}
+}
+
+class ICF_Profile_Section_Component extends ICF_Component
+{
+	public $title;
+
+	protected $_section;
+	protected $_id;
+
+	public function __construct(ICF_Profile_Section $section, $id, $title = '')
+	{
+		parent::__construct();
+
+		$this->_section = $section;
+		$this->_id = $id;
+
+		$this->title = (empty($title) && $title !== false) ? $id : $title;
+	}
+
+	public function get_id()
+	{
+		return $this->_id;
+	}
+
+	public function get_section()
+	{
+		return $this->_section;
+	}
+
 	public function save($user_id, $old_user_meta)
 	{
 		foreach ($this->_elements as $element) {
-			if (is_subclass_of($element, 'ICF_Profile_Component_Element_FormField_Abstract')) {
+			if (is_subclass_of($element, 'ICF_Profile_Section_Component_Element_FormField_Abstract')) {
 				$element->save($user_id, $old_user_meta);
 			}
 		}
@@ -372,11 +516,11 @@ class ICF_Profile_Component extends ICF_Component
 	}
 }
 
-abstract class ICF_Profile_Component_Element_FormField_Abstract extends ICF_Component_Element_FormField_Abstract
+abstract class ICF_Profile_Section_Component_Element_FormField_Abstract extends ICF_Component_Element_FormField_Abstract
 {
 	protected $_stored_value = false;
 
-	public function __construct(ICF_Profile_Component $component, $name, $value = null, array $args = array())
+	public function __construct(ICF_Profile_Section_Component $component, $name, $value = null, array $args = array())
 	{
 		parent::__construct($component, $name, $value, $args);
 	}
@@ -425,7 +569,7 @@ abstract class ICF_Profile_Component_Element_FormField_Abstract extends ICF_Comp
 	}
 }
 
-class ICF_Profile_Component_Element_FormField_Text extends ICF_Profile_Component_Element_FormField_Abstract
+class ICF_Profile_Section_Component_Element_FormField_Text extends ICF_Profile_Section_Component_Element_FormField_Abstract
 {
 	public function before_render(WP_User $user = null)
 	{
@@ -437,7 +581,7 @@ class ICF_Profile_Component_Element_FormField_Text extends ICF_Profile_Component
 	}
 }
 
-class ICF_Profile_Component_Element_FormField_Textarea extends ICF_Profile_Component_Element_FormField_Abstract
+class ICF_Profile_Section_Component_Element_FormField_Textarea extends ICF_Profile_Section_Component_Element_FormField_Abstract
 {
 	public function before_render(WP_User $user = null)
 	{
@@ -449,7 +593,7 @@ class ICF_Profile_Component_Element_FormField_Textarea extends ICF_Profile_Compo
 	}
 }
 
-class ICF_Profile_Component_Element_FormField_Checkbox extends ICF_Profile_Component_Element_FormField_Abstract
+class ICF_Profile_Section_Component_Element_FormField_Checkbox extends ICF_Profile_Section_Component_Element_FormField_Abstract
 {
 	public function before_render(WP_User $user = null)
 	{
@@ -462,7 +606,7 @@ class ICF_Profile_Component_Element_FormField_Checkbox extends ICF_Profile_Compo
 	}
 }
 
-class ICF_Profile_Component_Element_FormField_Radio extends ICF_Profile_Component_Element_FormField_Abstract
+class ICF_Profile_Section_Component_Element_FormField_Radio extends ICF_Profile_Section_Component_Element_FormField_Abstract
 {
 	public function before_render(WP_User $user = null)
 	{
@@ -475,7 +619,7 @@ class ICF_Profile_Component_Element_FormField_Radio extends ICF_Profile_Componen
 	}
 }
 
-class ICF_Profile_Component_Element_FormField_Select extends ICF_Profile_Component_Element_FormField_Abstract
+class ICF_Profile_Section_Component_Element_FormField_Select extends ICF_Profile_Section_Component_Element_FormField_Abstract
 {
 	public function before_render(WP_User $user = null)
 	{
@@ -488,7 +632,7 @@ class ICF_Profile_Component_Element_FormField_Select extends ICF_Profile_Compone
 	}
 }
 
-class ICF_Profile_Component_Element_FormField_Wysiwyg extends ICF_Profile_Component_Element_FormField_Abstract
+class ICF_Profile_Section_Component_Element_FormField_Wysiwyg extends ICF_Profile_Section_Component_Element_FormField_Abstract
 {
 	public function initialize()
 	{
