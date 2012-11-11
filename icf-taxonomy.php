@@ -122,9 +122,15 @@ class ICF_Taxonomy
 			$values = array();
 		}
 
+		do_action_ref_array('icf_before_save_taxonomy', array($this->_slug, &$this, &$values, $term_id, $tt_id));
+		do_action_ref_array('icf_before_save_taxonomy_' . $this->_slug, array(&$this, &$values, $term_id, $tt_id));
+
 		foreach ($this->_components as $component) {
 			$component->save($values, $term_id, $tt_id);
 		}
+
+		do_action_ref_array('icf_after_save_taxonomy', array($this->_slug, &$this, &$values, $term_id, $tt_id));
+		do_action_ref_array('icf_after_save_taxonomy_' . $this->_slug, array(&$this, &$values, $term_id, $tt_id));
 
 		update_option($option_key, $values);
 	}
@@ -133,24 +139,37 @@ class ICF_Taxonomy
 	{
 		$html = '';
 
+		do_action_ref_array('icf_before_display_add_form_taxonomy', array($this->_slug, &$this, &$html, $taxonomy));
+		do_action_ref_array('icf_before_display_add_form_taxonomy_' . $this->_slug, array(&$this, &$html, $taxonomy));
+
 		foreach ($this->_components as $component) {
 			$label = ICF_Tag::create('label', null, $component->title);
 			$body  = $component->render();
 			$html .= ICF_Tag::create('div', array('class' => 'form-field'), $label . "\n" . $body);
 		}
 
+		do_action_ref_array('icf_after_display_add_form_taxonomy', array($this->_slug, &$this, &$html, $taxonomy));
+		do_action_ref_array('icf_after_display_add_form_taxonomy_' . $this->_slug, array(&$this, &$html, $taxonomy));
+
 		echo $html;
 	}
 
 	public function display_edit_form(stdClass $tag, $taxonomy)
 	{
+		static $static = 1;
 		$html = '';
+
+		do_action_ref_array('icf_before_display_edit_form_taxonomy', array($this->_slug, &$this, &$html, $tag, $taxonomy));
+		do_action_ref_array('icf_before_display_edit_form_taxonomy_' . $this->_slug, array(&$this, &$html, $tag, $taxonomy));
 
 		foreach ($this->_components as $component) {
 			$th = ICF_Tag::create('th', array('scope' => 'row', 'valign' => 'top'), $component->title);
 			$td = ICF_Tag::create('td', null, $component->render($tag));
 			$html .= ICF_Tag::create('tr', array('class' => 'form-field'), $th . "\n" . $td);
 		}
+
+		do_action_ref_array('icf_after_display_edit_form_taxonomy', array($this->_slug, &$this, &$html, $tag, $taxonomy));
+		do_action_ref_array('icf_after_display_edit_form_taxonomy_' . $this->_slug, array(&$this, &$html, $tag, $taxonomy));
 
 		echo $html;
 	}
