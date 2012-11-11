@@ -482,7 +482,7 @@ class ICF_SettingsPage_Section
 
 		} else {
 			$component = new ICF_SettingsPage_Section_Component($id, $title, $this->_page_slug, $this->_id);
-			$this->_components[] = $component;
+			$this->_components[$id] = $component;
 		}
 
 		return $component;
