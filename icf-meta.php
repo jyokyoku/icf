@@ -1,4 +1,14 @@
 <?php
+/**
+ * Inspire Custom field Framework (ICF)
+ *
+ * @package		ICF
+ * @author		Masayuki Ietomi
+ * @copyright	Copyright(c) 2011 Masayuki Ietomi
+ */
+
+require_once dirname(__FILE__) . '/icf-loader.php';
+
 class ICF_Meta
 {
 	protected static $_types = array('post', 'user', 'option');
