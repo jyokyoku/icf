@@ -53,7 +53,7 @@ function icf_log($message = null)
 		$message = print_r($message, true);
 	}
 
-	$log_dir = ABSPATH . DIRECTORY_SEPARATOR . 'icf-logs';
+	$log_dir = WP_CONTENT_DIR . DIRECTORY_SEPARATOR . 'icf-logs';
 
 	if (!is_dir($log_dir)) {
 		if (!@mkdir($log_dir)) {
