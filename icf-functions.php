@@ -249,3 +249,52 @@ function icf_get_term_meta($term, $taxonomy, $key, $default = false)
 {
 	return ICF_Taxonomy::get_option($term, $taxonomy, $key, $default);
 }
+
+function icf_get_current_url($query = array(), $overwrite = false, $glue = '&')
+{
+	$url = (is_ssl() ? 'https://' : 'http://') . getenv('HTTP_HOST') . getenv('REQUEST_URI');
+	$query_string = getenv('QUERY_STRING');
+
+	if (strpos($url, '?') !== false) {
+		list($url, $query_string) = explode('?', $url);
+	}
+
+	if ($query_string) {
+		$query_string = wp_parse_args($query_string);
+
+	} else {
+		$query_string = array();
+	}
+
+	if ($query === false || $query === null) {
+		$query = array();
+
+	} else {
+		$query = wp_parse_args($query);
+	}
+
+	if (!$overwrite) {
+		$query = array_merge($query_string, $query);
+	}
+
+	foreach ($query as $key => $val) {
+		if ($val === false || $val === null || $value === '') {
+			unset($query[$key]);
+		}
+	}
+
+	$url = icf_create_url($url, $query, $glue);
+
+	return $url;
+}
+
+function icf_create_url($url, $query = array(), $glue = '&')
+{
+	$query = http_build_query(wp_parse_args($query));
+
+	if ($query) {
+		$url .= (strrpos($url, '?') !== false) ? $glue . $query : '?' . $query;
+	}
+
+	return $url;
+}
