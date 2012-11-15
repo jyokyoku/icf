@@ -278,7 +278,7 @@ function icf_get_current_url($query = array(), $overwrite = false, $glue = '&')
 	}
 
 	foreach ($query as $key => $val) {
-		if ($val === false || $val === null || $value === '') {
+		if ($val === false || $val === null || $val === '') {
 			unset($query[$key]);
 		}
 	}
