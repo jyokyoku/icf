@@ -17,6 +17,7 @@ abstract class ICF_SettingsPage_Abstract
 	public $menu_title;
 	public $capability;
 	public $template;
+	public $independent;
 	public $include_header;
 	public $before_template;
 	public $after_template;
@@ -32,8 +33,8 @@ abstract class ICF_SettingsPage_Abstract
 	public function __construct($slug, $title = null, $args = array())
 	{
 		$args = wp_parse_args($args, array(
-			'menu_title' => null, 'capability' => 'manage_options',
-			'template' => null, 'include_header' => true,
+			'menu_title' => null, 'capability' => 'manage_options', 'template' => null,
+			'include_header' => true, 'independent' => false,
 			'before_template' => null, 'after_template' => null, 'embed_form' => true,
 		));
 
@@ -43,10 +44,11 @@ abstract class ICF_SettingsPage_Abstract
 		$this->menu_title = empty($args['menu_title']) ? $this->title : $args['menu_title'];
 		$this->capability = $args['capability'];
 		$this->template = $args['template'];
-		$this->include_header = $args['include_header'];
-		$this->before_template = $args['before_template'];
-		$this->after_template = $args['after_template'];
-		$this->embed_form = $args['embed_form'];
+
+		$this->include_header = $args['independent'] ? false : $args['include_header'];
+		$this->before_template = $args['independent'] ? '' : $args['before_template'];
+		$this->after_template = $args['independent'] ? '' : $args['after_template'];
+		$this->embed_form = $args['independent'] ? false : $args['embed_form'];
 
 		add_action('admin_menu', array($this, 'register'));
 	}
