@@ -176,7 +176,7 @@ abstract class ICF_SettingsPage_Abstract
 		}
 
 		if ($this->template && is_file($this->template) && is_readable($this->template)) {
-			@include $this->template;
+			include $this->template;
 
 		} else if ($this->template && is_callable($this->template)) {
 			call_user_func_array($this->template, array($this));
