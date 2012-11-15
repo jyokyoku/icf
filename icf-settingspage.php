@@ -181,11 +181,25 @@ abstract class ICF_SettingsPage_Abstract
 			$this->display_hidden_fields();
 		}
 
-		if ($this->template && is_file($this->template) && is_readable($this->template)) {
-			include $this->template;
+		if ($this->template) {
+			if (is_callable($this->template)) {
+				call_user_func_array($this->template, array($this));
 
-		} else if ($this->template && is_callable($this->template)) {
-			call_user_func_array($this->template, array($this));
+			} else if (is_file($this->template) && is_readable($this->template)) {
+				include $this->template;
+
+			} else if (
+				is_file(get_stylesheet_directory() . '/' . $this->template)
+				&& is_readable(get_stylesheet_directory() . '/' . $this->template)
+			) {
+				include get_stylesheet_directory() . '/' . $this->template;
+
+			} else if (
+				is_file(get_template_directory() . '/' . $this->template)
+				&& is_readable(get_template_directory() . '/' . $this->template)
+			) {
+				include get_template_directory() . '/' . $this->template;
+			}
 
 		} else {
 			if (!empty($wp_settings_fields[$this->_slug]['default'])) {
