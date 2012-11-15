@@ -19,7 +19,7 @@ abstract class ICF_SettingsPage_Abstract
 	public $template;
 	public $before_template;
 	public $after_template;
-	public $embed_form = true;
+	public $embed_form;
 
 	protected $_slug;
 	protected $_sections = array();
@@ -28,8 +28,24 @@ abstract class ICF_SettingsPage_Abstract
 	/**
 	 * Constructor
 	 */
-	public function __construct()
+	public function __construct($slug, $title = null, $args = array())
 	{
+		$args = wp_parse_args($args, array(
+			'menu_title' => null, 'capability' => 'manage_options',
+			'template' => null, 'include_header' => true,
+			'before_template' => null, 'after_template' => null, 'embed_form' => true,
+		));
+
+		$this->_slug = $slug;
+
+		$this->title = empty($title) ? $this->_slug : $title;
+		$this->menu_title = empty($args['menu_title']) ? $this->title : $args['menu_title'];
+		$this->capability = $args['capability'];
+		$this->template = $args['template'];
+		$this->before_template = $args['before_template'];
+		$this->after_template = $args['after_template'];
+		$this->embed_form = $args['embed_form'];
+
 		add_action('admin_menu', array($this, 'register'));
 	}
 
@@ -263,21 +279,12 @@ class ICF_SettingsPage_Parent extends ICF_SettingsPage_Abstract
 	 */
 	public function __construct($slug, $title = null, $args = array())
 	{
-		$args = wp_parse_args($args, array(
-			'menu_title' => null, 'capability' => 'manage_options',
-			'icon_url' => null, 'position' => null, 'template' => null
-		));
+		parent::__construct($slug, $title, $args);
+		$args = wp_parse_args($args, array('icon_url' => null, 'position' => null));
 
-		$this->_slug = $slug;
-
-		$this->title = empty($title) ? $this->_slug : $title;
-		$this->menu_title = empty($args['menu_title']) ? $this->title : $args['menu_title'];
-		$this->capability = $args['capability'];
 		$this->icon_url = $args['icon_url'];
 		$this->position = $args['position'];
-		$this->template = $args['template'];
 
-		parent::__construct();
 	}
 
 	/**
@@ -352,9 +359,7 @@ class ICF_SettingsPage_Child extends ICF_SettingsPage_Abstract
 	 */
 	public function __construct($parent_slug, $slug, $title = null, $args = array())
 	{
-		$args = wp_parse_args($args, array(
-			'menu_title' => null, 'capability' => 'manage_options', 'template' => null
-		));
+		parent::__construct($slug, $title, $args);
 
 		if (is_object($parent_slug) && is_a($parent_slug, 'ICF_SettingsPage_Parent')) {
 			$this->_parent_slug = $parent_slug->get_slug();
@@ -377,14 +382,6 @@ class ICF_SettingsPage_Child extends ICF_SettingsPage_Abstract
 			$this->_parent_slug = isset($parent_alias[$parent_slug]) ? $parent_alias[$parent_slug] : $parent_slug;
 		}
 
-		$this->_slug = $slug;
-
-		$this->title = empty($title) ? $this->_slug : $title;
-		$this->menu_title = empty($args['menu_title']) ? $this->title : $args['menu_title'];
-		$this->capability = $args['capability'];
-		$this->template = $args['template'];
-
-		parent::__construct();
 	}
 
 	/**
