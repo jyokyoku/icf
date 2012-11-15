@@ -79,18 +79,29 @@ function icf_log($message = null)
  *
  * @param	array			$array
  * @param	string|array	$key
- * @param	mixed			$default
+ * @param	string|array	$_
  * @return	mixed
  */
-function icf_filter(array $array, $key, $default = null)
+function icf_filter(array $array, $key, $_ = null)
 {
-	$keys = is_array($key) ? $key : array($key => $default);
+	$args = func_get_args();
+	$keys = array_splice($args, 1);
 	$values = array();
 
-	foreach ($keys as $_key => $value) {
-		if (is_numeric($_key) && $value !== null) {
-			$_key = $value;
-			$value = null;
+	foreach ($keys as $_key) {
+		$default = null;
+
+		if (is_array($key)) {
+			if (count($key) > 1) {
+				list($key, $default) = array_values($key);
+
+			} else {
+				$key = reset($key);
+			}
+		}
+
+		if (!$key) {
+			continue;
 		}
 
 		if (isset($array[$_key])) {
@@ -101,15 +112,15 @@ function icf_filter(array $array, $key, $default = null)
 		}
 	}
 
-	return (is_array($key) && count($key) > 1) ? $values : reset($values);
+	return (count($key) > 1) ? $values : reset($values);
 }
 
 /**
  * Returns a value(s) of the specified key(s) of the array and removes it from the array.
  *
- * @param	array	$array
- * @param	string	$key
- * @param	string	$_
+ * @param	array			$array
+ * @param	string|array	$key
+ * @param	string|array	$_
  * @return	mixed
  */
 function icf_extract(array &$array, $key, $_ = null)
