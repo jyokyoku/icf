@@ -118,9 +118,9 @@ function icf_filter(array $array, $key, $_ = null)
 /**
  * Returns a value(s) of the specified key(s) of the array and removes it from the array.
  *
- * @param	array	$array
- * @param	string	$key
- * @param	string	$_
+ * @param	array			$array
+ * @param	string|array	$key
+ * @param	string|array	$_
  * @return	mixed
  */
 function icf_extract(array &$array, $key, $_ = null)
