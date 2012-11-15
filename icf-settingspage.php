@@ -18,6 +18,7 @@ abstract class ICF_SettingsPage_Abstract
 	public $capability;
 	public $template;
 	public $independent;
+	public $function;
 	public $include_header;
 	public $before_template;
 	public $after_template;
@@ -44,6 +45,7 @@ abstract class ICF_SettingsPage_Abstract
 		$this->menu_title = empty($args['menu_title']) ? $this->title : $args['menu_title'];
 		$this->capability = $args['capability'];
 		$this->template = $args['template'];
+		$this->function = $args['function'];
 
 		$this->include_header = $args['independent'] ? false : $args['include_header'];
 		$this->before_template = $args['independent'] ? '' : $args['before_template'];
@@ -266,7 +268,7 @@ abstract class ICF_SettingsPage_Abstract
 
 	public function before_display()
 	{
-		if (!$this->include_header) {
+		if (!$this->include_header && ($this->template || $this->function)) {
 			$_GET['noheader'] = true;
 		}
 	}
@@ -351,7 +353,8 @@ class ICF_SettingsPage_Parent extends ICF_SettingsPage_Abstract
 	{
 		add_menu_page(
 			$this->title, $this->menu_title, $this->capability, $this->_slug,
-			array($this, 'display'), $this->icon_url, $this->position
+			is_callable($this->function) ? $this->function : array($this, 'display'),
+			$this->icon_url, $this->position
 		);
 	}
 }
@@ -414,7 +417,8 @@ class ICF_SettingsPage_Child extends ICF_SettingsPage_Abstract
 	{
 		add_submenu_page(
 			$this->_parent_slug, $this->title, $this->menu_title,
-			$this->capability, $this->_slug, array($this, 'display')
+			$this->capability, $this->_slug,
+			is_callable($this->function) ? $this->function : array($this, 'display')
 		);
 	}
 }
