@@ -17,6 +17,7 @@ abstract class ICF_SettingsPage_Abstract
 	public $menu_title;
 	public $capability;
 	public $template;
+	public $include_header;
 	public $before_template;
 	public $after_template;
 	public $embed_form;
@@ -42,6 +43,7 @@ abstract class ICF_SettingsPage_Abstract
 		$this->menu_title = empty($args['menu_title']) ? $this->title : $args['menu_title'];
 		$this->capability = $args['capability'];
 		$this->template = $args['template'];
+		$this->include_header = $args['include_header'];
 		$this->before_template = $args['before_template'];
 		$this->after_template = $args['after_template'];
 		$this->embed_form = $args['embed_form'];
@@ -260,6 +262,13 @@ abstract class ICF_SettingsPage_Abstract
 		do_meta_boxes($this->_slug, $context, $this);
 	}
 
+	public function before_display()
+	{
+		if (!$this->include_header) {
+			$_GET['noheader'] = true;
+		}
+	}
+
 	abstract public function register();
 }
 
@@ -285,6 +294,7 @@ class ICF_SettingsPage_Parent extends ICF_SettingsPage_Abstract
 		$this->icon_url = $args['icon_url'];
 		$this->position = $args['position'];
 
+		add_action('load-toplevel_page_' . $this->_slug, array($this, 'before_display'));
 	}
 
 	/**
@@ -382,6 +392,7 @@ class ICF_SettingsPage_Child extends ICF_SettingsPage_Abstract
 			$this->_parent_slug = isset($parent_alias[$parent_slug]) ? $parent_alias[$parent_slug] : $parent_slug;
 		}
 
+		add_action('load-' . $this->_parent_slug . '_page_' . $this->_slug, array($this, 'before_display'));
 	}
 
 	/**
