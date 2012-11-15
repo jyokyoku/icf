@@ -170,8 +170,8 @@ abstract class ICF_Profile_Abstract
 			}
 		}
 
-		if ($this->capability) {
-			if (!current_user_can($this->capability)) {
+		if ($this->_capability) {
+			if (!current_user_can($this->_capability)) {
 				return false;
 			}
 		}
