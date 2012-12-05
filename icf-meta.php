@@ -32,9 +32,9 @@ class ICF_Meta
 			'single'  => false,
 		));
 
-		$value = $post_id ? trim(get_post_meta($post_id, $key, $attr['single'])) : null;
+		$value = $post_id ? get_post_meta($post_id, $key, $attr['single']) : null;
 
-		if (!$attr['single']) {
+		if (!is_string($value) || !$attr['single']) {
 			return $value;
 		}
 
@@ -77,9 +77,9 @@ class ICF_Meta
 			'single'  => false,
 		));
 
-		$value = $user_id ? trim(get_user_meta($user_id, $key, $attr['single'])) : null;
+		$value = $user_id ? get_user_meta($user_id, $key, $attr['single']) : null;
 
-		if (!$attr['single']) {
+		if (!is_string($value) || !$attr['single']) {
 			return $value;
 		}
 
