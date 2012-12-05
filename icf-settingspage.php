@@ -35,7 +35,7 @@ abstract class ICF_SettingsPage_Abstract
 	{
 		$args = wp_parse_args($args, array(
 			'menu_title' => null, 'capability' => 'manage_options', 'template' => null,
-			'include_header' => true, 'independent' => false,
+			'include_header' => true, 'independent' => false, 'function' => null,
 			'before_template' => null, 'after_template' => null, 'embed_form' => true,
 		));
 
