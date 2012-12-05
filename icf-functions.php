@@ -88,12 +88,12 @@ function icf_filter(array $array, $key, $_ = null)
 	$keys = array_splice($args, 1);
 	$values = array();
 
-	foreach ($keys as $_key) {
+	foreach ($keys as $key) {
 		$default = null;
 
 		if (is_array($key)) {
 			if (count($key) > 1) {
-				list($key, $default) = array_values($key);
+				list($key, $default) = $key;
 
 			} else {
 				$key = reset($key);
@@ -104,11 +104,11 @@ function icf_filter(array $array, $key, $_ = null)
 			continue;
 		}
 
-		if (isset($array[$_key])) {
-			$values[] = $array[$_key];
+		if (isset($array[$key])) {
+			$values[] = $array[$key];
 
 		} else {
-			$values[] = $value;
+			$values[] = $default;
 		}
 	}
 
@@ -308,4 +308,43 @@ function icf_create_url($url, $query = array(), $glue = '&')
 	}
 
 	return $url;
+}
+
+function icf_get_post_thumbnail_data($post_id = null, $default_src = null, $default_alt = null)
+{
+	global $post;
+
+	if (!$post_id && $post) {
+		$post_id = $post->ID;
+	}
+
+	$data = array(
+		'src' => $default_src,
+		'alt' => $default_alt
+	);
+
+	if (has_post_thumbnail($post_id)) {
+		if ($post_thumbnail_src = wp_get_attachment_image_src(get_post_thumbnail_id($post_id), '')) {
+			$data['src'] = $post_thumbnail_src[0];
+		}
+
+		if (
+			($attachment_id = get_post_thumbnail_id($post_id))
+			&& ($attachment = get_post($attachment_id))
+		) {
+			$alt = trim(strip_tags(get_post_meta($attachment_id, '_wp_attachment_image_alt', true)));
+
+			if (empty($alt)) {
+				$alt = trim(strip_tags($attachment->post_excerpt));
+			}
+
+			if (empty($alt)) {
+				$alt = trim(strip_tags($attachment->post_title));
+			}
+
+			$data['alt'] = $alt;
+		}
+	}
+
+	return $data;
 }
