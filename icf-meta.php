@@ -24,7 +24,7 @@ class ICF_Meta
 			$post_id = (int)$post;
 		}
 
-		if (is_bool($attr) || preg_match('|^[0|1]$|', $attr)) {
+		if (is_bool($attr) || (is_string($attr) && preg_match('|^[0|1]$|', $attr))) {
 			$attr = array('single' => (bool)$attr);
 		}
 
@@ -69,7 +69,7 @@ class ICF_Meta
 			$user_id = (int)$user;
 		}
 
-		if (is_bool($attr) || preg_match('|^[0|1]$|', $attr)) {
+		if (is_bool($attr) || (is_string($attr) && preg_match('|^[0|1]$|', $attr))) {
 			$attr = array('single' => (bool)$attr);
 		}
 
