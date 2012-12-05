@@ -105,21 +105,13 @@ class ICF_Meta
 
 	public static function option($key, $attr = array())
 	{
-		if (!is_array($attr)) {
-			$attr = array('default' => $attr);
+		$value = get_option($key, false);
+
+		if (!is_string($value)) {
+			return $option;
 		}
 
-		$attr = wp_parse_args($attr, array(
-			'default' => false,
-			'before'  => '',
-			'after'   => ''
-		));
-
-		if (($option = get_option($key, false)) === false) {
-			return $attr['default'] ? $attr['before'] . $attr['default'] . $attr['after'] : $attr['default'];
-		}
-
-		return $attr['before'] . $option . $attr['after'];
+		return self::_filter($value, $attr);
 	}
 
 	public static function option_iteration($key, $min, $max, $attr = array())
