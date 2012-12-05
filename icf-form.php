@@ -71,6 +71,21 @@ class ICF_Form
 		return self::input($attributes);
 	}
 
+	public static function hidden($name, $value = null, array $attributes = array())
+	{
+		if (is_array($name)) {
+			$attributes = $name;
+
+		} else {
+			$attributes['name'] = $name;
+			$attributes['value'] = $value;
+		}
+
+		$attributes['type'] = __FUNCTION__;
+
+		return self::input($attributes);
+	}
+
 	public static function file($name, array $attributes = array())
 	{
 		if (is_array($name)) {
