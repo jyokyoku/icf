@@ -121,6 +121,7 @@ if (!class_exists('ICF_Loader')) {
 		{
 			wp_enqueue_script('media-upload');
 			wp_enqueue_script('thickbox');
+			wp_enqueue_script('icf-flexible-wh', self::get_latest_version_url() . '/js/flexible_wh.js', array('jquery'), null, true);
 
 			if (version_compare(get_bloginfo('version'), '3.3', '>=')) {
 				wp_enqueue_script('wplink');
