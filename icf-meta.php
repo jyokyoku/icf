@@ -29,7 +29,7 @@ class ICF_Meta
 		}
 
 		$attr = wp_parse_args($attr, array(
-			'single'  => false,
+			'single'  => true,
 		));
 
 		$value = $post_id ? get_post_meta($post_id, $key, $attr['single']) : null;
@@ -74,7 +74,7 @@ class ICF_Meta
 		}
 
 		$attr = wp_parse_args($attr, array(
-			'single'  => false,
+			'single'  => true,
 		));
 
 		$value = $user_id ? get_user_meta($user_id, $key, $attr['single']) : null;
