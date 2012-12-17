@@ -423,3 +423,32 @@ function icf_url_to_path($url)
 
 	return false;
 }
+
+function icf_calc_image_size($width, $height, $new_width = 0, $new_height = 0)
+{
+	$sizes = array('width' => $new_width, 'height' => $new_height);
+
+	if ($new_width > 0) {
+		$ratio = (100 * $new_width) / $width;
+		$sizes['height'] = floor(($height * $ratio) / 100);
+
+		if ($new_height > 0 && $sizes['height'] > $new_height) {
+			$ratio = (100 * $new_height) / $sizes['height'];
+			$sizes['width'] = floor(($sizes['width'] * $ratio) / 100);
+			$sizes['height'] = $new_height;
+		}
+	}
+
+	if ($new_height > 0) {
+		$ratio = (100 * $new_height) / $height;
+		$sizes['width'] = floor(($width * $ratio) / 100);
+
+		if ($new_width > 0 && $sizes['width'] > $new_width) {
+			$ratio = (100 * $new_width) / $sizes['width'];
+			$sizes['height'] = floor(($sizes['height'] * $ratio) / 100);
+			$sizes['width'] = $new_width;
+		}
+	}
+
+	return $sizes;
+}
