@@ -348,3 +348,78 @@ function icf_get_post_thumbnail_data($post_id = null, $default_src = null, $defa
 
 	return $data;
 }
+
+function icf_get_document_root()
+{
+	$document_root = getenv('DOCUMENT_ROOT');
+
+	if (!$document_root && ($php_self = getenv('PHP_SELF'))) {
+		if ($script_filename = getenv('SCRIPT_FILENAME')) {
+			$document_root = str_replace( '\\', '/', substr($script_filename, 0, 0 - strlen($php_self)));
+
+		} else if ($path_traslated = getenv('PATH_TRANSLATED')) {
+			$document_root = str_replace( '\\', '/', substr(str_replace('\\\\', '\\', $path_traslated), 0, 0 - strlen($php_self)));
+		}
+	}
+
+	if ($document_root && getenv('DOCUMENT_ROOT') != '/'){
+		$document_root = preg_replace('/\/$/', '', $document_root);
+	}
+
+	return $document_root;
+}
+
+function icf_url_to_path($url)
+{
+	$host = preg_replace('/^www\./i', '', getenv('HTTP_HOST'));
+	$url = ltrim(preg_replace('/https?:\/\/(?:www\.)?' . $host . '/i', '', $url), '/');
+	$document_root = icf_get_document_root();
+
+	if (!$document_root) {
+		$file = preg_replace('/^.*?([^\/\\\\]+)$/', '$1', $url);
+
+		if (is_file($file)) {
+			return realpath($file);
+		}
+	}
+
+	if (file_exists($document_root . '/' . $url)) {
+		$real = realpath($document_root . '/' . $url);
+
+		if (stripos($real, $document_root) === 0){
+			return $real;
+		}
+	}
+
+	$absolute = realpath('/' . $url);
+
+	if ($absolute && file_exists($absolute)) {
+		if (stripos($absolute, $document_root) === 0){
+			return $absolute;
+		}
+	}
+
+	$base = $document_root;
+	$script_filename = getenv('SCRIPT_FILENAME');
+
+	if (strstr($script_filename, ':')) {
+		$sub_directories = explode('\\', str_replace($document_root, '', $script_filename));
+
+	} else {
+		$sub_directories = explode('/', str_replace($document_root, '', $script_filename));
+	}
+
+	foreach ($sub_directories as $sub){
+		$base .= $sub . '/';
+
+		if(file_exists($base . $url)){
+			$real = realpath($base . $url);
+
+			if (stripos($real, realpath($document_root)) === 0) {
+				return $real;
+			}
+		}
+	}
+
+	return false;
+}
