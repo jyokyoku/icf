@@ -235,7 +235,7 @@ if (!class_exists('ICF_Loader')) {
 		/**
 		 * Adds the codes of link dialog
 		 */
-		public function load_wpeditor_html()
+		public static function load_wpeditor_html()
 		{
 			if (version_compare(get_bloginfo('version'), '3.3', '>=')) {
 				include_once ABSPATH . WPINC . '/class-wp-editor.php';
