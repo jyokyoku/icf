@@ -241,7 +241,7 @@ class ICF_MetaBox
 
 	protected function _generate_uniq_id()
 	{
-		return sha1($this->_id . serialize($this->_components));
+		return sha1($this->_id . serialize(implode('', array_keys($this->_components))));
 	}
 }
 
