@@ -262,7 +262,7 @@ class timthumb {
 			asort($arr);
 			$this->cachefile = $this->cacheDirectory . '/' . FILE_CACHE_PREFIX . $cachePrefix . md5($this->salt . implode('', $arr) . $this->fileCacheVersion) . FILE_CACHE_SUFFIX;
 		} else {
-			$this->localImage = $this->getLocalImagePath($this->src);
+			$this->localImage = file_exists($this->src) ? $this->src : $this->getLocalImagePath($this->src);
 			if(! $this->localImage){
 				$this->debug(1, "Could not find the local image: {$this->localImage}");
 				$this->error("Could not find the internal image you specified.");

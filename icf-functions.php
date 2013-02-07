@@ -187,6 +187,9 @@ function icf_timthumb($file, $width = null, $height = null, $attr = array())
 		$attr = $width;
 		$width = null;
 	}
+	
+	$script_filename = str_replace(DIRECTORY_SEPARATOR, '/', icf_filter($_SERVER, 'SCRIPT_FILENAME'));
+	$php_self = icf_filter($_SERVER, 'PHP_SELF');
 
 	$defaults = array(
 		'q' => null,
@@ -195,12 +198,14 @@ function icf_timthumb($file, $width = null, $height = null, $attr = array())
 		'f' => array(),
 		's' => null,
 		'w' => null,
-		'h' => null
+		'h' => null,
+		'path' => ($script_filename && $php_self && strpos($script_filename, $php_self) === false),
 	);
 
 	$attr = array_intersect_key(wp_parse_args($attr, $defaults), $defaults);
 	$timthumb = ICF_Loader::get_latest_version_url() . '/vendors/timthumb.php';
-	$attr['src'] = $file;
+
+	$attr['src'] = icf_extract($attr, 'path') ? icf_url_to_path($file) : $file;
 
 	if ($width) {
 		$attr['w'] = $width;
