@@ -347,19 +347,34 @@ function icf_get_post_thumbnail_data($post_id = null)
 
 function icf_get_document_root()
 {
-	$document_root = getenv('DOCUMENT_ROOT');
+	$script_filename = icf_filter($_SERVER, 'SCRIPT_FILENAME');
+	$php_self = icf_filter($_SERVER, 'PHP_SELF');
+	$document_root = icf_filter($_SERVER, 'DOCUMENT_ROOT');
 
-	if (!$document_root && ($php_self = getenv('PHP_SELF'))) {
-		if ($script_filename = getenv('SCRIPT_FILENAME')) {
-			$document_root = str_replace( '\\', '/', substr($script_filename, 0, 0 - strlen($php_self)));
+	if ($php_self && $script_filename && (!$document_root || strpos($script_filename, $document_root) === false)) {
+		$script_filename = str_replace(DIRECTORY_SEPARATOR, '/', $script_filename);
 
-		} else if ($path_traslated = getenv('PATH_TRANSLATED')) {
-			$document_root = str_replace( '\\', '/', substr(str_replace('\\\\', '\\', $path_traslated), 0, 0 - strlen($php_self)));
+		if (strpos($script_filename, $php_self) !== false) {
+			$document_root = substr($script_filename, 0, 0 - strlen($php_self));
+
+		} else {
+			$paths = array_reverse(explode('/', $script_filename));
+			$php_self_paths = array_reverse(explode('/', $php_self));
+
+			foreach ($php_self_paths as $i => $php_self_path) {
+				if (!isset($paths[$i]) || $paths[$i] != $php_self_path) {
+					break;
+				}
+				
+				unset($paths[$i]);
+			}
+
+			$document_root = implode('/', array_reverse($paths));
 		}
 	}
 
-	if ($document_root && getenv('DOCUMENT_ROOT') != '/'){
-		$document_root = preg_replace('/\/$/', '', $document_root);
+	if ($document_root && icf_filter($_SERVER, 'DOCUMENT_ROOT') != '/'){
+		$document_root = preg_replace('|/$|', '', $document_root);
 	}
 
 	return $document_root;
@@ -367,12 +382,38 @@ function icf_get_document_root()
 
 function icf_url_to_path($url)
 {
-	$host = preg_replace('/^www\./i', '', getenv('HTTP_HOST'));
-	$url = ltrim(preg_replace('/https?:\/\/(?:www\.)?' . $host . '/i', '', $url), '/');
+	$script_filename = str_replace(DIRECTORY_SEPARATOR, '/', icf_filter($_SERVER, 'SCRIPT_FILENAME'));
+	$php_self = icf_filter($_SERVER, 'PHP_SELF');
+	$remove_path = null;
+
+	if ($script_filename && $php_self && strpos($script_filename, $php_self) === false) {
+		$paths = array_reverse(explode('/', $script_filename));
+		$php_self_paths = array_reverse(explode('/', $php_self));
+
+		foreach ($paths as $i => $path) {
+			if (!isset($php_self_paths[$i]) || $php_self_paths[$i] != $path) {
+				break;
+			}
+			
+			unset($php_self_paths[$i]);
+		}
+
+		if ($php_self_paths) {
+			$remove_path = implode('/', $php_self_paths);
+		}
+	}
+
+	$host = preg_replace('|^www\.|i', '', icf_filter($_SERVER, 'HTTP_HOST'));
+	$url = ltrim(preg_replace('|https?://(?:www\.)?' . $host . '|i', '', $url), '/');
+
+	if ($remove_path) {
+		$url = str_replace($remove_path, '', $url);
+	}
+
 	$document_root = icf_get_document_root();
 
 	if (!$document_root) {
-		$file = preg_replace('/^.*?([^\/\\\\]+)$/', '$1', $url);
+		$file = preg_replace('|^.*?([^/\\\\]+)$|', '$1', $url);
 
 		if (is_file($file)) {
 			return realpath($file);
@@ -396,19 +437,12 @@ function icf_url_to_path($url)
 	}
 
 	$base = $document_root;
-	$script_filename = getenv('SCRIPT_FILENAME');
-
-	if (strstr($script_filename, ':')) {
-		$sub_directories = explode('\\', str_replace($document_root, '', $script_filename));
-
-	} else {
-		$sub_directories = explode('/', str_replace($document_root, '', $script_filename));
-	}
+	$sub_directories = explode('/', str_replace($document_root, '', $script_filename));
 
 	foreach ($sub_directories as $sub){
 		$base .= $sub . '/';
 
-		if(file_exists($base . $url)){
+		if (file_exists($base . $url)){
 			$real = realpath($base . $url);
 
 			if (stripos($real, realpath($document_root)) === 0) {
