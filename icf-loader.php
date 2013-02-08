@@ -216,6 +216,7 @@ if (!class_exists('ICF_Loader')) {
 		{
 			wp_enqueue_style('thickbox');
 			wp_enqueue_style('editor-buttons');
+			wp_enqueue_style('icf-common', ICF_Loader::get_latest_version_url() . '/css/common.css');
 
 			if (version_compare(get_bloginfo('version'), '3.3', '>=')) {
 				wp_enqueue_style('wp-jquery-ui-dialog');

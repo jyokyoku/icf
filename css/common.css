@@ -1,0 +1,101 @@
+@CHARSET "UTF-8";
+
+.postbox-container table.icf-table {
+	width: 100%;
+}
+
+.postbox-container table.icf-table th {
+	font-weight: normal;
+	text-align: right;
+	width: 10%;
+}
+
+.postbox-container table.icf-table td {
+	text-align: left;
+	padding-left: 10px;
+}
+
+.icf-w10p {
+	width: 10%;
+}
+
+.icf-w15p {
+	width: 15%;
+}
+
+.icf-w20p {
+	width: 20%;
+}
+
+.icf-w25p {
+	width: 25%;
+}
+
+.icf-w30p {
+	width: 30%;
+}
+
+.icf-w33p {
+	width: 33%;
+}
+
+.icf-w35p {
+	width: 35%;
+}
+
+.icf-w40p {
+	width: 40%;
+}
+
+.icf-w45p {
+	width: 45%;
+}
+
+.icf-w50p {
+	width: 50%;
+}
+
+.icf-w55p {
+	width: 55%;
+}
+
+.icf-w60p {
+	width: 60%;
+}
+
+.icf-w65 {
+	width: 65%;
+}
+
+.icf-w66p {
+	width: 66%;
+}
+
+.icf-w70p {
+	width: 70%;
+}
+
+.icf-w75p {
+	width: 75%;
+}
+
+.icf-w80p {
+	width: 80%;
+}
+
+.icf-w85p {
+	width: 85%;
+}
+
+.icf-w90p {
+	width: 90%;
+}
+
+.icf-w100p {
+	width: 100%;
+}
+
+input.icf-w100p {
+	width: 97%;
+}
+
