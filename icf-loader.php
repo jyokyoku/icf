@@ -9,10 +9,6 @@
 
 $GLOBALS['icf_versions']['1.6'] = __FILE__;
 
-if (!defined('ICF_DEBUG')) {
-	define('ICF_DEBUG', false);
-}
-
 if (!class_exists('ICF_Loader')) {
 	class ICF_Loader
 	{
@@ -75,6 +71,10 @@ if (!class_exists('ICF_Loader')) {
 			do_action('icf_loaded', self::$_loaded_files);
 
 			self::$_loaded = true;
+			
+			if (!defined('ICF_DEBUG')) {
+				define('ICF_DEBUG', false);
+			}
 		}
 
 		/**

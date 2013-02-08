@@ -53,7 +53,7 @@ function icf_log($message = null)
 		$message = print_r($message, true);
 	}
 
-	$log_dir = WP_CONTENT_DIR . DIRECTORY_SEPARATOR . 'icf-logs';
+	$log_dir = WP_CONTENT_DIR . ICF_DS . 'icf-logs';
 
 	if (!is_dir($log_dir)) {
 		if (!@mkdir($log_dir)) {
@@ -61,7 +61,7 @@ function icf_log($message = null)
 		}
 	}
 
-	$log_file = $log_dir . DIRECTORY_SEPARATOR . date('Y-m-d') . '.txt';
+	$log_file = $log_dir . ICF_DS . date('Y-m-d') . '.txt';
 
 	if (!is_file($log_file)) {
 		if (!@touch($log_file)) {
