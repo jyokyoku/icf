@@ -60,7 +60,7 @@ if (!class_exists('ICF_Loader')) {
 
 					$filepath = $base_dir . '/' . $file;
 
-					if (is_readable($filepath) && include_once $filepath) {
+					if (is_file($filepath) && is_readable($filepath) && @include_once $filepath) {
 						self::$_loaded_files[] = $filepath;
 					}
 				}
