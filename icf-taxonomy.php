@@ -26,6 +26,38 @@ class ICF_Taxonomy
 		$this->_post_type = $post_type;
 		$this->_args = wp_parse_args($args);
 
+		if (!has_action('edited_' . $this->_slug, array($this, 'save'))) {
+			add_action('edited_' . $this->_slug, array($this, 'save'), 10, 2);
+		}
+
+		if (!has_action('created_' . $this->_slug, array($this, 'save'))) {
+			add_action('created_' . $this->_slug, array($this, 'save'), 10, 2);
+		}
+
+		if (!has_action($this->_slug . '_add_form_fields', array($this, 'display_add_form'))) {
+			add_action($this->_slug . '_add_form_fields', array($this, 'display_add_form'), 10, 1);
+		}
+
+		if (!has_action($this->_slug . '_edit_form_fields', array($this, 'display_edit_form'))) {
+			add_action($this->_slug . '_edit_form_fields', array($this, 'display_edit_form'), 10, 2);
+		}
+
+		if (!has_action('admin_init', array('ICF_Taxonomy', 'load_wpeditor_html'))) {
+			add_action('admin_init', array('ICF_Taxonomy', 'load_wpeditor_html'), 10);
+		}
+
+		if (!has_action('admin_head', array('ICF_Taxonomy', 'add_local_style'))) {
+			add_action('admin_head', array('ICF_Taxonomy', 'add_local_style'), 10);
+		}
+
+		if (!has_action('admin_print_scripts', array('ICF_Taxonomy', 'add_scripts'))) {
+			add_action('admin_print_scripts', array('ICF_Taxonomy', 'add_scripts'), 10);
+		}
+
+		if (!has_action('admin_print_styles', array('ICF_Taxonomy', 'add_styles'))) {
+			add_action('admin_print_styles', array('ICF_Taxonomy', 'add_styles'), 10);
+		}
+
 		if (!isset($wp_taxonomies[$this->_slug])) {
 			if (empty($this->_args['label'])) {
 				$this->_args['label'] = $this->_slug;
@@ -50,20 +82,6 @@ class ICF_Taxonomy
 					'choose_from_most_used' => sprintf(__('Choose from the most used %s', 'icf'), strtolower($this->_pluralize($this->_args['label']))),
 				);
 			}
-
-			add_action('edited_' . $this->_slug, array($this, 'save'), 10, 2);
-			add_action('created_' . $this->_slug, array($this, 'save'), 10, 2);
-			add_action($this->_slug . '_add_form_fields', array($this, 'display_add_form'), 10, 1);
-			add_action($this->_slug . '_edit_form_fields', array($this, 'display_edit_form'), 10, 2);
-
-			add_action('admin_init', array('ICF_Taxonomy', 'load_wpeditor_html'), 10);
-
-			if (!has_action('admin_head', array('ICF_Taxonomy', 'add_local_style'))) {
-				add_action('admin_head', array('ICF_Taxonomy', 'add_local_style'), 10);
-			}
-
-			add_action('admin_print_scripts', array('ICF_Taxonomy', 'add_scripts'), 10);
-			add_action('admin_print_styles', array('ICF_Taxonomy', 'add_styles'), 10);
 
 			register_taxonomy($this->_slug, $this->_post_type, $this->_args);
 
