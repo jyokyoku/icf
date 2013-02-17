@@ -24,8 +24,11 @@ class ICF_Meta
 			$post_id = (int)$post;
 		}
 
-		if (is_bool($attr) || (is_string($attr) && preg_match('|^[0|1]$|', $attr))) {
+		if (is_bool($attr) || (is_string($attr) && preg_match('/^[0|1]$/', $attr))) {
 			$attr = array('single' => (bool)$attr);
+
+		} else if (is_scalar($attr)) {
+			$attr = array('default' => $attr);
 		}
 
 		$attr = wp_parse_args($attr, array(
@@ -69,8 +72,11 @@ class ICF_Meta
 			$user_id = (int)$user;
 		}
 
-		if (is_bool($attr) || (is_string($attr) && preg_match('|^[0|1]$|', $attr))) {
+		if (is_bool($attr) || (is_string($attr) && preg_match('/^[0|1]$/', $attr))) {
 			$attr = array('single' => (bool)$attr);
+
+		} else if (is_scalar($attr)) {
+			$attr = array('default' => $attr);
 		}
 
 		$attr = wp_parse_args($attr, array(
@@ -107,8 +113,12 @@ class ICF_Meta
 	{
 		$value = get_option($key, false);
 
-		if (!is_string($value)) {
+		if ($value && !is_string($value)) {
 			return $option;
+		}
+
+		if (is_scalar($attr)) {
+			$attr = array('default' => $attr);
 		}
 
 		return self::_filter($value, $attr);
