@@ -658,10 +658,6 @@ class ICF_Component_Element_FormField_Media extends ICF_Component_Element_FormFi
 			if (!$reset_label) {
 				$reset_label = __('Clear', 'icf');
 			}
-
-			if (!isset($this->_args['readonly']) && !ICF_DEBUG) {
-				$this->_args['readonly'] = true;
-			}
 		}
 
 		$this->_component
