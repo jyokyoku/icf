@@ -7,7 +7,7 @@
  * @copyright	Copyright(c) 2011 Masayuki Ietomi
  */
 
-$GLOBALS['icf_versions']['1.6'] = __FILE__;
+$GLOBALS['icf_versions']['1.7.0.1'] = __FILE__;
 
 if (!class_exists('ICF_Loader')) {
 	class ICF_Loader

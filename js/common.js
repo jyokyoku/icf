@@ -119,7 +119,7 @@
 			var field = $(this).data('for');
 
 			if (field) {
-				$('input[name=' + field + ']').each(function() {
+				$('input[name="' + field + '"]').each(function() {
 					if ($(this).is(':checkbox') || $(this).is(':radio')) {
 						$(this).attr('checked', false);
 
@@ -128,8 +128,8 @@
 					}
 				});
 
-				$('select[name=' + field + ']').attr('selected', false);
-				$('textarea[name=' + field + ']').val('');
+				$('select[name="' + field + '"]').attr('selected', false);
+				$('textarea[name="' + field + '"]').val('');
 			}
 		});
 
