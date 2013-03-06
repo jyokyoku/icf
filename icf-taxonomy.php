@@ -280,6 +280,24 @@ class ICF_Taxonomy
 		return stripslashes_deep($values[$key]);
 	}
 
+	public static function get_list_recursive($taxonomy, $args = array())
+	{
+		$args = wp_parse_args($args, array(
+			'key' => '%name (ID:%term_id)',
+			'value' => 'term_id',
+			'orderby' => 'name'
+		));
+
+		$terms = get_terms($taxonomy, array('get' => 'all', 'orderby' => $args['orderby']));
+
+		if (is_wp_error($terms)) {
+			return array();
+		}
+
+		$walker = new ICF_Taxonomy_List_Walker();
+		return $walker->walk($terms, 0, $args);
+	}
+
 	protected function _pluralize($text)
 	{
 		return preg_match('/[a-zA-Z]$/', $text) ? ICF_Inflector::pluralize($text) : $text;
@@ -288,6 +306,36 @@ class ICF_Taxonomy
 	protected function _singularize($text)
 	{
 		return preg_match('/[a-zA-Z]$/', $text) ? ICF_Inflector::singularize($text) : $text;
+	}
+}
+
+class ICF_Taxonomy_List_Walker extends Walker
+{
+	public $tree_type = 'taxonomy';
+	public $db_fields = array ('parent' => 'parent', 'id' => 'term_id');
+
+	public function start_el(&$output, $term, $depth, $args, $id = 0)
+	{
+		$key_format = icf_filter($args, 'key');
+		$value_prop = icf_filter($args, 'value');
+
+		$replace = $search = array();
+
+		foreach (get_object_vars($term) as $key => $value) {
+			$search[] = '%' . $key;
+			$replace[] = $value;
+		}
+
+		$key = str_replace($search, $replace, $key_format);
+		$value = isset($term->{$value_prop}) ? $term->{$value_prop} : null;
+
+		$prefix = str_repeat('-', $depth);
+
+		if ($prefix) {
+			$prefix .= ' ';
+		}
+
+		$output[$prefix . $key] = $value;
 	}
 }
 
