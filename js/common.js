@@ -156,7 +156,6 @@
 			}
 
 			var settings = $.extend({}, {
-				ampm           : false,
 				cancelText     : icfCommonL10n.cancelText,
 				dateFormat     : icfCommonL10n.dateFormat,
 				dateOrder      : icfCommonL10n.dateOrder,
@@ -186,6 +185,7 @@
 				secText        : icfCommonL10n.secText,
 				setText        : icfCommonL10n.setText,
 				timeFormat     : icfCommonL10n.timeFormat,
+				timeWheels     : icfCommonL10n.timeWheels,
 				yearText       : icfCommonL10n.yearText
 			}, $self.data());
 

@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Inspire Custom field Framework\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-11 21:20+0900\n"
-"PO-Revision-Date: 2013-03-12 03:22+0900\n"
+"POT-Creation-Date: 2013-03-12 04:47+0900\n"
+"PO-Revision-Date: 2013-03-12 04:51+0900\n"
 "Last-Translator: Masayuki Ietomi <jyokyoku@gmail.com>\n"
 "Language-Team: \n"
 "Language: ja_JP\n"
@@ -12,6 +12,9 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-KeywordsList: __;_e;_x\n"
 "X-Generator: Poedit 1.5.5\n"
+"X-Poedit-Basepath: Y:/html/wordpress/style-designer/wordpress/wp-content/"
+"themes/style-designer\n"
+"X-Poedit-SearchPath-0: icf\n"
 
 #: icf/icf-custompost.php:42
 msgid "Add New"
@@ -186,7 +189,7 @@ msgstr "戻る"
 
 #: icf/icf-loader.php:158
 msgid "mm/dd/yy"
-msgstr "yyyy/mm/dd"
+msgstr "yy/mm/dd"
 
 #: icf/icf-loader.php:159
 msgid "mmddy"
@@ -364,7 +367,7 @@ msgstr "月"
 
 #: icf/icf-loader.php:202
 msgid "Seconds"
-msgstr "病"
+msgstr "秒"
 
 #: icf/icf-loader.php:203
 msgid "Set"
@@ -375,5 +378,9 @@ msgid "hh:ii A"
 msgstr "H:i"
 
 #: icf/icf-loader.php:205
+msgid "hhiiA"
+msgstr "HHii"
+
+#: icf/icf-loader.php:206
 msgid "Year"
 msgstr "年"
