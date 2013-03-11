@@ -79,40 +79,36 @@ function icf_log($message = null)
  *
  * @param	array			$array
  * @param	string|array	$key
- * @param	string|array	$_
+ * @param	mixed			$default
  * @return	mixed
  */
-function icf_filter(array $array, $key, $_ = null)
+function icf_filter(array $array, $key, $default = null)
 {
-	$args = func_get_args();
-	$keys = array_splice($args, 1);
-	$values = array();
+	$tmp_keys = $key;
 
-	foreach ($keys as $key) {
-		$default = null;
+	if (!is_array($tmp_keys)) {
+		$tmp_keys = array($key => $default);
+	}
 
-		if (is_array($key)) {
-			if (count($key) > 1) {
-				list($key, $default) = $key;
-
-			} else {
-				$key = reset($key);
-			}
+	foreach ($tmp_keys as $tmp_key => $default) {
+		if (is_int($tmp_key) && is_string($default)) {
+			$tmp_key = $default;
+			$default = null;
 		}
 
-		if (!$key) {
+		if (!$tmp_key) {
 			continue;
 		}
 
-		if (isset($array[$key])) {
-			$values[] = $array[$key];
+		if (isset($array[$tmp_key])) {
+			$values[] = $array[$tmp_key];
 
 		} else {
 			$values[] = $default;
 		}
 	}
 
-	return (count($key) > 1) ? $values : reset($values);
+	return is_array($key) ? $values : reset($values);
 }
 
 /**
@@ -120,59 +116,59 @@ function icf_filter(array $array, $key, $_ = null)
  *
  * @param	array			$array
  * @param	string|array	$key
- * @param	string|array	$_
+ * @param	mixed			$default
  * @return	mixed
  */
-function icf_extract(array &$array, $key, $_ = null)
+function icf_extract(array &$array, $key, $default = null)
 {
-	$args = func_get_args();
-	$keys = array_splice($args, 1);
-	$values = array();
+	$tmp_keys = $key;
 
-	foreach ($keys as $key) {
-		$default = null;
+	if (!is_array($tmp_keys)) {
+		$tmp_keys = array($key => $default);
+	}
 
-		if (is_array($key)) {
-			if (count($key) > 1) {
-				list($key, $default) = array_values($key);
-
-			} else {
-				$key = reset($key);
-			}
+	foreach ($tmp_keys as $tmp_key => $default) {
+		if (is_int($tmp_key) && is_string($default)) {
+			$tmp_key = $default;
+			$default = null;
 		}
 
-		if (!$key) {
+		if (!$tmp_key) {
 			continue;
 		}
 
-		if (isset($array[$key])) {
-			$values[] = $array[$key];
-			unset($array[$key]);
+		if (isset($array[$tmp_key])) {
+			$values[] = $array[$tmp_key];
+			unset($array[$tmp_key]);
 
 		} else {
 			$values[] = $default;
 		}
 	}
 
-	return (count($keys) > 1) ? $values : reset($values);
+	return is_array($key) ? $values : reset($values);
 }
 
 /**
  * Returns a merged value of the specified key(s) of array and removes it from array.
  *
- * @param	array	$array
- * @param	string	$key
- * @param	string	$_
+ * @param	array			$array
+ * @param	string|array	$key
+ * @param	mixed			$default
  * @return	array
  */
 function icf_extract_and_merge(array &$array, $key, $_ = null)
 {
-	$args = func_get_args();
-	$keys = array_splice($args, 1);
+	$tmp_keys = $key;
+
+	if (!is_array($tmp_keys)) {
+		$tmp_keys = array($key => $default);
+	}
+
 	$values = array();
 
-	foreach ($keys as $key) {
-		if ($value = icf_extract($array, $key)) {
+	foreach ($tmp_keys as $tmp_key => $default) {
+		if ($value = icf_extract($array, $tmp_key, $default)) {
 			$values = array_merge($values, (array)$value);
 		}
 	}
@@ -187,7 +183,7 @@ function icf_timthumb($file, $width = null, $height = null, $attr = array())
 		$attr = $width;
 		$width = null;
 	}
-	
+
 	$script_filename = str_replace(DIRECTORY_SEPARATOR, '/', icf_filter($_SERVER, 'SCRIPT_FILENAME'));
 	$php_self = icf_filter($_SERVER, 'PHP_SELF');
 
@@ -370,7 +366,7 @@ function icf_get_document_root()
 				if (!isset($paths[$i]) || $paths[$i] != $php_self_path) {
 					break;
 				}
-				
+
 				unset($paths[$i]);
 			}
 
@@ -399,7 +395,7 @@ function icf_url_to_path($url)
 			if (!isset($php_self_paths[$i]) || $php_self_paths[$i] != $path) {
 				break;
 			}
-			
+
 			unset($php_self_paths[$i]);
 		}
 

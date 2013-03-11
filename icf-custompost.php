@@ -29,7 +29,7 @@ class ICF_CustomPost
 	{
 		$this->_post_type = $post_type;
 		$args = wp_parse_args($args);
-		$auto_inflection = icf_extract($args, array('auto_inflection', true));
+		$auto_inflection = icf_extract($args, 'auto_inflection', true);
 
 		if (empty($args['label'])) {
 			$args['label'] = $post_type;

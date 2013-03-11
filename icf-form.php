@@ -140,8 +140,8 @@ class ICF_Form
 			$attributes['options'] = $options;
 		}
 
-		$selected = icf_extract_and_merge($attributes, 'selected', 'checked');
-		$options = icf_extract_and_merge($attributes, 'options', 'value', 'values');
+		$selected = icf_extract_and_merge($attributes, array('selected', 'checked'));
+		$options = icf_extract_and_merge($attributes, array('options', 'value', 'values'));
 
 		if (icf_extract($attributes, 'empty')) {
 			array_unshift($options, '');
@@ -196,14 +196,14 @@ class ICF_Form
 			$attributes['values'] = $values;
 		}
 
-		list($name, $before, $after, $separator) = icf_extract($attributes, 'name', 'before', 'after', 'separator');
+		list($name, $before, $after, $separator) = icf_extract($attributes, array('name', 'before', 'after', 'separator'));
 
 		if ($separator === null) {
 			$separator = '&nbsp;&nbsp;';
 		}
 
-		$checked = reset(icf_extract_and_merge($attributes, 'checked', 'selected'));
-		$values = icf_extract_and_merge($attributes, 'value', 'values', 'options');
+		$checked = reset(icf_extract_and_merge($attributes, array('checked', 'selected')));
+		$values = icf_extract_and_merge($attributes, array('value', 'values', 'options'));
 
 		if (!is_array($values)) {
 			$options = array($values => $values);

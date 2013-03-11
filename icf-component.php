@@ -255,7 +255,7 @@ abstract class ICF_Component_Element_FormField_Abstract extends ICF_Component_El
 
 	public function initialize()
 	{
-		list($this->_container, $this->_validation) = icf_extract($this->_args, 'container', 'validation');
+		list($this->_container, $this->_validation) = icf_extract($this->_args, array('container', 'validation'));
 		$this->_validation = self::_parse_validation_rules($this->_validation);
 
 		if ($this->_validation && in_array($this->_type, $this->_single_form_types)) {
@@ -419,7 +419,7 @@ class ICF_Component_Element_Button_Media extends ICF_Component_Element_Abstract
 	{
 		$data = array_combine(
 			array('type', 'mode', 'value'),
-			icf_extract($this->_args, 'type', 'mode', 'value')
+			icf_extract($this->_args, array('type', 'mode', 'value'))
 		);
 
 		foreach ($data as $key => $value) {
@@ -542,11 +542,11 @@ class ICF_Component_Element_FormField_Date extends ICF_Component_Element_FormFie
 
 	public function initialize()
 	{
-		list($pick, $reset) = icf_extract($this->_args, 'pick', 'reset');
+		list($pick, $reset) = icf_extract($this->_args, array('pick', 'reset'));
 
 		$settings = array_combine(
 			array('data-preset', 'data-step-year', 'data-step-hour', 'data-step-minute', 'data-step-second', 'data-start-year', 'data-end-year'),
-			icf_extract($this->_args, 'preset', 'step_year', 'step_hour', 'step_minute', 'step_second', 'start_year', 'end_year')
+			icf_extract($this->_args, array('preset', 'step_year', 'step_hour', 'step_minute', 'step_second', 'start_year', 'end_year'))
 		);
 
 		if (!in_array($settings['data-preset'], $this->_date_type)) {
@@ -572,7 +572,7 @@ class ICF_Component_Element_FormField_Date extends ICF_Component_Element_FormFie
 
 		if ($pick !== false){
 			if (is_array($pick)) {
-				$pick_label = reset(icf_extract_and_merge($pick, 'value', 'label'));
+				$pick_label = reset(icf_extract_and_merge($pick, array('value', 'label')));
 
 			} else {
 				$pick_label = $pick;
@@ -590,7 +590,7 @@ class ICF_Component_Element_FormField_Date extends ICF_Component_Element_FormFie
 
 		if ($reset !== false) {
 			if (is_array($reset)) {
-				$reset_label = reset(icf_extract_and_merge($reset, 'value', 'label'));
+				$reset_label = reset(icf_extract_and_merge($reset, array('value', 'label')));
 
 			} else {
 				$reset_label = $reset;
@@ -630,10 +630,10 @@ class ICF_Component_Element_FormField_Media extends ICF_Component_Element_FormFi
 {
 	public function initialize()
 	{
-		list($media, $reset, $preview, $type) = icf_extract($this->_args, 'media', 'reset', 'preview', 'type');
+		list($media, $reset, $preview, $type) = icf_extract($this->_args, array('media', 'reset', 'preview', 'type'));
 
 		if (is_array($media)) {
-			$media_label = reset(icf_extract_and_merge($media, 'value', 'label'));
+			$media_label = reset(icf_extract_and_merge($media, array('value', 'label')));
 
 		} else {
 			$media_label = $media;
@@ -648,7 +648,7 @@ class ICF_Component_Element_FormField_Media extends ICF_Component_Element_FormFi
 
 		if ($reset !== false) {
 			if (is_array($reset)) {
-				$reset_label = reset(icf_extract_and_merge($reset, 'value', 'label'));
+				$reset_label = reset(icf_extract_and_merge($reset, array('value', 'label')));
 
 			} else {
 				$reset_label = $reset;
