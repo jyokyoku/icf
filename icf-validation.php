@@ -25,10 +25,25 @@ class ICF_Validation
 	protected function __construct($config = array())
 	{
 		$config = wp_parse_args($config, array(
-			'messages' => array()
+			'messages' => array(
+				'not_empty'     => _x('The field :label is required and must contain value.', 'not_empty', 'icf'),
+				'not_empty_if'  => _x('The field :label is required and must contain value.', 'not_empty_if', 'icf'),
+				'valid_string'  => __('The valid string rule :rule(:param:1) failed for field :label.', 'icf'),
+				'valid_email'   => __('The field :label must contain a valid email address.', 'icf'),
+				'valid_url'     => __('The field :label must contain a valid URL.', 'icf'),
+				'min_length'    => __('The field :label has to contain at least :param:1 characters.', 'icf'),
+				'max_length'    => __('The field :label may not contain more than :param:1 characters.', 'icf'),
+				'exact_length'  => __('The field :label must equal :param:1 characters.', 'icf'),
+				'numeric_min'   => __('The minimum numeric value of :label must be :param:1', 'icf'),
+				'numeric_max'   => __('The maximum numeric value of :label must be :param:1', 'icf'),
+				'integer'       => __('The value of :label must be integer.', 'icf'),
+				'decimal'       => __('The value of :label must be decimal.', 'icf'),
+				'match_value'   => __('The field :label must contain the value :param:1.', 'icf'),
+				'match_pattern' => __('The field :label must match the pattern :param:1.', 'icf')
+			)
 		));
 
-		$this->_default_messages = $config['messages'];
+		$this->set_default_message($config['messages']);
 	}
 
 	public function add_field($field, $label = null)

@@ -2,318 +2,378 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Inspire Custom field Framework\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-07 22:13+0900\n"
-"PO-Revision-Date: 2012-04-07 23:24+0900\n"
+"POT-Creation-Date: 2013-03-11 21:20+0900\n"
+"PO-Revision-Date: 2013-03-12 03:22+0900\n"
 "Last-Translator: Masayuki Ietomi <jyokyoku@gmail.com>\n"
 "Language-Team: \n"
+"Language: ja_JP\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-KeywordsList: __;_e;_x\n"
-"X-Poedit-Basepath: D:/Htdocs/wordpress/development/wp-content/plugins/icf-sample\n"
-"X-Poedit-Language: Japanese\n"
-"X-Poedit-Country: JAPAN\n"
-"X-Poedit-SearchPath-0: icf\n"
+"X-Generator: Poedit 1.5.5\n"
 
-#: icf/component.php:481
-msgid "Select File"
-msgstr "ファイル選択"
-
-#: icf/component.php:496
-msgid "Clear"
-msgstr "クリア"
-
-#: icf/custompost.php:37
+#: icf/icf-custompost.php:42
 msgid "Add New"
 msgstr "新規追加"
 
-#: icf/custompost.php:38
-#: icf/custompost.php:98
+#: icf/icf-custompost.php:43 icf/icf-taxonomy.php:78
 #, php-format
 msgid "Add New %s"
 msgstr "新規%sを追加"
 
-#: icf/custompost.php:39
-#: icf/custompost.php:95
+#: icf/icf-custompost.php:44 icf/icf-taxonomy.php:75
 #, php-format
 msgid "Edit %s"
 msgstr "%sを編集"
 
-#: icf/custompost.php:40
+#: icf/icf-custompost.php:45
 #, php-format
 msgid "New %s"
 msgstr "新規%s"
 
-#: icf/custompost.php:41
-#: icf/custompost.php:96
+#: icf/icf-custompost.php:46 icf/icf-taxonomy.php:76
 #, php-format
 msgid "View %s"
 msgstr "%sを表示"
 
-#: icf/custompost.php:42
-#: icf/custompost.php:90
+#: icf/icf-custompost.php:47 icf/icf-taxonomy.php:70
 #, php-format
 msgid "Search %s"
 msgstr "%sを検索"
 
-#: icf/custompost.php:43
+#: icf/icf-custompost.php:48
 #, php-format
 msgid "No %s found."
 msgstr "%sが見つかりませんでした。"
 
-#: icf/custompost.php:44
+#: icf/icf-custompost.php:49
 #, php-format
 msgid "No %s found in Trash."
 msgstr "ゴミ箱内に%sが見つかりませんでした。"
 
-#: icf/custompost.php:45
-#: icf/custompost.php:94
+#: icf/icf-custompost.php:50 icf/icf-taxonomy.php:74
 #, php-format
 msgid "Parent %s:"
 msgstr "親%s:"
 
-#: icf/custompost.php:46
-#: icf/custompost.php:92
+#: icf/icf-custompost.php:51 icf/icf-taxonomy.php:72
 #, php-format
 msgid "All %s"
 msgstr "%s一覧"
 
-#: icf/custompost.php:91
+#: icf/icf-component.php:447 icf/icf-component.php:601
+#: icf/icf-component.php:659
+msgid "Clear"
+msgstr "クリア"
+
+#: icf/icf-component.php:583
+msgid "Pick"
+msgstr "設定"
+
+#: icf/icf-component.php:644
+msgid "Select File"
+msgstr "ファイル選択"
+
+#: icf/icf-metabox.php:529
+msgid "The TinyMCE cannot be use to inside of a MetaBox"
+msgstr "TinyMCEはMetaBoxの内部に設置することはできません。"
+
+#: icf/icf-taxonomy.php:71
 #, php-format
 msgid "Popular %s"
 msgstr "人気の%s"
 
-#: icf/custompost.php:93
+#: icf/icf-taxonomy.php:73
 #, php-format
 msgid "Parent %s"
 msgstr "親%s"
 
-#: icf/custompost.php:97
+#: icf/icf-taxonomy.php:77
 #, php-format
 msgid "Update %s"
 msgstr "%sを更新"
 
-#: icf/custompost.php:99
+#: icf/icf-taxonomy.php:79
 #, php-format
 msgid "New %s Name"
 msgstr "新規%s名"
 
-#: icf/custompost.php:100
+#: icf/icf-taxonomy.php:80
 #, php-format
 msgid "Separate %s with commas"
 msgstr "%sが複数ある場合はコンマで区切ってください"
 
-#: icf/custompost.php:101
+#: icf/icf-taxonomy.php:81
 #, php-format
 msgid "Add or remove %s"
 msgstr "%sの追加もしくは削除"
 
-#: icf/custompost.php:102
+#: icf/icf-taxonomy.php:82
 #, php-format
 msgid "Choose from the most used %s"
 msgstr "よく使われている%sから選択"
 
-#: icf/loader.php:131
+#: icf/icf-profile.php:306
+msgid "<strong>ERROR</strong>: profile page not found."
+msgstr "<strong>エラー</strong>: プロフィールページが見つかりません。"
+
+#: icf/icf-validation.php:29
+msgctxt "not_empty"
+msgid "The field :label is required and must contain value."
+msgstr ":labelは必須入力です。"
+
+#: icf/icf-validation.php:30
+msgctxt "not_empty_if"
+msgid "The field :label is required and must contain value."
+msgstr ":labelは必須入力です。"
+
+#: icf/icf-validation.php:31
+msgid "The valid string rule :rule(:param:1) failed for field :label."
+msgstr ":labelは正しくない文字列です。（:param:1）"
+
+#: icf/icf-validation.php:32
+msgid "The field :label must contain a valid email address."
+msgstr ":labelは正しいメールアドレスの形式で入力してください。"
+
+#: icf/icf-validation.php:33
+msgid "The field :label must contain a valid URL."
+msgstr ":labelは正しいURLの形式で入力してください。"
+
+#: icf/icf-validation.php:34
+msgid "The field :label has to contain at least :param:1 characters."
+msgstr ":labelは:param:1文字以内で入力してください。"
+
+#: icf/icf-validation.php:35
+msgid "The field :label may not contain more than :param:1 characters."
+msgstr ":labelは:param:1文字以上で入力してください。"
+
+#: icf/icf-validation.php:36
+msgid "The field :label must equal :param:1 characters."
+msgstr ":labelは:param:1文字で入力してください。"
+
+#: icf/icf-validation.php:37
+msgid "The minimum numeric value of :label must be :param:1"
+msgstr ":labelは:param:1以上の値を入力してください。"
+
+#: icf/icf-validation.php:38
+msgid "The maximum numeric value of :label must be :param:1"
+msgstr ":labelは:param:1以下の値を入力してください。"
+
+#: icf/icf-validation.php:39
+msgid "The value of :label must be integer."
+msgstr ":labelは整数で入力して下さい。"
+
+#: icf/icf-validation.php:40
+msgid "The value of :label must be decimal."
+msgstr ":labelは小数で入力して下さい。"
+
+#: icf/icf-validation.php:41
+msgid "The field :label must contain the value :param:1."
+msgstr ":labelは:param:1と一致しません。"
+
+#: icf/icf-validation.php:42
+msgid "The field :label must match the pattern :param:1."
+msgstr ":labelは:param:1のパターンにマッチしていません。"
+
+#: icf/icf-loader.php:156
 msgid "Insert to field"
 msgstr "フィールドに挿入"
 
-#: icf/loader.php:132
+#: icf/icf-loader.php:157
 msgid "Cancel"
 msgstr "戻る"
 
-#: icf/loader.php:133
+#: icf/icf-loader.php:158
 msgid "mm/dd/yy"
 msgstr "yyyy/mm/dd"
 
-#: icf/loader.php:134
+#: icf/icf-loader.php:159
 msgid "mmddy"
 msgstr "yymmdd"
 
-#: icf/loader.php:135
+#: icf/icf-loader.php:160
 msgid "Sunday"
 msgstr "日曜"
 
-#: icf/loader.php:136
+#: icf/icf-loader.php:161
 msgid "Monday"
 msgstr "月曜"
 
-#: icf/loader.php:137
+#: icf/icf-loader.php:162
 msgid "Tuesday"
 msgstr "火曜"
 
-#: icf/loader.php:138
+#: icf/icf-loader.php:163
 msgid "Wednesday"
 msgstr "水曜"
 
-#: icf/loader.php:139
+#: icf/icf-loader.php:164
 msgid "Thursday"
 msgstr "木曜"
 
-#: icf/loader.php:140
+#: icf/icf-loader.php:165
 msgid "Friday"
 msgstr "金曜"
 
-#: icf/loader.php:141
+#: icf/icf-loader.php:166
 msgid "Saturday"
 msgstr "土曜"
 
-#: icf/loader.php:142
+#: icf/icf-loader.php:167
 msgid "Sun"
 msgstr "日"
 
-#: icf/loader.php:143
+#: icf/icf-loader.php:168
 msgid "Mon"
 msgstr "月"
 
-#: icf/loader.php:144
+#: icf/icf-loader.php:169
 msgid "Tue"
 msgstr "火"
 
-#: icf/loader.php:145
+#: icf/icf-loader.php:170
 msgid "Wed"
 msgstr "水"
 
-#: icf/loader.php:146
+#: icf/icf-loader.php:171
 msgid "Thu"
 msgstr "木"
 
-#: icf/loader.php:147
+#: icf/icf-loader.php:172
 msgid "Fri"
 msgstr "金"
 
-#: icf/loader.php:148
+#: icf/icf-loader.php:173
 msgid "Sat"
 msgstr "土"
 
-#: icf/loader.php:149
+#: icf/icf-loader.php:174
 msgid "Day"
 msgstr "日"
 
-#: icf/loader.php:150
+#: icf/icf-loader.php:175
 msgid "Hours"
 msgstr "時"
 
-#: icf/loader.php:151
+#: icf/icf-loader.php:176
 msgid "Minutes"
 msgstr "分"
 
-#: icf/loader.php:152
+#: icf/icf-loader.php:177
 msgid "January"
 msgstr "1月"
 
-#: icf/loader.php:153
+#: icf/icf-loader.php:178
 msgid "February"
 msgstr "2月"
 
-#: icf/loader.php:154
+#: icf/icf-loader.php:179
 msgid "March"
 msgstr "3月"
 
-#: icf/loader.php:155
+#: icf/icf-loader.php:180
 msgid "April"
 msgstr "4月"
 
-#. translators: long
-#: icf/loader.php:156
+#: icf/icf-loader.php:181
 msgctxt "long"
 msgid "May"
 msgstr "5月"
 
-#: icf/loader.php:157
+#: icf/icf-loader.php:182
 msgid "June"
 msgstr "6月"
 
-#: icf/loader.php:158
+#: icf/icf-loader.php:183
 msgid "July"
 msgstr "7月"
 
-#: icf/loader.php:159
+#: icf/icf-loader.php:184
 msgid "August"
 msgstr "8月"
 
-#: icf/loader.php:160
+#: icf/icf-loader.php:185
 msgid "September"
 msgstr "9月"
 
-#: icf/loader.php:161
+#: icf/icf-loader.php:186
 msgid "October"
 msgstr "10月"
 
-#: icf/loader.php:162
+#: icf/icf-loader.php:187
 msgid "November"
 msgstr "11月"
 
-#: icf/loader.php:163
+#: icf/icf-loader.php:188
 msgid "December"
 msgstr "12月"
 
-#: icf/loader.php:164
+#: icf/icf-loader.php:189
 msgid "Jan"
 msgstr "1月"
 
-#: icf/loader.php:165
+#: icf/icf-loader.php:190
 msgid "Feb"
 msgstr "2月"
 
-#: icf/loader.php:166
+#: icf/icf-loader.php:191
 msgid "Mar"
 msgstr "3月"
 
-#: icf/loader.php:167
+#: icf/icf-loader.php:192
 msgid "Apr"
 msgstr "4月"
 
-#. translators: short
-#: icf/loader.php:168
+#: icf/icf-loader.php:193
 msgctxt "short"
 msgid "May"
 msgstr "5月"
 
-#: icf/loader.php:169
+#: icf/icf-loader.php:194
 msgid "Jun"
 msgstr "6月"
 
-#: icf/loader.php:170
+#: icf/icf-loader.php:195
 msgid "Jul"
 msgstr "7月"
 
-#: icf/loader.php:171
+#: icf/icf-loader.php:196
 msgid "Aug"
 msgstr "8月"
 
-#: icf/loader.php:172
+#: icf/icf-loader.php:197
 msgid "Sep"
 msgstr "9月"
 
-#: icf/loader.php:173
+#: icf/icf-loader.php:198
 msgid "Oct"
 msgstr "10月"
 
-#: icf/loader.php:174
+#: icf/icf-loader.php:199
 msgid "Nov"
 msgstr "11月"
 
-#: icf/loader.php:175
+#: icf/icf-loader.php:200
 msgid "Dec"
 msgstr "12月"
 
-#: icf/loader.php:176
+#: icf/icf-loader.php:201
 msgid "Month"
 msgstr "月"
 
-#: icf/loader.php:177
+#: icf/icf-loader.php:202
 msgid "Seconds"
 msgstr "病"
 
-#: icf/loader.php:178
+#: icf/icf-loader.php:203
 msgid "Set"
 msgstr "設定"
 
-#: icf/loader.php:179
+#: icf/icf-loader.php:204
 msgid "hh:ii A"
 msgstr "H:i"
 
-#: icf/loader.php:180
+#: icf/icf-loader.php:205
 msgid "Year"
 msgstr "年"
-
