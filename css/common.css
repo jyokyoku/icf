@@ -11,6 +11,8 @@ table.icf-table th {
 	text-align: right !important;
 	width: 10% !important;
 	padding-right: 5px;
+	padding-top: 5px;
+	vertical-align: top !important;
 }
 
 table.icf-table td {
