@@ -95,7 +95,7 @@ class ICF_Component extends ICF_Tag
 		return $this;
 	}
 
-	public function render($arg1 = null, $arg2 = null)
+	public function render($arg = null, $_ = null)
 	{
 		$this->all_close();
 		$this->capture_all_end();
@@ -126,6 +126,11 @@ class ICF_Component extends ICF_Tag
 	{
 		$args = func_get_args();
 		echo call_user_func_array(array($this, 'render'), $args);
+	}
+
+	public function __toString()
+	{
+		return $this->render();
 	}
 
 	/**
