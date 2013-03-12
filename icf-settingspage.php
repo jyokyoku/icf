@@ -462,10 +462,7 @@ class ICF_SettingsPage_Section
 		$this->title = empty($title) ? $this->_id : $title;
 		$this->description_or_callback = $description_or_callback;
 
-		add_action('admin_init', array($this, 'load_wpeditor_html'));
 		add_action('admin_menu', array($this, 'register'));
-		add_action('admin_print_scripts', array($this, 'add_scripts'));
-		add_action('admin_print_styles', array($this, 'add_styles'));
 	}
 
 	/**
@@ -547,53 +544,6 @@ class ICF_SettingsPage_Section
 	{
 		if (!empty($this->description_or_callback) && is_string($this->description_or_callback)) {
 			echo $this->description_or_callback;
-		}
-	}
-
-	/**
-	 * Adds the html of link dialog
-	 */
-	public function load_wpeditor_html()
-	{
-		global $pagenow;
-
-		if (
-			(isset($_GET['page']) && $_GET['page'] == $this->_page_slug)
-			|| (!isset($_GET['page']) && strpos($pagenow, 'options-') === 0)
-		) {
-			add_action('admin_print_footer_scripts', array('ICF_Loader', 'load_wpeditor_html'));
-		}
-	}
-
-	/**
-	 * Adds the scripts used by ICF
-	 */
-	public function add_scripts()
-	{
-		global $pagenow;
-
-		if (
-			(isset($_GET['page']) && $_GET['page'] == $this->_page_slug)
-			|| (!isset($_GET['page']) && strpos($pagenow, 'options-') === 0)
-		) {
-			ICF_Loader::register_javascript(array(
-				'icf-settingspage' => array(ICF_Loader::get_latest_version_url() . '/js/settingspage.js', array('icf-common'), null, true)
-			));
-		}
-	}
-
-	/**
-	 * Adds the stylesheets used by ICF
-	 */
-	public function add_styles()
-	{
-		global $pagenow;
-
-		if (
-			(isset($_GET['page']) && $_GET['page'] == $this->_page_slug)
-			|| (!isset($_GET['page']) && strpos($pagenow, 'options-') === 0)
-		) {
-			ICF_Loader::register_css();
 		}
 	}
 }

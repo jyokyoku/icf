@@ -39,14 +39,9 @@ abstract class ICF_Profile_Abstract
 			$this->_capability = array($this->capability);
 		}
 
-		add_action('admin_init', array('ICF_Profile_Abstract', 'load_wpeditor_html'), 10);
-
 		if (!has_action('admin_head', array('ICF_Profile_Abstract', 'add_local_style'))) {
 			add_action('admin_head', array('ICF_Profile_Abstract', 'add_local_style'), 10);
 		}
-
-		add_action('admin_print_scripts', array('ICF_Profile_Abstract', 'add_scripts'), 10);
-		add_action('admin_print_styles', array('ICF_Profile_Abstract', 'add_styles'), 10);
 	}
 
 	public static function add_local_style()
@@ -62,36 +57,6 @@ abstract class ICF_Profile_Abstract
 }
 </style>
 <?php
-		}
-	}
-
-	public static function add_scripts()
-	{
-		global $pagenow;
-
-		if ($pagenow == 'profile.php' || $pagenow == 'user-edit.php') {
-			ICF_Loader::register_javascript();
-		}
-	}
-
-	public static function add_styles()
-	{
-		global $pagenow;
-
-		if ($pagenow == 'profile.php' || $pagenow == 'user-edit.php') {
-			ICF_Loader::register_css();
-		}
-	}
-
-	public static function load_wpeditor_html()
-	{
-		global $pagenow;
-
-		if (
-			($pagenow == 'profile.php' || $pagenow == 'user-edit.php')
-			&& !has_action('admin_print_footer_scripts', array('ICF_Loader', 'load_wpeditor_html'))
-		) {
-			add_action('admin_print_footer_scripts', array('ICF_Loader', 'load_wpeditor_html'));
 		}
 	}
 
@@ -293,11 +258,8 @@ class ICF_Profile_Page extends ICF_Profile_Abstract
 		$this->position = $args['position'];
 		$this->template = $args['template'];
 
-		add_action('admin_init', array($this, 'load_wpeditor_html_local'));
 		add_action('admin_init', array($this, 'save'));
 		add_action('admin_menu', array($this, 'register'));
-		add_action('admin_print_scripts', array($this, 'add_scripts_local'), 10);
-		add_action('admin_print_styles', array($this, 'add_styles_local'), 10);
 	}
 
 	public function display()
@@ -378,33 +340,6 @@ class ICF_Profile_Page extends ICF_Profile_Abstract
 
 			$goback = add_query_arg('updated', 'true',  wp_get_referer());
 			wp_redirect($goback);
-		}
-	}
-
-	public function load_wpeditor_html_local()
-	{
-		global $pagenow, $plugin_page;
-
-		if ($pagenow == 'admin.php' && $plugin_page == $this->_slug) {
-			add_action('admin_print_footer_scripts', array('ICF_Loader', 'load_wpeditor_html'));
-		}
-	}
-
-	public function add_scripts_local()
-	{
-		global $pagenow, $plugin_page;
-
-		if ($pagenow == 'admin.php' && $plugin_page == $this->_slug) {
-			ICF_Loader::register_javascript();
-		}
-	}
-
-	public function add_styles_local()
-	{
-		global $pagenow, $plugin_page;
-
-		if ($pagenow == 'admin.php' && $plugin_page == $this->_slug) {
-			ICF_Loader::register_css();
 		}
 	}
 }

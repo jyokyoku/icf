@@ -45,10 +45,6 @@ class ICF_MetaBox
 		$this->priority = $args['priority'];
 		$this->capability = $args['capability'];
 
-		add_action('admin_init', array($this, 'load_wpeditor_html'));
-		add_action('admin_print_scripts', array($this, 'add_scripts'));
-		add_action('admin_print_styles', array($this, 'add_styles'));
-
 		if ($args['register']) {
 			add_action('admin_menu', array($this, 'register'));
 		}
@@ -125,50 +121,6 @@ class ICF_MetaBox
 	public function c($id, $title = null)
 	{
 		return $this->component($id, $title);
-	}
-
-	/**
-	 * Adds the html of link dialog
-	 */
-	public function load_wpeditor_html()
-	{
-		global $pagenow, $plugin_page;
-
-		if ($pagenow == 'admin.php' && $plugin_page == $this->_screen) {
-			add_action('admin_print_footer_scripts', array('ICF_Loader', 'load_wpeditor_html'));
-		}
-	}
-
-	/**
-	 * Adds the scripts used by ICF
-	 */
-	public function add_scripts()
-	{
-		global $pagenow, $typenow, $plugin_page;
-
-		if (
-			(in_array($pagenow, array('post.php', 'post-new.php')) && $typenow == $this->_screen)
-			|| ($pagenow == 'admin.php' && $plugin_page == $this->_screen)
-		) {
-			ICF_Loader::register_javascript(array(
-				'icf-metabox' => array(ICF_Loader::get_latest_version_url() . '/js/metabox.js', array('icf-common'), null, true)
-			));
-		}
-	}
-
-	/**
-	 * Adds the stylesheets used by ICF
-	 */
-	public function add_styles()
-	{
-		global $pagenow, $typenow, $plugin_page;
-
-		if (
-			(in_array($pagenow, array('post.php', 'post-new.php')) && $typenow == $this->_screen)
-			|| ($pagenow == 'admin.php' && $plugin_page == $this->_screen)
-		) {
-			ICF_Loader::register_css();
-		}
 	}
 
 	/**

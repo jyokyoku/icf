@@ -37,6 +37,7 @@ if (!class_exists('ICF_Loader')) {
 				}
 			}
 
+			add_action('admin_print_footer_scripts', array('ICF_Loader', 'load_wpeditor_html'));
 			add_action('after_setup_theme', array('ICF_Loader', 'load'));
 		}
 
@@ -67,6 +68,9 @@ if (!class_exists('ICF_Loader')) {
 
 				closedir($dh);
 			}
+
+			self::register_javascript();
+			self::register_css();
 
 			do_action('icf_loaded', self::$_loaded_files);
 
@@ -117,7 +121,7 @@ if (!class_exists('ICF_Loader')) {
 		/**
 		 * Enqueues a JavaScript set
 		 */
-		public static function register_javascript(array $queue = array())
+		public static function register_javascript()
 		{
 			wp_enqueue_script('media-upload');
 			wp_enqueue_script('thickbox');
@@ -131,11 +135,11 @@ if (!class_exists('ICF_Loader')) {
 			}
 
 			if (!wp_script_is('icf-mobiscroll', 'registered')) {
-				wp_enqueue_script('icf-mobiscroll', self::get_latest_version_url() . '/js/mobiscroll/mobiscroll.custom-2.4.4.min.js', array('jquery'));
+				wp_enqueue_script('icf-mobiscroll', self::get_latest_version_url() . '/js/mobiscroll/mobiscroll.custom-2.4.4.min.js', array('jquery'), null, true);
 			}
 
 			if (!wp_script_is('icf-exvalidaion', 'registered')) {
-				wp_enqueue_script('icf-exvalidation', self::get_latest_version_url() . '/js/exvalidation/exvalidation.js', array('jquery'));
+				wp_enqueue_script('icf-exvalidation', self::get_latest_version_url() . '/js/exvalidation/exvalidation.js', array('jquery'), null, true);
 			}
 
 			if (!wp_script_is('icf-exchecker', 'registered')) {
@@ -152,6 +156,9 @@ if (!class_exists('ICF_Loader')) {
 				$assoc = array('jquery', 'media-upload', 'thickbox', 'icf-exchecker', 'icf-mobiscroll');
 
 				wp_enqueue_script('icf-common', self::get_latest_version_url() . '/js/common.js', $assoc, null, true);
+				wp_enqueue_script('icf-metabox', self::get_latest_version_url() . '/js/metabox.js', array('icf-common'), null, true);
+				wp_enqueue_script('icf-settingspage', self::get_latest_version_url() . '/js/settingspage.js', array('icf-common'), null, true);
+
 				wp_localize_script('icf-common', 'icfCommonL10n', array(
 					'insertToField' => __('Insert to field', 'icf'),
 					'cancelText' => __('Cancel', 'icf'),
@@ -206,8 +213,6 @@ if (!class_exists('ICF_Loader')) {
 					'yearText' => __('Year', 'icf')
 				));
 			}
-
-			self::_enqueue($queue, 'script');
 		}
 
 		/**
@@ -230,8 +235,6 @@ if (!class_exists('ICF_Loader')) {
 			if (!wp_style_is('icf-exvalidation', 'registered')) {
 				wp_enqueue_style('icf-exvalidation', ICF_Loader::get_latest_version_url() . '/js/exvalidation/exvalidation.css');
 			}
-
-			self::_enqueue($queue, 'style');
 		}
 
 		/**
@@ -243,46 +246,6 @@ if (!class_exists('ICF_Loader')) {
 				include_once ABSPATH . WPINC . '/class-wp-editor.php';
 				_WP_Editors::wp_link_dialog();
 			}
-		}
-
-		/**
-		 * Enqueues a script/style
-		 *
-		 * @param	array	$queue
-		 * @param	string	$type
-		 * @return	boolean
-		 */
-		protected static function _enqueue(array $queue, $type = 'script')
-		{
-			$check_func = 'wp_' . $type . '_is';
-			$register_func = 'wp_enqueue_' . $type;
-
-			if (!function_exists($check_func) || !function_exists($register_func)) {
-				return false;
-			}
-
-			foreach ($queue as $handler => $params) {
-				if (is_int($handler)) {
-					if (is_string($params)) {
-						$handler = $params;
-						$params = array();
-
-					} else {
-						continue;
-					}
-				}
-
-				if (!is_array($params)) {
-					$params = array($params);
-				}
-
-				if (!$check_func($handler, 'registered')) {
-					array_unshift($params, $handler);
-					call_user_func_array($register_func, $params);
-				}
-			}
-
-			return true;
 		}
 	}
 }
