@@ -185,7 +185,7 @@ class ICF_Component extends ICF_Component_Abstract
 		return self::$_instances[$name];
 	}
 
-	public static function instance($name)
+	public static function instance($name = null)
 	{
 		return self::get_instance($name);
 	}
