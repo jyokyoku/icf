@@ -12,7 +12,7 @@ require_once dirname(__FILE__) . '/icf-tag.php';
 require_once dirname(__FILE__) . '/icf-form.php';
 require_once dirname(__FILE__) . '/icf-inflector.php';
 
-class ICF_Component extends ICF_Tag
+abstract class ICF_Component_Abstract extends ICF_Tag
 {
 	protected $_name = '';
 	protected $_name_cache = array();
@@ -168,6 +168,29 @@ class ICF_Component extends ICF_Tag
 	}
 }
 
+class ICF_Component extends ICF_Component_Abstract
+{
+	protected static $_instances = array();
+
+	public static function get_instance($name = null)
+	{
+		if (!$name) {
+			$name = 'default';
+		}
+
+		if (!isset($_instances[$name])) {
+			self::$_instances[$name] = new ICF_Component();
+		}
+
+		return self::$_instances[$name];
+	}
+
+	public static function instance($name)
+	{
+		return self::get_instance($name);
+	}
+}
+
 abstract class ICF_Component_Element_Abstract implements ICF_Tag_Element_Interface
 {
 	protected $_component;
@@ -177,7 +200,7 @@ abstract class ICF_Component_Element_Abstract implements ICF_Tag_Element_Interfa
 	 *
 	 * @param	ICF_Component	$component
 	 */
-	public function __construct(ICF_Component $component)
+	public function __construct(ICF_Component_Abstract $component)
 	{
 		$this->_component = $component;
 	}
@@ -229,7 +252,7 @@ abstract class ICF_Component_Element_FormField_Abstract extends ICF_Component_El
 	 * @param	int|string				$value
 	 * @param	array					$args
 	 */
-	public function __construct(ICF_Component $component, $name, $value = null, array $args = array())
+	public function __construct(ICF_Component_Abstract $component, $name, $value = null, array $args = array())
 	{
 		if (is_array($name)) {
 			$args = $name;
@@ -306,7 +329,7 @@ class ICF_Component_Element_Validation extends ICF_Component_Element_Abstract
 {
 	protected $_rules = array();
 
-	public function __construct(ICF_Component $component, $rules = array(), $container = null)
+	public function __construct(ICF_Component_Abstract $component, $rules = array(), $container = null)
 	{
 		parent::__construct($component);
 		$container_args = array();
@@ -338,7 +361,7 @@ class ICF_Component_Element_Nbsp extends ICF_Component_Element_Abstract
 {
 	protected $_repeat = 1;
 
-	public function __construct(ICF_Component $component, $repeat = 1)
+	public function __construct(ICF_Component_Abstract $component, $repeat = 1)
 	{
 		parent::__construct($component);
 
@@ -357,7 +380,7 @@ class ICF_Component_Element_Nbsp extends ICF_Component_Element_Abstract
 
 class ICF_Component_Element_Description extends ICF_Component_Element_Abstract
 {
-	public function __construct(ICF_Component $component, $value = null, $args = array())
+	public function __construct(ICF_Component_Abstract $component, $value = null, $args = array())
 	{
 		parent::__construct($component);
 
@@ -384,7 +407,7 @@ class ICF_Component_Element_Button_Secondary extends ICF_Component_Element_Abstr
 	protected $_value;
 	protected $_args = array();
 
-	public function __construct(ICF_Component $component, $value = null, $args = array())
+	public function __construct(ICF_Component_Abstract $component, $value = null, $args = array())
 	{
 		$this->_value = $value;
 		$this->_args = $args;
@@ -413,7 +436,7 @@ class ICF_Component_Element_Button_Media extends ICF_Component_Element_Abstract
 {
 	protected $_for;
 
-	public function __construct(ICF_Component $component, $for = null, $value = null, $args = array())
+	public function __construct(ICF_Component_Abstract $component, $for = null, $value = null, $args = array())
 	{
 		$this->_for = $for;
 		$this->_value = $value;

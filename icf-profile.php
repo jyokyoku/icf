@@ -433,7 +433,7 @@ class ICF_Profile_Section
 	}
 }
 
-class ICF_Profile_Section_Component extends ICF_Component
+class ICF_Profile_Section_Component extends ICF_Component_Abstract
 {
 	public $title;
 
