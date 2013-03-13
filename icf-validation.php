@@ -322,6 +322,11 @@ class ICF_Validation
 		return self::$_instances[$name];
 	}
 
+	public static function instance($name = null, $config = array())
+	{
+		return self::get_instance($name, $config);
+	}
+
 	public static function not_empty($value)
 	{
 		return !($value === false || $value === null || $value === '' || $value === array());
