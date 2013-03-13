@@ -37,6 +37,8 @@ if (!class_exists('ICF_Loader')) {
 				}
 			}
 
+			add_action('admin_init', array('ICF_Loader', 'register_javascript'));
+			add_action('admin_init', array('ICF_Loader', 'register_css'));
 			add_action('admin_print_footer_scripts', array('ICF_Loader', 'load_wpeditor_html'));
 			add_action('after_setup_theme', array('ICF_Loader', 'load'));
 		}
@@ -68,9 +70,6 @@ if (!class_exists('ICF_Loader')) {
 
 				closedir($dh);
 			}
-
-			self::register_javascript();
-			self::register_css();
 
 			do_action('icf_loaded', self::$_loaded_files);
 
@@ -218,7 +217,7 @@ if (!class_exists('ICF_Loader')) {
 		/**
 		 * Enqueues a CSS set
 		 */
-		public static function register_css(array $queue = array())
+		public static function register_css()
 		{
 			wp_enqueue_style('thickbox');
 			wp_enqueue_style('editor-buttons');
