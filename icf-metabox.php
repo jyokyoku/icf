@@ -382,6 +382,32 @@ class ICF_MetaBox_Component_Element_FormField_Text extends ICF_MetaBox_Component
 	}
 }
 
+class ICF_MetaBox_Component_Element_FormField_Password extends ICF_MetaBox_Component_Element_FormField_Abstract
+{
+	public function before_render()
+	{
+		$args = func_get_args();
+		call_user_func_array(array($this, 'parent::before_render'), $args);
+
+		if ($this->_stored_value !== false) {
+			$this->_value = $this->_stored_value;
+		}
+	}
+}
+
+class ICF_MetaBox_Component_Element_FormField_Hidden extends ICF_MetaBox_Component_Element_FormField_Abstract
+{
+	public function before_render()
+	{
+		$args = func_get_args();
+		call_user_func_array(array($this, 'parent::before_render'), $args);
+
+		if ($this->_stored_value !== false) {
+			$this->_value = $this->_stored_value;
+		}
+	}
+}
+
 class ICF_MetaBox_Component_Element_FormField_Textarea extends ICF_MetaBox_Component_Element_FormField_Abstract
 {
 	public function before_render()

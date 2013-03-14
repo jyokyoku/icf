@@ -485,6 +485,30 @@ class ICF_Component_Element_FormField_Text extends ICF_Component_Element_FormFie
 {
 }
 
+class ICF_Component_Element_FormField_Password extends ICF_Component_Element_FormField_Abstract
+{
+}
+
+class ICF_Component_Element_FormField_Hidden extends ICF_Component_Element_FormField_Abstract
+{
+}
+
+class ICF_Component_Element_FormField_File extends ICF_Component_Element_FormField_Abstract
+{
+	public function __construct(ICF_Component_Abstract $component, $name, array $args = array()) {
+		parent::__construct($component, $name, null, $args);
+	}
+
+	public function render()
+	{
+		if (!$this->_type || !method_exists('ICF_Form', $this->_type)) {
+			return '';
+		}
+
+		return call_user_func(array('ICF_Form', $this->_type), $this->_name, $this->_args);
+	}
+}
+
 class ICF_Component_Element_FormField_Checkbox extends ICF_Component_Element_FormField_Abstract
 {
 }

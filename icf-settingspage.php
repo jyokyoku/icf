@@ -689,6 +689,30 @@ class ICF_SettingsPage_Section_Component_Element_FormField_Text extends ICF_Sett
 	}
 }
 
+class ICF_SettingsPage_Section_Component_Element_FormField_Password extends ICF_SettingsPage_Section_Component_Element_FormField_Abstract
+{
+	public function before_render()
+	{
+		parent::before_render();
+
+		if ($this->_stored_value !== false) {
+			$this->_value = $this->_stored_value;
+		}
+	}
+}
+
+class ICF_SettingsPage_Section_Component_Element_FormField_Hidden extends ICF_SettingsPage_Section_Component_Element_FormField_Abstract
+{
+	public function before_render()
+	{
+		parent::before_render();
+
+		if ($this->_stored_value !== false) {
+			$this->_value = $this->_stored_value;
+		}
+	}
+}
+
 class ICF_SettingsPage_Section_Component_Element_FormField_Textarea extends ICF_SettingsPage_Section_Component_Element_FormField_Abstract
 {
 	public function before_render()
