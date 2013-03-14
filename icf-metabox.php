@@ -281,6 +281,37 @@ class ICF_MetaBox_Component extends ICF_Component_Abstract
 	}
 }
 
+class ICF_MetaBox_Component_Element_Value extends ICF_Component_Element_Abstract
+{
+	protected $_name;
+	protected $_default;
+
+	public function __construct(ICF_MetaBox_Component $component, $name, $default = null)
+	{
+		$this->_name = $name;
+		$this->_default = $default;
+
+		parent::__construct($component);
+	}
+
+	public function render()
+	{
+		$args = func_get_args();
+		$value = $this->_default;
+
+		if ($this->_component->get_metabox()->is_post()) {
+			if ($post = array_shift($args)) {
+				$value = ($meta_value = get_post_meta($post->ID, $this->_name, true)) ? $meta_value : $value;
+			}
+
+		} else {
+			$value = get_option($this->_name, $value);
+		}
+
+		return $value;
+	}
+}
+
 abstract class ICF_MetaBox_Component_Element_FormField_Abstract extends ICF_Component_Element_FormField_Abstract
 {
 	protected $_stored_value = false;

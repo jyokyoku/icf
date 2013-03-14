@@ -636,6 +636,23 @@ class ICF_SettingsPage_Section_Component extends ICF_Component_Abstract
 	}
 }
 
+class ICF_SettingsPage_Section_Component_Element_Value extends ICF_Component_Element_Abstract
+{
+	protected $_name;
+	protected $_default;
+
+	public function __construct(ICF_SettingsPage_Section_Component $component, $name, $default = null)
+	{
+		$this->_name = $name;
+		parent::__construct($component);
+	}
+
+	public function render()
+	{
+		return get_option($this->_name, $this->_default);
+	}
+}
+
 abstract class ICF_SettingsPage_Section_Component_Element_FormField_Abstract extends ICF_Component_Element_FormField_Abstract
 {
 	protected $_stored_value = false;
