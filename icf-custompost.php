@@ -181,6 +181,31 @@ class ICF_CustomPost
 		return $this->metabox($id, $title, $args);
 	}
 
+	public static function get_list_recursive($post_type, $args = array())
+	{
+		$args = wp_parse_args($args, array(
+			'key' => '%post_title (ID:%ID)',
+			'value' => 'ID',
+			'orderby' => 'menu_order',
+			'post_status' => 'publish',
+			'posts_per_page' => 100
+		));
+
+		$posts = get_posts(array(
+			'post_type' => $post_type,
+			'post_status' => icf_extract($args, 'post_status'),
+			'orderby' => icf_extract($args, 'orderby'),
+			'posts_per_page' => icf_extract($args, 'posts_per_page'),
+		));
+
+		if (!$posts) {
+			return array();
+		}
+
+		$walker = new ICF_CustomPost_List_Walker();
+		return $walker->walk($posts, 0, $args);
+	}
+
 	protected function _pluralize($text)
 	{
 		return preg_match('/[a-zA-Z]$/', $text) ? ICF_Inflector::pluralize($text) : $text;
@@ -189,5 +214,35 @@ class ICF_CustomPost
 	protected function _singularize($text)
 	{
 		return preg_match('/[a-zA-Z]$/', $text) ? ICF_Inflector::singularize($text) : $text;
+	}
+}
+
+class ICF_CustomPost_List_Walker extends Walker
+{
+	public $tree_type = 'post';
+	public $db_fields = array ('parent' => 'post_parent', 'id' => 'ID');
+
+	public function start_el(&$output, $term, $depth, $args, $id = 0)
+	{
+		$key_format = icf_extract($args, 'key');
+		$value_prop = icf_extract($args, 'value');
+
+		$replace = $search = array();
+
+		foreach (get_object_vars($term) as $key => $value) {
+			$search[] = '%' . $key;
+			$replace[] = $value;
+		}
+
+		$key = str_replace($search, $replace, $key_format);
+		$value = isset($term->{$value_prop}) ? $term->{$value_prop} : null;
+
+		$prefix = str_repeat('-', $depth);
+
+		if ($prefix) {
+			$prefix .= ' ';
+		}
+
+		$output[$prefix . $key] = $value;
 	}
 }
