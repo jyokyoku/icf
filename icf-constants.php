@@ -1,4 +1,13 @@
 <?php
+/**
+ * Inspire Custom field Framework (ICF)
+ *
+ * @package		ICF
+ * @author		Masayuki Ietomi <jyokyoku@gmail.com>
+ * @copyright	Copyright(c) 2011 Masayuki Ietomi
+ * @link		http://inspire-tech.jp
+ */
+
 if (!defined('ICF_DS')) {
 	define('ICF_DS', DIRECTORY_SEPARATOR);
 }

@@ -3,8 +3,9 @@
  * Inspire Custom field Framework (ICF)
  *
  * @package		ICF
- * @author		Masayuki Ietomi
+ * @author		Masayuki Ietomi <jyokyoku@gmail.com>
  * @copyright	Copyright(c) 2011 Masayuki Ietomi
+ * @link		http://inspire-tech.jp
  */
 
 require_once dirname(__FILE__) . '/icf-loader.php';
