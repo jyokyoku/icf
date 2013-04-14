@@ -168,7 +168,7 @@ class ICF_Meta
 		}
 
 		if (!$value) {
-			return $attr['default'] ? $attr['before'] . $attr['default'] . $attr['after'] : $attr['default'];
+			return $attr['default'];
 		}
 
 		return $value;
