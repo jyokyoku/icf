@@ -534,8 +534,40 @@ class ICF_MetaBox_Component_Element_FormField_Select extends ICF_MetaBox_Compone
 
 class ICF_MetaBox_Component_Element_FormField_Wysiwyg extends ICF_MetaBox_Component_Element_FormField_Abstract
 {
+	public function initialize()
+	{
+		parent::initialize();
+
+		if (!isset($this->_args['settings'])) {
+			$this->_args['settings'] = array();
+		}
+
+		$this->_args['id'] = $this->_name;
+	}
+
+	public function before_render()
+	{
+		$args = func_get_args();
+		call_user_func_array(array($this, 'parent::before_render'), $args);
+
+		if ($this->_stored_value !== false) {
+			$this->_value = $this->_stored_value;
+		}
+	}
+
 	public function render()
 	{
-		trigger_error(__('The TinyMCE cannot be use to inside of a MetaBox', 'icf'), E_USER_NOTICE);
+		$editor = '';
+
+		if (version_compare(get_bloginfo('version'), '3.3', '>=') && function_exists('wp_editor')) {
+			ob_start();
+			wp_editor($this->_value, $this->_args['id'], $this->_args['settings']);
+			$editor = ob_get_clean();
+
+		} else {
+			trigger_error('The TinyMCE has been required for the WordPress 3.3 or above');
+		}
+
+		return $editor;
 	}
 }
