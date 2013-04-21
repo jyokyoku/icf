@@ -171,7 +171,7 @@ class ICF_Meta
 			return $attr['default'];
 		}
 
-		return $value;
+		return $attr['before'] . $value . $attr['after'];
 	}
 
 	protected static function _iterate($type, $key, $min, $max, $object = null, $attr = array())
