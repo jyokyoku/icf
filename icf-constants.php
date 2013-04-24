@@ -21,7 +21,7 @@ if (!defined('ICF_MINUTE')) {
 }
 
 if (!defined('ICF_HOUR')) {
-	define('ICF_HOUR', ICF_HOUR * 60);
+	define('ICF_HOUR', ICF_MINUTE * 60);
 }
 
 if (!defined('ICF_DAY')) {
