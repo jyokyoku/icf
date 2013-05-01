@@ -10,7 +10,6 @@
 
 require_once dirname(__FILE__) . '/icf-loader.php';
 require_once dirname(__FILE__) . '/icf-component.php';
-require_once dirname(__FILE__) . '/icf-inflector.php';
 
 class ICF_Taxonomy
 {
@@ -54,21 +53,21 @@ class ICF_Taxonomy
 
 			if (empty($this->_args['labels'])) {
 				$this->_args['labels'] = array(
-					'name' => ICF_Inflector::humanize($this->_pluralize($this->_args['label'])),
-					'singular_name' => ICF_Inflector::humanize($this->_singularize($this->_args['label'])),
-					'search_items' => sprintf(__('Search %s', 'icf'), ICF_Inflector::humanize($this->_singularize($this->_args['label']))),
-					'popular_items' => sprintf(__('Popular %s', 'icf'), ICF_Inflector::humanize($this->_pluralize($this->_args['label']))),
-					'all_items' => sprintf(__('All %s', 'icf'), ICF_Inflector::humanize($this->_pluralize($this->_args['label']))),
-					'parent_item' => sprintf(__('Parent %s', 'icf'), ICF_Inflector::humanize($this->_singularize($this->_args['label']))),
-					'parent_item_colon' => sprintf(__('Parent %s:', 'icf'), ICF_Inflector::humanize($this->_singularize($this->_args['label']))),
-					'edit_item' => sprintf(__('Edit %s', 'icf'), ICF_Inflector::humanize($this->_singularize($this->_args['label']))),
-					'view_item' => sprintf(__('View %s', 'icf'), ICF_Inflector::humanize($this->_singularize($this->_args['label']))),
-					'update_item' => sprintf(__('Update %s', 'icf'), ICF_Inflector::humanize($this->_singularize($this->_args['label']))),
-					'add_new_item' => sprintf(__('Add New %s', 'icf'), ICF_Inflector::humanize($this->_singularize($this->_args['label']))),
-					'new_item_name' => sprintf(__('New %s Name', 'icf'), ICF_Inflector::humanize($this->_singularize($this->_args['label']))),
-					'separate_items_with_commas' => sprintf(__('Separate %s with commas', 'icf'), strtolower($this->_pluralize($this->_args['label']))),
-					'add_or_remove_items' => sprintf(__('Add or remove %s', 'icf'), strtolower($this->_pluralize($this->_args['label']))),
-					'choose_from_most_used' => sprintf(__('Choose from the most used %s', 'icf'), strtolower($this->_pluralize($this->_args['label']))),
+					'name' => $this->_args['label'],
+					'singular_name' => $this->_args['label'],
+					'search_items' => sprintf(__('Search %s', 'icf'), $this->_args['label']),
+					'popular_items' => sprintf(__('Popular %s', 'icf'), $this->_pluralize($this->_args['label'])),
+					'all_items' => sprintf(__('All %s', 'icf'), $this->_pluralize($this->_args['label'])),
+					'parent_item' => sprintf(__('Parent %s', 'icf'), $this->_args['label']),
+					'parent_item_colon' => sprintf(__('Parent %s:', 'icf'), $this->_args['label']),
+					'edit_item' => sprintf(__('Edit %s', 'icf'), $this->_args['label']),
+					'view_item' => sprintf(__('View %s', 'icf'), $this->_args['label']),
+					'update_item' => sprintf(__('Update %s', 'icf'), $this->_args['label']),
+					'add_new_item' => sprintf(__('Add New %s', 'icf'), $this->_args['label']),
+					'new_item_name' => sprintf(__('New %s Name', 'icf'), $this->_args['label']),
+					'separate_items_with_commas' => sprintf(__('Separate %s with commas', 'icf'), $this->_args['label']),
+					'add_or_remove_items' => sprintf(__('Add or remove %s', 'icf'), $this->_args['label']),
+					'choose_from_most_used' => sprintf(__('Choose from the most used %s', 'icf'), $this->_args['label']),
 				);
 			}
 
