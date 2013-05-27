@@ -207,7 +207,7 @@ class ICF_Form
 		$values = icf_extract_and_merge($attributes, array('value', 'values', 'options'));
 
 		if (!is_array($values)) {
-			$options = array($values => $values);
+			$values = array($values => $values);
 		}
 
 		$radios = array();
