@@ -20,7 +20,7 @@ class ICF_Validation
 	protected $_forms = array();
 	protected $_rules = array();
 	protected $_messages = array();
-	protected $_default_messages = array();
+	protected $_defaults = array();
 	protected $_data = array();
 
 	protected static $_instances = array();
@@ -325,12 +325,27 @@ class ICF_Validation
 			}
 
 			if (is_null($message) || $message === false) {
-				unset($this->_default_messages[$rule_name]);
+				icf_delete_array($this->_defaults, 'message.' . $rule_name);
 
 			} else {
-				$this->_default_messages[$rule_name] = $message;
+				$this->set_default('message.' . $rule_name, $message);
+			}
 			}
 		}
+
+	public function set_default($key, $value = null)
+	{
+		if (is_null($value)) {
+			icf_delete_array($this->_defaults, $key);
+
+		} else {
+			icf_set_array($this->_defaults, $key, $value);
+		}
+	}
+
+	public function get_default($key, $default = null)
+	{
+		return icf_get_array($this->_defaults, $key, $default);
 	}
 
 	public function create_callback_name($callback)
