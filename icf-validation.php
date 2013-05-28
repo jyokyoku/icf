@@ -333,6 +333,16 @@ class ICF_Validation
 			}
 		}
 
+	public function get_default_message($rule = null)
+	{
+		if (empty($rule)) {
+			return icf_get_array($this->_defaults, 'message');
+
+		} else {
+			return icf_get_array($this->_defaults, 'message.' . $rule);
+		}
+	}
+
 	public function set_default($key, $value = null)
 	{
 		if (is_null($value)) {
