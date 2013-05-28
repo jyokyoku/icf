@@ -43,10 +43,14 @@ class ICF_Validation
 				'decimal'       => __('The value of :label must be decimal.', 'icf'),
 				'match_value'   => __('The field :label must contain the value :param:1.', 'icf'),
 				'match_pattern' => __('The field :label must match the pattern :param:1.', 'icf')
-			)
+			),
+			'error_open' => '<span class="error">',
+			'error_close' => '</span>'
 		));
 
 		$this->set_default_message($config['messages']);
+		$this->set_default('error_open', $config['error_open']);
+		$this->set_default('error_close', $config['error_close']);
 	}
 
 	public function add_field($field, $label = null, $type = null, $value = null, $attributes = array())
@@ -193,7 +197,30 @@ class ICF_Validation
 		return false;
 	}
 
-	public function error($field = null)
+	public function error($field = null, $open = null, $close = null)
+	{
+		$error_messages = $this->error_message($field);
+
+		if (!$error_messages) {
+			return $error_messages;
+		}
+
+		if (!is_array($error_messages)) {
+			$error_messages = array($error_messages);
+		}
+
+		$open = is_null($open) ? $this->get_default('error_open') : $open;
+		$close = is_null($close) ? $this->get_default('error_close') : $close;
+		$errors = array();
+
+		foreach ($error_messages as $error_message) {
+			$errors[] = $open . $error_message . $close;
+		}
+
+		return count($error_messages) > 1 ? $errors : reset($errors);
+	}
+
+	public function error_message($field = null)
 	{
 		if (func_num_args() > 1) {
 			$field = func_get_args();
