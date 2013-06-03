@@ -196,6 +196,7 @@ function icf_timthumb($file, $width = null, $height = null, $attr = array())
 		's' => null,
 		'w' => null,
 		'h' => null,
+		'cc' => null,
 		'path' => ($script_filename && $php_self && strpos($script_filename, $php_self) === false),
 	);
 
