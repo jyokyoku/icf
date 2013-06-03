@@ -485,3 +485,95 @@ function icf_calc_image_size($width, $height, $new_width = 0, $new_height = 0)
 
 	return $sizes;
 }
+
+function icf_get_array($array, $key, $default = null)
+{
+	if (empty($key)) {
+		return $array;
+	}
+
+	if (is_array($key)) {
+		$return = array();
+
+		foreach ($key as $k) {
+			$return[$k] = icf_get_array($array, $k, $default);
+		}
+
+		return $return;
+	}
+
+	foreach (explode('.', $key) as $key_part) {
+		if (isset($array[$key_part]) === false) {
+			if (!is_array($array) || !array_key_exists($key_part, $array)) {
+				return $default;
+			}
+		}
+
+		$array = $array[$key_part];
+	}
+
+	return $array;
+}
+
+function icf_set_array(&$array, $key, $value)
+{
+	if (empty($key)) {
+		return;
+	}
+
+	if (is_array($key)) {
+		foreach ($key as $k => $v) {
+			icf_set_array($array, $k, $v);
+		}
+
+	} else {
+		$keys = explode('.', $key);
+
+		while (count($keys) > 1) {
+			$key = array_shift($keys);
+
+			if (!isset($array[$key]) || !is_array($array[$key])) {
+				$array[$key] = array();
+			}
+
+			$array =& $array[$key];
+		}
+
+		$array[array_shift($keys)] = $value;
+	}
+}
+
+function icf_delete_array(&$array, $key)
+{
+	if (is_null($key)) {
+		return false;
+	}
+
+	if (is_array($key)) {
+		$return = array();
+
+		foreach ($key as $k) {
+			$return[$k] = icf_delete_array($array, $k);
+		}
+
+		return $return;
+	}
+
+	$key_parts = explode('.', $key);
+
+	if (!is_array($array) || !array_key_exists($key_parts[0], $array)) {
+		return false;
+	}
+
+	$this_key = array_shift($key_parts);
+
+	if (!empty($key_parts)) {
+		$key = implode('.', $key_parts);
+		return icf_delete_array($array[$this_key], $key);
+
+	} else {
+		unset($array[$this_key]);
+	}
+
+	return true;
+}

@@ -17,9 +17,11 @@ class ICF_Validation
 	protected $_validated = array();
 	protected $_errors = array();
 	protected $_fields = array();
+	protected $_forms = array();
 	protected $_rules = array();
 	protected $_messages = array();
-	protected $_default_messages = array();
+	protected $_defaults = array();
+	protected $_data = array();
 
 	protected static $_instances = array();
 
@@ -41,13 +43,17 @@ class ICF_Validation
 				'decimal'       => __('The value of :label must be decimal.', 'icf'),
 				'match_value'   => __('The field :label must contain the value :param:1.', 'icf'),
 				'match_pattern' => __('The field :label must match the pattern :param:1.', 'icf')
-			)
+			),
+			'error_open' => '<span class="error">',
+			'error_close' => '</span>'
 		));
 
 		$this->set_default_message($config['messages']);
+		$this->set_default('error_open', $config['error_open']);
+		$this->set_default('error_close', $config['error_close']);
 	}
 
-	public function add_field($field, $label = null)
+	public function add_field($field, $label = null, $type = null, $value = null, $attributes = array())
 	{
 		if (!array_key_exists($field, $this->_fields)) {
 			if (!$label) {
@@ -57,6 +63,8 @@ class ICF_Validation
 			$this->_fields[$field] = $label;
 			$this->_current_field = $field;
 		}
+
+		$this->_forms[$field] = compact('type', 'value', 'attributes');
 
 		return $this;
 	}
@@ -109,6 +117,57 @@ class ICF_Validation
 		return $this;
 	}
 
+	public function form_field($field, $type = null, $value = null, $attributes = array())
+	{
+		if (!isset($this->_forms[$field])) {
+			return null;
+		}
+
+		$form = $this->_forms[$field];
+
+		foreach (array('type', 'value', 'attributes') as $varname) {
+			if (${$varname}) {
+				$form[$varname] = ${$varname};
+			}
+		}
+
+		$value = icf_get_array($this->_data, $field);
+
+		if (!method_exists('ICF_Form', $form['type'])) {
+			return null;
+		}
+
+		if ($value) {
+			switch ($form['type']) {
+				case 'checkbox':
+					if ($form['value'] && $value == $form['value']) {
+						$form['attributes']['checked'] = 'checked';
+					}
+
+					break;
+
+				case 'radio':
+					if ($form['value']) {
+						$form['attributes']['checked'] = $value;
+					}
+
+					break;
+
+				case 'select':
+					if ($form['value']) {
+						$form['attributes']['selected'] = $value;
+					}
+
+					break;
+
+				default:
+					$form['value'] = $value;
+			}
+		}
+
+		return call_user_func(array('ICF_Form', $form['type']), $field, $form['value'], $form['attributes']);
+	}
+
 	public function validated($field = null)
 	{
 		if (func_num_args() > 1) {
@@ -138,7 +197,30 @@ class ICF_Validation
 		return false;
 	}
 
-	public function error($field = null)
+	public function error($field = null, $open = null, $close = null)
+	{
+		$error_messages = $this->error_message($field);
+
+		if (!$error_messages) {
+			return $error_messages;
+		}
+
+		if (!is_array($error_messages)) {
+			$error_messages = array($error_messages);
+		}
+
+		$open = is_null($open) ? $this->get_default('error_open') : $open;
+		$close = is_null($close) ? $this->get_default('error_close') : $close;
+		$errors = array();
+
+		foreach ($error_messages as $error_message) {
+			$errors[] = $open . $error_message . $close;
+		}
+
+		return count($error_messages) > 1 ? $errors : reset($errors);
+	}
+
+	public function error_message($field = null)
 	{
 		if (func_num_args() > 1) {
 			$field = func_get_args();
@@ -167,16 +249,21 @@ class ICF_Validation
 		return false;
 	}
 
-	public function run(array &$data, $overwrite = false)
+	public function run($data = array())
 	{
 		$this->_errors = $this->_validated = array();
 
 		if (empty($data)) {
+			if (empty($this->_data)) {
 			return true;
 		}
 
+		} else {
+			$this->_data = (array)$data;
+		}
+
 		foreach ($this->_fields as $field => $label) {
-			$value = icf_filter($data, $field);
+			$value = icf_get_array($this->_data, $field);
 
 			if (!empty($this->_rules[$field])) {
 				foreach ($this->_rules[$field] as $rule => $params) {
@@ -186,7 +273,7 @@ class ICF_Validation
 					foreach ($args as $i => $arg) {
 						if (is_string($arg) && strpos($arg, ':') === 0) {
 							$data_field = substr($arg, 1);
-							$args[$i] = icf_filter($data, $data_field);
+							$args[$i] = icf_get_array($this->_data, $data_field);
 						}
 					}
 
@@ -196,7 +283,7 @@ class ICF_Validation
 					if ($result === false) {
 						$message = isset($this->_messages[$field][$rule])
 							? $this->_messages[$field][$rule]
-							: (isset($this->_default_messages[$rule]) ? $this->_default_messages[$rule] : true);
+							: $this->get_default('message.' . $rule, true);
 
 						$find = array(':field', ':label', ':value', ':rule');
 						$replace = array($field, $label, $value, $rule);
@@ -243,10 +330,6 @@ class ICF_Validation
 			}
 
 			$this->_validated[$field] = $value;
-
-			if ($overwrite) {
-				$data[$field] = $value;
-			}
 		}
 
 		return count($this->_errors) == 0;
@@ -269,12 +352,37 @@ class ICF_Validation
 			}
 
 			if (is_null($message) || $message === false) {
-				unset($this->_default_messages[$rule_name]);
+				icf_delete_array($this->_defaults, 'message.' . $rule_name);
 
 			} else {
-				$this->_default_messages[$rule_name] = $message;
+				$this->set_default('message.' . $rule_name, $message);
+			}
 			}
 		}
+
+	public function get_default_message($rule = null)
+	{
+		if (empty($rule)) {
+			return icf_get_array($this->_defaults, 'message');
+
+		} else {
+			return icf_get_array($this->_defaults, 'message.' . $rule);
+		}
+	}
+
+	public function set_default($key, $value = null)
+	{
+		if (is_null($value)) {
+			icf_delete_array($this->_defaults, $key);
+
+		} else {
+			icf_set_array($this->_defaults, $key, $value);
+		}
+	}
+
+	public function get_default($key, $default = null)
+	{
+		return icf_get_array($this->_defaults, $key, $default);
 	}
 
 	public function create_callback_name($callback)
