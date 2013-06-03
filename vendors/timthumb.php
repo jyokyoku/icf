@@ -571,6 +571,32 @@ class timthumb {
 
 		}
 
+		// if original image is smaller than new image size
+		if ($zoom_crop == 5) {
+
+			if ($new_width > $width && $new_height > $height) {
+
+				$new_width = $width;
+				$new_height = $height;
+			
+			} else if ($new_width > $width) {
+				$new_width = $width * ($new_height / $height);
+			} else if ($new_height > $height) {
+				$new_height = $height * ($new_width / $width);
+			} else {
+
+				$final_height = $height * ($new_width / $width);
+
+				if ($final_height > $new_height) {
+					$new_width = $width * ($new_height / $height);
+				} else {
+					$new_height = $final_height;
+				}
+
+			}
+
+		}
+
 		// create a new true color image
 		$canvas = imagecreatetruecolor ($new_width, $new_height);
 		imagealphablending ($canvas, false);
@@ -622,7 +648,69 @@ class timthumb {
 		// Restore transparency blending
 		imagesavealpha ($canvas, true);
 
-		if ($zoom_crop > 0) {
+		if ($zoom_crop == 4) {
+
+			if ($new_width > $width) {
+
+				$final_width = $width;
+
+				if ($new_height > $height) {
+
+					$final_height = $height;
+					$origin_x = ($new_width - $width) / 2;
+					$origin_y = ($new_height - $height) / 2;
+
+				} else {
+
+					$final_width = $width * ($new_height / $height);
+					$final_height = $new_height;
+					$origin_x = ($new_width - $final_width) / 2;
+
+				}
+
+			} else {
+
+				$final_width = $new_width;
+				$final_height = $height * ($new_width / $width);
+
+				if ($final_height > $new_height) {
+
+					$final_width = $new_width * ($new_height / $final_height);
+					$final_height = $new_height;
+					$origin_x = ($new_width - $final_width) / 2;
+
+				} else {
+					$origin_y = ($new_height - $final_height) / 2;
+				}
+
+			}
+
+			// create tmp canvas
+			$tmp_canvas = imagecreatetruecolor ($final_width, $final_height);
+			imagealphablending ($tmp_canvas, false);
+			imagesavealpha ($tmp_canvas, true);
+
+			if(preg_match('/^image\/png$/i', $mimeType) && !PNG_IS_TRANSPARENT && $canvas_trans){
+				$color = imagecolorallocatealpha ($canvas, $canvas_color_R, $canvas_color_G, $canvas_color_B, 127);
+			}else{
+				$color = imagecolorallocatealpha ($canvas, $canvas_color_R, $canvas_color_G, $canvas_color_B, 0);
+			}
+
+			imagefill ($canvas, 0, 0, $color);
+
+			// scale down
+			imagecopyresampled ($tmp_canvas, $image, 0, 0, 0, 0, $final_width, $final_height, $width, $height);
+
+			// destory orignal image
+			imagedestroy($image);
+
+			// tmp canvas copy to original image
+			$image = $tmp_canvas;
+
+			// copy resampled image to center of canvas
+			imagecopy ($canvas, $image, $origin_x, $origin_y, 0, 0, imagesx($tmp_canvas), imagesy($tmp_canvas));
+
+		} else if ($zoom_crop > 0) {
 
 			$src_x = $src_y = 0;
 			$src_w = $width;
