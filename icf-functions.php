@@ -520,6 +520,47 @@ function icf_get_array($array, $key, $default = null)
 	return $array;
 }
 
+function icf_get_array_hard(&$array, $key, $default = null)
+{
+	if (is_null($key)) {
+		return $array;
+	}
+
+	if (is_array($key)) {
+		$return = array();
+
+		foreach ($key as $_key => $_default) {
+			if (is_int($_key) && $_default) {
+				$_key = $_default;
+				$_default = $default;
+			}
+
+			$return[$_key] = icf_get_array_hard($array, $_key, $_default);
+		}
+
+		return $return;
+	}
+
+	$key_parts = explode('.', $key);
+	$tmp_array = $array;
+
+	foreach ($key_parts as $i => $key_part) {
+		if (isset($tmp_array[$key_part]) === false) {
+			if (!is_array($tmp_array) || !array_key_exists($key_part, $tmp_array)) {
+				return $default;
+			}
+		}
+
+		$tmp_array = $tmp_array[$key_part];
+
+		if (count($key_parts) <= $i + 1) {
+			unset($array[$key_part]);
+		}
+	}
+
+	return $tmp_array;
+}
+
 function icf_set_array(&$array, $key, $value)
 {
 	if (is_null($key)) {
