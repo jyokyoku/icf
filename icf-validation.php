@@ -249,6 +249,11 @@ class ICF_Validation
 		return false;
 	}
 
+	public function set_data($data = array())
+	{
+		$this->_data = (array) $data;
+	}
+
 	public function run($data = array())
 	{
 		$this->_errors = $this->_validated = array();
