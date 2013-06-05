@@ -495,8 +495,13 @@ function icf_get_array($array, $key, $default = null)
 	if (is_array($key)) {
 		$return = array();
 
-		foreach ($key as $k) {
-			$return[$k] = icf_get_array($array, $k, $default);
+		foreach ($key as $_key => $_default) {
+			if (is_int($_key) && $_default) {
+				$_key = $_default;
+				$_default = $default;
+			}
+
+			$return[$_key] = icf_get_array($array, $_key, $_default);
 		}
 
 		return $return;
