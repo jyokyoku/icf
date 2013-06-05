@@ -197,7 +197,7 @@ class ICF_Form
 			$attributes['values'] = $values;
 		}
 
-		list($name, $before, $after, $separator) = icf_get_array_hard($attributes, array('name', 'before', 'after', 'separator'));
+		list($name, $before, $after, $separator) = array_values(icf_get_array_hard($attributes, array('name', 'before', 'after', 'separator')));
 
 		if ($separator === null) {
 			$separator = '&nbsp;&nbsp;';

@@ -284,7 +284,7 @@ abstract class ICF_Component_Element_FormField_Abstract extends ICF_Component_El
 
 	public function initialize()
 	{
-		list($this->_container, $this->_validation) = icf_get_array_hard($this->_args, array('container', 'validation'));
+		list($this->_container, $this->_validation) = array_values(icf_get_array_hard($this->_args, array('container', 'validation')));
 		$this->_validation = self::_parse_validation_rules($this->_validation);
 
 		if ($this->_validation && in_array($this->_type, $this->_single_form_types)) {
@@ -595,7 +595,7 @@ class ICF_Component_Element_FormField_Date extends ICF_Component_Element_FormFie
 
 	public function initialize()
 	{
-		list($pick, $reset) = icf_get_array_hard($this->_args, array('pick', 'reset'));
+		list($pick, $reset) = array_values(icf_get_array_hard($this->_args, array('pick', 'reset')));
 
 		$settings = array_combine(
 			array('data-preset', 'data-step-year', 'data-step-hour', 'data-step-minute', 'data-step-second', 'data-start-year', 'data-end-year'),
@@ -683,7 +683,7 @@ class ICF_Component_Element_FormField_Media extends ICF_Component_Element_FormFi
 {
 	public function initialize()
 	{
-		list($media, $reset, $preview, $type) = icf_get_array_hard($this->_args, array('media', 'reset', 'preview', 'type'));
+		list($media, $reset, $preview, $type) = array_values(icf_get_array_hard($this->_args, array('media', 'reset', 'preview', 'type')));
 
 		if (is_array($media)) {
 			$media_label = reset(icf_extract_and_merge($media, array('value', 'label')));
