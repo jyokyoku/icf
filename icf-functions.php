@@ -488,7 +488,7 @@ function icf_calc_image_size($width, $height, $new_width = 0, $new_height = 0)
 
 function icf_get_array($array, $key, $default = null)
 {
-	if (empty($key)) {
+	if (is_null($key)) {
 		return $array;
 	}
 
@@ -517,7 +517,7 @@ function icf_get_array($array, $key, $default = null)
 
 function icf_set_array(&$array, $key, $value)
 {
-	if (empty($key)) {
+	if (is_null($key)) {
 		return;
 	}
 
