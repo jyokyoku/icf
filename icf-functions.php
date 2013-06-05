@@ -111,7 +111,7 @@ function icf_extract(array &$array, $key, $default = null)
  * @param	mixed			$default
  * @return	array
  */
-function icf_extract_and_merge(array &$array, $key, $_ = null)
+function icf_extract_and_merge(array &$array, $key, $default = null)
 {
 	$tmp_keys = $key;
 
