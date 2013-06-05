@@ -47,7 +47,7 @@ class ICF_Meta
 
 	public static function post_iteration($post, $key, $min, $max, $attr = array())
 	{
-		return self::_iterate('post', $key, $min, $max, $user, $attr);
+		return self::_iterate('post', $key, $min, $max, $post, $attr);
 	}
 
 	public static function current_post($key, $attr = array())
