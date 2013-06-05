@@ -327,7 +327,7 @@ class ICF_Profile_Page extends ICF_Profile_Abstract
 
 	public function save()
 	{
-		$action = icf_filter($_REQUEST, 'action');
+		$action = icf_get_array($_REQUEST, 'action');
 
 		if (!$this->_is_arrowed() || empty($action)) {
 			return false;

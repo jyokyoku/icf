@@ -138,8 +138,8 @@ function icf_timthumb($file, $width = null, $height = null, $attr = array())
 		$width = null;
 	}
 
-	$script_filename = str_replace(DIRECTORY_SEPARATOR, '/', icf_filter($_SERVER, 'SCRIPT_FILENAME'));
-	$php_self = icf_filter($_SERVER, 'PHP_SELF');
+	$script_filename = str_replace(DIRECTORY_SEPARATOR, '/', icf_get_array($_SERVER, 'SCRIPT_FILENAME'));
+	$php_self = icf_get_array($_SERVER, 'PHP_SELF');
 
 	$defaults = array(
 		'q' => null,
@@ -156,7 +156,7 @@ function icf_timthumb($file, $width = null, $height = null, $attr = array())
 	$attr = array_intersect_key(wp_parse_args($attr, $defaults), $defaults);
 	$timthumb = ICF_Loader::get_latest_version_url() . '/vendors/timthumb.php';
 
-	$attr['src'] = icf_extract($attr, 'path') ? icf_url_to_path($file) : $file;
+	$attr['src'] = icf_get_array_hard($attr, 'path') ? icf_url_to_path($file) : $file;
 
 	if ($width) {
 		$attr['w'] = $width;
@@ -303,9 +303,9 @@ function icf_get_post_thumbnail_data($post_id = null)
 
 function icf_get_document_root()
 {
-	$script_filename = icf_filter($_SERVER, 'SCRIPT_FILENAME');
-	$php_self = icf_filter($_SERVER, 'PHP_SELF');
-	$document_root = icf_filter($_SERVER, 'DOCUMENT_ROOT');
+	$script_filename = icf_get_array($_SERVER, 'SCRIPT_FILENAME');
+	$php_self = icf_get_array($_SERVER, 'PHP_SELF');
+	$document_root = icf_get_array($_SERVER, 'DOCUMENT_ROOT');
 
 	if ($php_self && $script_filename && (!$document_root || strpos($script_filename, $document_root) === false)) {
 		$script_filename = str_replace(DIRECTORY_SEPARATOR, '/', $script_filename);
@@ -329,7 +329,7 @@ function icf_get_document_root()
 		}
 	}
 
-	if ($document_root && icf_filter($_SERVER, 'DOCUMENT_ROOT') != '/'){
+	if ($document_root && icf_get_array($_SERVER, 'DOCUMENT_ROOT') != '/'){
 		$document_root = preg_replace('|/$|', '', $document_root);
 	}
 
@@ -338,8 +338,8 @@ function icf_get_document_root()
 
 function icf_url_to_path($url)
 {
-	$script_filename = str_replace(DIRECTORY_SEPARATOR, '/', icf_filter($_SERVER, 'SCRIPT_FILENAME'));
-	$php_self = icf_filter($_SERVER, 'PHP_SELF');
+	$script_filename = str_replace(DIRECTORY_SEPARATOR, '/', icf_get_array($_SERVER, 'SCRIPT_FILENAME'));
+	$php_self = icf_get_array($_SERVER, 'PHP_SELF');
 	$remove_path = null;
 
 	if ($script_filename && $php_self && strpos($script_filename, $php_self) === false) {
@@ -359,7 +359,7 @@ function icf_url_to_path($url)
 		}
 	}
 
-	$host = preg_replace('|^www\.|i', '', icf_filter($_SERVER, 'HTTP_HOST'));
+	$host = preg_replace('|^www\.|i', '', icf_get_array($_SERVER, 'HTTP_HOST'));
 	$url = ltrim(preg_replace('|https?://(?:www\.)?' . $host . '|i', '', $url), '/');
 
 	if ($remove_path) {

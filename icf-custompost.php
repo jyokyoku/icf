@@ -71,7 +71,7 @@ class ICF_CustomPost
 			add_theme_support('post-thumbnails', $thumbnail_support_types);
 		}
 
-		if ($enter_title_here = icf_extract($args, 'enter_title_here')) {
+		if ($enter_title_here = icf_get_array_hard($args, 'enter_title_here')) {
 			$this->_enter_title_here = $enter_title_here;
 			add_filter('enter_title_here', array($this, 'rewrite_title_watermark'));
 		}
@@ -192,9 +192,9 @@ class ICF_CustomPost
 
 		$posts = get_posts(array(
 			'post_type' => $post_type,
-			'post_status' => icf_extract($args, 'post_status'),
-			'orderby' => icf_extract($args, 'orderby'),
-			'posts_per_page' => icf_extract($args, 'posts_per_page'),
+			'post_status' => icf_get_array_hard($args, 'post_status'),
+			'orderby' => icf_get_array_hard($args, 'orderby'),
+			'posts_per_page' => icf_get_array_hard($args, 'posts_per_page'),
 		));
 
 		if (!$posts) {
@@ -213,8 +213,8 @@ class ICF_CustomPost_List_Walker extends Walker
 
 	public function start_el(&$output, $term, $depth, $args, $id = 0)
 	{
-		$key_format = icf_extract($args, 'key');
-		$value_prop = icf_extract($args, 'value');
+		$key_format = icf_get_array_hard($args, 'key');
+		$value_prop = icf_get_array_hard($args, 'value');
 
 		$replace = $search = array();
 

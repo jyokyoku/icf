@@ -31,7 +31,7 @@ class ICF_Form
 			$attributes['type'] = 'text';
 		}
 
-		$label = icf_extract($attributes, 'label');
+		$label = icf_get_array_hard($attributes, 'label');
 		$html = ICF_Tag::create('input', $attributes);
 
 		if ($label) {
@@ -119,8 +119,8 @@ class ICF_Form
 			$attributes['id'] = self::_generate_id($attributes['name']);
 		}
 
-		$value = !($value = icf_extract($attributes, 'value')) ? '' : esc_textarea($value);
-		$label = icf_extract($attributes, 'label');
+		$value = !($value = icf_get_array_hard($attributes, 'value')) ? '' : esc_textarea($value);
+		$label = icf_get_array_hard($attributes, 'label');
 		$html = ICF_Tag::create('textarea', $attributes, $value);
 
 		if ($label) {
@@ -144,7 +144,7 @@ class ICF_Form
 		$selected = icf_extract_and_merge($attributes, array('selected', 'checked'));
 		$options = icf_extract_and_merge($attributes, array('options', 'value', 'values'));
 
-		if (icf_extract($attributes, 'empty')) {
+		if (icf_get_array_hard($attributes, 'empty')) {
 			array_unshift($options, '');
 		}
 
@@ -154,7 +154,7 @@ class ICF_Form
 			$attributes['id'] = self::_generate_id($attributes['name']);
 		}
 
-		$label = icf_extract($attributes, 'label');
+		$label = icf_get_array_hard($attributes, 'label');
 		$html = ICF_Tag::create('select', $attributes, self::_generate_options($options, $selected));
 
 		if ($label) {
@@ -197,7 +197,7 @@ class ICF_Form
 			$attributes['values'] = $values;
 		}
 
-		list($name, $before, $after, $separator) = icf_extract($attributes, array('name', 'before', 'after', 'separator'));
+		list($name, $before, $after, $separator) = icf_get_array_hard($attributes, array('name', 'before', 'after', 'separator'));
 
 		if ($separator === null) {
 			$separator = '&nbsp;&nbsp;';

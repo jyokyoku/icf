@@ -277,8 +277,8 @@ class ICF_Taxonomy_List_Walker extends Walker
 
 	public function start_el(&$output, $term, $depth, $args, $id = 0)
 	{
-		$key_format = icf_filter($args, 'key');
-		$value_prop = icf_filter($args, 'value');
+		$key_format = icf_get_array($args, 'key');
+		$value_prop = icf_get_array($args, 'value');
 
 		$replace = $search = array();
 
