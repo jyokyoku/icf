@@ -189,16 +189,22 @@ class ICF_Meta
 			$type = 'current_' . $type;
 		}
 
+		if (strpos($key, ':index') === false) {
+			$key .= ':index';
+		}
+
 		for ($i = $min; $i <= $max; $i++) {
+			$_key = str_replace(':index', $i, $key);
+
 			if (!$object) {
-				$value = call_user_func(array('ICF_Meta', $type), $key . $i, $attr);
+				$value = call_user_func(array('ICF_Meta', $type), $_key, $attr);
 
 			} else {
-				$value = call_user_func(array('ICF_Meta', $type), $object, $key . $i, $attr);
+				$value = call_user_func(array('ICF_Meta', $type), $object, $_key, $attr);
 			}
 
 			if ($value) {
-				$values[] = $value;
+				$values[$i] = $value;
 			}
 		}
 
