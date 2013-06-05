@@ -82,34 +82,11 @@ function icf_log($message = null)
  * @param	string|array	$key
  * @param	mixed			$default
  * @return	mixed
+ * @deprecated
  */
 function icf_filter(array $array, $key, $default = null)
 {
-	$tmp_keys = $key;
-
-	if (!is_array($tmp_keys)) {
-		$tmp_keys = array($key => $default);
-	}
-
-	foreach ($tmp_keys as $tmp_key => $default) {
-		if (is_int($tmp_key) && is_string($default)) {
-			$tmp_key = $default;
-			$default = null;
-		}
-
-		if (!$tmp_key) {
-			continue;
-		}
-
-		if (isset($array[$tmp_key])) {
-			$values[] = $array[$tmp_key];
-
-		} else {
-			$values[] = $default;
-		}
-	}
-
-	return is_array($key) ? $values : reset($values);
+	return icf_get_array($array, $key, $default);
 }
 
 /**
@@ -119,35 +96,11 @@ function icf_filter(array $array, $key, $default = null)
  * @param	string|array	$key
  * @param	mixed			$default
  * @return	mixed
+ * @deprecated
  */
 function icf_extract(array &$array, $key, $default = null)
 {
-	$tmp_keys = $key;
-
-	if (!is_array($tmp_keys)) {
-		$tmp_keys = array($key => $default);
-	}
-
-	foreach ($tmp_keys as $tmp_key => $default) {
-		if (is_int($tmp_key) && is_string($default)) {
-			$tmp_key = $default;
-			$default = null;
-		}
-
-		if (!$tmp_key) {
-			continue;
-		}
-
-		if (isset($array[$tmp_key])) {
-			$values[] = $array[$tmp_key];
-			unset($array[$tmp_key]);
-
-		} else {
-			$values[] = $default;
-		}
-	}
-
-	return is_array($key) ? $values : reset($values);
+	return icf_get_array_hard($array, $key, $default);
 }
 
 /**
@@ -169,7 +122,7 @@ function icf_extract_and_merge(array &$array, $key, $_ = null)
 	$values = array();
 
 	foreach ($tmp_keys as $tmp_key => $default) {
-		if ($value = icf_extract($array, $tmp_key, $default)) {
+		if ($value = icf_get_array_hard($array, $tmp_key, $default)) {
 			$values = array_merge($values, (array)$value);
 		}
 	}
