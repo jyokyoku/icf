@@ -125,7 +125,9 @@ function icf_extract_and_merge(array &$array, $key, $default = null)
 			$_default = $default;
 		}
 
-		if ($value = icf_get_array_hard($array, $_key, $_default)) {
+		$value = icf_get_array_hard($array, $_key, $_default);
+
+		if (!is_null($value)) {
 			$values = array_merge($values, (array) $value);
 		}
 	}
