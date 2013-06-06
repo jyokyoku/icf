@@ -449,7 +449,7 @@ function icf_get_array($array, $key, $default = null)
 		$return = array();
 
 		foreach ($key as $_key => $_default) {
-			if (is_int($_key) && $_default) {
+			if (is_int($_key)) {
 				$_key = $_default;
 				$_default = $default;
 			}
@@ -483,7 +483,7 @@ function icf_get_array_hard(&$array, $key, $default = null)
 		$return = array();
 
 		foreach ($key as $_key => $_default) {
-			if (is_int($_key) && $_default) {
+			if (is_int($_key)) {
 				$_key = $_default;
 				$_default = $default;
 			}
