@@ -113,17 +113,20 @@ function icf_extract(array &$array, $key, $default = null)
  */
 function icf_extract_and_merge(array &$array, $key, $default = null)
 {
-	$tmp_keys = $key;
-
-	if (!is_array($tmp_keys)) {
-		$tmp_keys = array($key => $default);
+	if (!is_array($key)) {
+		$key = array($key => $default);
 	}
 
 	$values = array();
 
-	foreach ($tmp_keys as $tmp_key => $default) {
-		if ($value = icf_get_array_hard($array, $tmp_key, $default)) {
-			$values = array_merge($values, (array)$value);
+	foreach ($key as $_key => $_default) {
+		if (is_int($_key)) {
+			$_key = $_default;
+			$_default = $default;
+		}
+
+		if ($value = icf_get_array_hard($array, $_key, $_default)) {
+			$values = array_merge($values, (array) $value);
 		}
 	}
 
