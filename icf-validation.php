@@ -137,7 +137,7 @@ class ICF_Validation
 			return null;
 		}
 
-		if ($value) {
+		if (!is_null($value)) {
 			switch ($form['type']) {
 				case 'checkbox':
 					if ($form['value'] && $value == $form['value']) {
