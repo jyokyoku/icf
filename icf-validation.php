@@ -181,11 +181,11 @@ class ICF_Validation
 			$validated_values = array();
 
 			foreach ($field as $_field) {
-				if (!$_field || ($validated_value = $this->validated($_field))) {
+				if (!$_field || !isset($this->_validated[$_field])) {
 					continue;
 				}
 
-				$validated_values[] = $validated_value;
+				$validated_values[$_field] = $this->_validated[$_field];
 			}
 
 			return $validated_values;
