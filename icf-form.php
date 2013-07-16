@@ -144,8 +144,12 @@ class ICF_Form
 		$selected = icf_extract_and_merge($attributes, array('selected', 'checked'));
 		$options = icf_extract_and_merge($attributes, array('options', 'value', 'values'));
 
-		if (icf_get_array_hard($attributes, 'empty')) {
-			array_unshift($options, '');
+		if ($empty = icf_get_array_hard($attributes, 'empty')) {
+			if ($empty === true || $empty === 1) {
+				$empty = '';
+			}
+
+			$options = array_merge(array($empty => ''), $options);
 		}
 
 		$selected = (array)$selected;
