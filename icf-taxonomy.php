@@ -267,16 +267,6 @@ class ICF_Taxonomy
 		$walker = new ICF_Taxonomy_List_Walker();
 		return $walker->walk($terms, 0, $args);
 	}
-
-	protected function _pluralize($text)
-	{
-		return preg_match('/[a-zA-Z]$/', $text) ? ICF_Inflector::pluralize($text) : $text;
-	}
-
-	protected function _singularize($text)
-	{
-		return preg_match('/[a-zA-Z]$/', $text) ? ICF_Inflector::singularize($text) : $text;
-	}
 }
 
 class ICF_Taxonomy_List_Walker extends Walker
