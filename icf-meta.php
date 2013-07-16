@@ -132,46 +132,7 @@ class ICF_Meta
 
 	protected static function _filter($value, $attr = array())
 	{
-		$attr = wp_parse_args($attr, array(
-			'filter'  => false,
-			'default' => false,
-			'before'  => '',
-			'after'   => '',
-		));
-
-		if ($attr['filter'] && $value) {
-			if (is_callable($attr['filter'])) {
-				$value = call_user_func($attr['filter'], $value);
-
-			} else if (is_array($attr['filter'])) {
-				foreach ($attr['filter'] as $filter => $args) {
-					if (is_int($filter) && $args) {
-						$filter = $args;
-						$args = array();
-					}
-
-					if (!is_callable($filter)) {
-						continue;
-					}
-
-					if ($args && !is_array($args)) {
-						$args = array($args);
-
-					} else {
-						$args = array();
-					}
-
-					array_unshift($args, $value);
-					$value = call_user_func($filter, $value);
-				}
-			}
-		}
-
-		if (!$value) {
-			return $attr['default'];
-		}
-
-		return $attr['before'] . $value . $attr['after'];
+		return icf_filter($value, $attr);
 	}
 
 	protected static function _iterate($type, $key, $min, $max, $object = null, $attr = array())
