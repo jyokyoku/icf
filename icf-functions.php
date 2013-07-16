@@ -76,34 +76,6 @@ function icf_log($message = null)
 }
 
 /**
- * Returns a value(s) of the specified key(s) of the array.
- *
- * @param	array			$array
- * @param	string|array	$key
- * @param	mixed			$default
- * @return	mixed
- * @deprecated
- */
-function icf_filter(array $array, $key, $default = null)
-{
-	return icf_get_array($array, $key, $default);
-}
-
-/**
- * Returns a value(s) of the specified key(s) of the array and removes it from the array.
- *
- * @param	array			$array
- * @param	string|array	$key
- * @param	mixed			$default
- * @return	mixed
- * @deprecated
- */
-function icf_extract(array &$array, $key, $default = null)
-{
-	return icf_get_array_hard($array, $key, $default);
-}
-
-/**
  * Returns a merged value of the specified key(s) of array and removes it from array.
  *
  * @param	array			$array
