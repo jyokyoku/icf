@@ -553,3 +553,132 @@ function icf_delete_array(&$array, $key)
 
 	return true;
 }
+
+function icf_convert($value, $type)
+{
+	switch ($type) {
+		case 'i':
+		case 'int':
+		case 'integer':
+			$value = (int) $value;
+			break;
+
+		case 'f':
+		case 'float':
+		case 'double':
+		case 'real':
+			$value = (float) $value;
+			break;
+
+		case 'b':
+		case 'bool':
+		case 'boolean':
+			$value = (boolean) $value;
+			break;
+
+		case 's':
+		case 'string':
+			if (is_array($value)) {
+				foreach ($value as &$_value) {
+					$_value= icf_convert($_value, 'string');
+				}
+
+				$value = implode(', ', $value);
+
+			} else if (is_object($value)) {
+				if (method_exists($object, '__toString')) {
+					$value = (string) $object->__toString();
+
+				} else {
+					$value = '(object)';
+				}
+
+			} else if (is_bool($value)) {
+				$value = ($value === true) ? 'true' : 'false';
+
+			} else {
+				$value = (string) $value;
+			}
+
+			break;
+
+		case 'a':
+		case 'array':
+			if (!is_array($value)) {
+				$value = (array) $value;
+			}
+
+			break;
+
+		case 'o':
+		case 'object':
+			if (!is_object($value)) {
+				$value = (object) $value;
+			}
+
+			break;
+	}
+
+	return $value;
+}
+
+function icf_callback($value, $callback) {
+	if (is_callable($callback)) {
+		$value = call_user_func($callback, $value);
+
+	} else if (is_array($callback)) {
+		foreach ($callback as $_callback => $args) {
+			if (is_int($_callback) && $args) {
+				$_callback = $args;
+				$args = array();
+			}
+
+			if (!is_callable($_callback)) {
+				continue;
+			}
+
+			if ($args && !is_array($args)) {
+				$args = array($args);
+
+			} else {
+				$args = array();
+			}
+
+			array_unshift($args, $value);
+			$value = call_user_func($_callback, $value);
+		}
+	}
+
+	return $value;
+}
+
+function icf_filter($value, $attr = array())
+{
+	if (!is_array($attr)) {
+		$attr = array('default' => $attr);
+	}
+
+	$attr = wp_parse_args($attr, array(
+		'convert' => false,
+		'callback' => false,
+		'default' => false,
+		'empty_value' => true,
+		'before' => '',
+		'after' => ''
+	));
+
+	foreach ($attr as $attr_key => $attr_value) {
+		if ($attr_key == 'convert' && $attr_value) {
+			$value = icf_convert($value, $attr_value);
+
+		} else if ($attr_key == 'callback' && $attr_value) {
+			$value = icf_callback($value, $attr_value);
+		}
+	}
+
+	if (is_null($value) || (!$attr['empty_value'] && empty($value))) {
+		return $attr['default'];
+	}
+
+	return ($attr['before'] || $attr['after']) ? $attr['before'] . icf_convert($value, 's') . $attr['after'] : $value;
+}
