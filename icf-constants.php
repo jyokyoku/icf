@@ -12,6 +12,14 @@ if (!defined('ICF_DS')) {
 	define('ICF_DS', DIRECTORY_SEPARATOR);
 }
 
+if (!defined('ICF_TMPL_URI')) {
+	define('ICF_TMPL_URI', get_template_directory_uri());
+}
+
+if (!defined('ICF_SS_URI')) {
+	define('ICF_SS_URI', get_stylesheet_directory_uri());
+}
+
 if (!defined('ICF_SECOND')) {
 	define('ICF_SECOND', 1);
 }
