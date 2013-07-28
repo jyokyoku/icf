@@ -663,3 +663,43 @@ function icf_filter( $value, $attr = array() ) {
 
 	return ( $attr['before'] || $attr['after'] ) ? $attr['before'] . icf_convert( $value, 's' ) . $attr['after'] : $value;
 }
+
+/**
+ * Return the blogs
+ *
+ * @param null   $exclude_id Exclude blog id(s)
+ * @param string $orderby
+ * @return mixed
+ */
+function icf_get_blogs( $args = array() ) {
+	global $wpdb;
+
+	$args = wp_parse_args( $args , array(
+		'include_id' => null,
+		'exclude_id' => null,
+		'orderby' => null,
+	));
+
+	if ( !$args['orderby'] || !in_array( $args['orderby'], array( 'blog_id', 'site_id', 'domain', 'path', 'registered', 'last_updated', 'pubilc', 'archived', 'mature', 'spam', 'deleted', 'lang_id' ) ) ) {
+		$args['orderby'] = 'registered';
+	}
+
+	$query[] = "SELECT blog_id, domain, path";
+	$query[] = "FROM $wpdb->blogs";
+	$query[] = sprintf( "WHERE site_id = %d AND public = '1' AND archived = '0' AND mature = '0' AND spam = '0' AND deleted = '0'", $wpdb->siteid );
+
+	if ( $args['include_id'] ) {
+		$args['include_id'] = wp_parse_id_list( $args['include_id'] );
+		$query[] = sprintf( "AND blog_id IN ( %s )", implode( ', ', $args['include_id'] ) );
+	}
+
+	if ( $args['exclude_id'] ) {
+		$args['exclude_id'] = wp_parse_id_list( $args['exclude_id'] );
+		$query[] = sprintf( "AND blog_id NOT IN ( %s )", implode( ', ', $args['exclude_id'] ) );
+	}
+
+	$query[] = sprintf( "ORDER BY %s DESC", $args['orderby'] );
+	$blogs = $wpdb->get_results( implode(' ', $query) );
+
+	return $blogs ? $blogs : array();
+}
