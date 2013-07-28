@@ -8,7 +8,7 @@
  * @link		http://inspire-tech.jp
  */
 
-$GLOBALS['icf_versions']['1.8'] = __FILE__;
+$GLOBALS['icf_versions']['1.8.1'] = __FILE__;
 
 if (!class_exists('ICF_Loader')) {
 	class ICF_Loader

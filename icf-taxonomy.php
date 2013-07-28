@@ -46,6 +46,10 @@ class ICF_Taxonomy
 			add_action('admin_head', array('ICF_Taxonomy', 'add_local_style'), 10);
 		}
 
+		if (!has_action('delete_term', array('ICF_Taxonomy', 'delete_term_meta'))) {
+			add_action('delete_term', array('ICF_Taxonomy', 'delete_term_meta'), 10, 4);
+		}
+
 		if (!isset($wp_taxonomies[$this->_slug])) {
 			if (empty($this->_args['label'])) {
 				$this->_args['label'] = $this->_slug;
@@ -56,8 +60,8 @@ class ICF_Taxonomy
 					'name' => $this->_args['label'],
 					'singular_name' => $this->_args['label'],
 					'search_items' => sprintf(__('Search %s', 'icf'), $this->_args['label']),
-					'popular_items' => sprintf(__('Popular %s', 'icf'), $this->_pluralize($this->_args['label'])),
-					'all_items' => sprintf(__('All %s', 'icf'), $this->_pluralize($this->_args['label'])),
+					'popular_items' => sprintf(__('Popular %s', 'icf'), $this->_args['label']),
+					'all_items' => sprintf(__('All %s', 'icf'), $this->_args['label']),
 					'parent_item' => sprintf(__('Parent %s', 'icf'), $this->_args['label']),
 					'parent_item_colon' => sprintf(__('Parent %s:', 'icf'), $this->_args['label']),
 					'edit_item' => sprintf(__('Edit %s', 'icf'), $this->_args['label']),
@@ -180,6 +184,11 @@ class ICF_Taxonomy
 		echo $html;
 	}
 
+	public function delete_term_meta($term, $tt_id, $taxonomy, $deleted_term)
+	{
+		delete_option(self::get_option_key($term->term_id, $taxonomy));
+	}
+
 	public static function add_local_style()
 	{
 		global $pagenow;
@@ -257,16 +266,6 @@ class ICF_Taxonomy
 
 		$walker = new ICF_Taxonomy_List_Walker();
 		return $walker->walk($terms, 0, $args);
-	}
-
-	protected function _pluralize($text)
-	{
-		return preg_match('/[a-zA-Z]$/', $text) ? ICF_Inflector::pluralize($text) : $text;
-	}
-
-	protected function _singularize($text)
-	{
-		return preg_match('/[a-zA-Z]$/', $text) ? ICF_Inflector::singularize($text) : $text;
 	}
 }
 
