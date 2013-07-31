@@ -571,3 +571,7 @@ class ICF_MetaBox_Component_Element_FormField_Wysiwyg extends ICF_MetaBox_Compon
 		return $editor;
 	}
 }
+
+class ICF_MetaBox_Component_Element_FormField_Visual extends ICF_MetaBox_Component_Element_FormField_Wysiwyg
+{
+}

@@ -589,6 +589,10 @@ class ICF_Component_Element_FormField_Wysiwyg extends ICF_Component_Element_Form
 	}
 }
 
+class ICF_Component_Element_FormField_Visual extends ICF_Component_Element_FormField_Wysiwyg
+{
+}
+
 class ICF_Component_Element_FormField_Date extends ICF_Component_Element_FormField_Abstract
 {
 	protected $_date_type = array('date', 'datetime', 'time');

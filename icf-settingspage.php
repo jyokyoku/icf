@@ -857,3 +857,7 @@ class ICF_SettingsPage_Section_Component_Element_FormField_Wysiwyg extends ICF_S
 		return $editor;
 	}
 }
+
+class ICF_SettingsPage_Section_Component_Element_FormField_Visual extends ICF_SettingsPage_Section_Component_Element_FormField_Wysiwyg
+{
+}
