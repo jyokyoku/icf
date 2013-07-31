@@ -700,8 +700,14 @@ function icf_get_blogs( $args = array() ) {
 		$query[] = sprintf( "AND blog_id NOT IN ( %s )", implode( ', ', $args['exclude_id'] ) );
 	}
 
-	$query[] = sprintf( "ORDER BY %s DESC", $args['orderby'] );
-	$blogs = $wpdb->get_results( implode(' ', $query) );
+	$query[] = sprintf( "ORDER BY %s %s", $args['orderby'], strtoupper($args['order']) );
+	$key = md5(implode('', $query));
+
+	if (!empty($GLOBALS['_icf_all_blogs'][$key])) {
+		return $GLOBALS['_icf_all_blogs'][$key];
+	}
+
+	$GLOBALS['_icf_all_blogs'][$key] = $blogs = $wpdb->get_results( implode(' ', $query) );
 
 	return $blogs ? $blogs : array();
 }
