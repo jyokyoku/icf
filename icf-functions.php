@@ -680,10 +680,15 @@ function icf_get_blogs( $args = array() ) {
 		'include_id' => null,
 		'exclude_id' => null,
 		'orderby' => null,
+		'order' => 'desc'
 	));
 
 	if ( !$args['orderby'] || !in_array( $args['orderby'], array( 'blog_id', 'site_id', 'domain', 'path', 'registered', 'last_updated', 'pubilc', 'archived', 'mature', 'spam', 'deleted', 'lang_id' ) ) ) {
 		$args['orderby'] = 'registered';
+	}
+
+	if (strtolower($args['order']) != 'desc') {
+		$args['order'] = 'asc';
 	}
 
 	$query[] = "SELECT blog_id, domain, path";
