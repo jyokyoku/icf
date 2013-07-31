@@ -609,8 +609,13 @@ function icf_convert( $value, $type ) {
 function icf_callback( $value, $callback ) {
 	if ( is_callable( $callback ) ) {
 		$value = call_user_func( $callback, $value );
+	}
 
-	} else if ( is_array( $callback ) ) {
+	if ( is_string( $callback ) ) {
+		$callback = array_unique(array_filter(explode( ' ', $callback )));
+	}
+
+	if ( is_array( $callback ) ) {
 		foreach ( $callback as $_callback => $args ) {
 			if ( is_int( $_callback ) && $args ) {
 				$_callback = $args;
