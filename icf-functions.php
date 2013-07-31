@@ -644,11 +644,16 @@ function icf_filter( $value, $attr = array() ) {
 	$attr = wp_parse_args( $attr, array(
 		'convert' => false,
 		'callback' => false,
+		'filter' => false,
 		'default' => false,
 		'empty_value' => true,
 		'before' => '',
 		'after' => ''
 	) );
+
+	if ( $attr['filter'] ) {
+		$attr['callback'] = $attr['filter'];
+	}
 
 	foreach ( $attr as $attr_key => $attr_value ) {
 		if ( $attr_key == 'convert' && $attr_value ) {
