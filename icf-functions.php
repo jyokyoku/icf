@@ -651,7 +651,7 @@ function icf_filter( $value, $attr = array() ) {
 		'callback' => false,
 		'filter' => false,
 		'default' => false,
-		'empty_value' => true,
+		'empty_value' => false,
 		'before' => '',
 		'after' => ''
 	) );
