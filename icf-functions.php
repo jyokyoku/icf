@@ -626,11 +626,11 @@ function icf_callback( $value, $callback ) {
 				continue;
 			}
 
-			if ( $args && !is_array( $args ) ) {
-				$args = array( $args );
-
-			} else {
+			if ( !$args ) {
 				$args = array();
+
+			} else if ( !is_array( $args ) ) {
+				$args = array( $args );
 			}
 
 			array_unshift( $args, $value );
