@@ -10,6 +10,9 @@
 
 require_once dirname( __FILE__ ) . '/icf-loader.php';
 
+/**
+ * Dump the values
+ */
 function icf_dump() {
 	$backtrace = debug_backtrace();
 
@@ -38,6 +41,12 @@ function icf_dump() {
 	echo "</div>";
 }
 
+/**
+ * Save the messages to file
+ *
+ * @param null $message
+ * @throws
+ */
 function icf_log( $message = null ) {
 	$backtrace = debug_backtrace();
 
@@ -76,10 +85,10 @@ function icf_log( $message = null ) {
 /**
  * Returns a merged value of the specified key(s) of array and removes it from array.
  *
- * @param    array        $array
- * @param    string|array $key
- * @param    mixed        $default
- * @return    array
+ * @param array        $array
+ * @param string|array $key
+ * @param mixed        $default
+ * @return array
  */
 function icf_extract_and_merge( array &$array, $key, $default = null ) {
 	if ( !is_array( $key ) ) {
@@ -104,6 +113,15 @@ function icf_extract_and_merge( array &$array, $key, $default = null ) {
 	return $values;
 }
 
+/**
+ * Returns the file path of timthumb.php and the arguments
+ *
+ * @param       $file
+ * @param null  $width
+ * @param null  $height
+ * @param array $attr
+ * @return string
+ */
 function icf_timthumb( $file, $width = null, $height = null, $attr = array() ) {
 	if ( is_array( $width ) && empty( $height ) && empty( $attr ) ) {
 		$attr = $width;
@@ -180,10 +198,27 @@ function icf_timthumb( $file, $width = null, $height = null, $attr = array() ) {
 	return $timthumb . '?' . http_build_query(array_filter($attr));
 }
 
+/**
+ * Returns the html tag
+ *
+ * @param       $tag
+ * @param array $attributes
+ * @param null  $content
+ * @return string
+ */
 function icf_html_tag( $tag, $attributes = array(), $content = null ) {
 	return ICF_Tag::create( $tag, $attributes, $content );
 }
 
+/**
+ * Returns the meta value from the term in the taxonomy
+ *
+ * @param      $term
+ * @param      $taxonomy
+ * @param      $key
+ * @param bool $default
+ * @return bool|mixed
+ */
 function icf_get_term_meta( $term, $taxonomy, $key, $default = false ) {
 	return ICF_Taxonomy::get_option( $term, $taxonomy, $key, $default );
 }
@@ -404,6 +439,13 @@ function icf_calc_image_size( $width, $height, $new_width = 0, $new_height = 0 )
 	return $sizes;
 }
 
+/**
+ * Get the value using any key from the array
+ *
+ * @param $array
+ * @param $key
+ * @return array|bool
+ */
 function icf_get_array( $array, $key, $default = null ) {
 	if ( is_null( $key ) ) {
 		return $array;
@@ -437,6 +479,13 @@ function icf_get_array( $array, $key, $default = null ) {
 	return $array;
 }
 
+/**
+ * Get the value using any key from the array, and then delete that value
+ *
+ * @param $array
+ * @param $key
+ * @return array|bool
+ */
 function icf_get_array_hard( &$array, $key, $default = null ) {
 	if ( is_null( $key ) ) {
 		return $array;
@@ -477,6 +526,13 @@ function icf_get_array_hard( &$array, $key, $default = null ) {
 	return $tmp_array;
 }
 
+/**
+ * Sets the value using any key to the array
+ *
+ * @param $array
+ * @param $key
+ * @return array|bool
+ */
 function icf_set_array( &$array, $key, $value ) {
 	if ( is_null( $key ) ) {
 		return;
@@ -504,6 +560,13 @@ function icf_set_array( &$array, $key, $value ) {
 	}
 }
 
+/**
+ * Delete the value with any key from the array
+ *
+ * @param $array
+ * @param $key
+ * @return array|bool
+ */
 function icf_delete_array( &$array, $key ) {
 	if ( is_null( $key ) ) {
 		return false;
@@ -539,6 +602,13 @@ function icf_delete_array( &$array, $key ) {
 	return true;
 }
 
+/**
+ * Convert the value to any type.
+ *
+ * @param $value
+ * @param $type
+ * @return array|bool|float|int|object|string
+ */
 function icf_convert( $value, $type ) {
 	switch ( $type ) {
 		case 'i':
@@ -606,6 +676,13 @@ function icf_convert( $value, $type ) {
 	return $value;
 }
 
+/**
+ * Apply functions to the value.
+ *
+ * @param mixed $value
+ * @param string|array|callback $callback
+ * @return mixed
+ */
 function icf_callback( $value, $callback ) {
 	if ( is_callable( $callback ) ) {
 		$value = call_user_func( $callback, $value );
@@ -641,6 +718,13 @@ function icf_callback( $value, $callback ) {
 	return $value;
 }
 
+/**
+ * Apply filters to the value.
+ *
+ * @param mixed $value
+ * @param string|array $attr
+ * @return mixed
+ */
 function icf_filter( $value, $attr = array() ) {
 	if ( !is_array( $attr ) ) {
 		$attr = array( 'default' => $attr );
