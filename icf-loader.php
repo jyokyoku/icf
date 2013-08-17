@@ -204,7 +204,7 @@ if (!class_exists('ICF_Loader')) {
 					'augustShort' => __('Aug', 'icf'),
 					'septemberShort' => __('Sep', 'icf'),
 					'octoberShort' => __('Oct', 'icf'),
-					'november' => __('Nov', 'icf'),
+					'novemberShort' => __('Nov', 'icf'),
 					'decemberShort' => __('Dec', 'icf'),
 					'monthText' => __('Month', 'icf'),
 					'secText' => __('Seconds', 'icf'),
