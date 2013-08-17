@@ -27,7 +27,7 @@ class ICF_Validation {
 
 	protected $_messages = array();
 
-	protected $_defaults = array();
+	protected $_config = array();
 
 	protected $_data = array();
 
@@ -56,8 +56,8 @@ class ICF_Validation {
 		) );
 
 		$this->set_default_message( $config['messages'] );
-		$this->set_default( 'error_open', $config['error_open'] );
-		$this->set_default( 'error_close', $config['error_close'] );
+		$this->set_config( 'error_open', $config['error_open'] );
+		$this->set_config( 'error_close', $config['error_close'] );
 	}
 
 	public function add_field( $field, $label = null, $type = null, $value = null, $attributes = array() ) {
@@ -215,8 +215,8 @@ class ICF_Validation {
 			$error_messages = array( $error_messages );
 		}
 
-		$open = is_null( $open ) ? $this->get_default( 'error_open' ) : $open;
-		$close = is_null( $close ) ? $this->get_default( 'error_close' ) : $close;
+		$open = is_null( $open ) ? $this->get_config( 'error_open' ) : $open;
+		$close = is_null( $close ) ? $this->get_config( 'error_close' ) : $close;
 		$errors = array();
 
 		foreach ( $error_messages as $error_message ) {
@@ -291,7 +291,7 @@ class ICF_Validation {
 					if ( $result === false ) {
 						$message = isset( $this->_messages[$field][$rule] )
 							? $this->_messages[$field][$rule]
-							: $this->get_default( 'message.' . $rule, true );
+							: $this->get_default_message( $rule );
 
 						$find = array( ':field', ':label', ':value', ':rule' );
 						$replace = array( $field, $label, $value, $rule );
@@ -359,34 +359,34 @@ class ICF_Validation {
 			}
 
 			if ( is_null( $message ) || $message === false ) {
-				icf_delete_array( $this->_defaults, 'message.' . $rule_name );
+				icf_delete_array( $this->_config, 'message.' . $rule_name );
 
 			} else {
-				$this->set_default( 'message.' . $rule_name, $message );
+				$this->set_config( 'message.' . $rule_name, $message );
 			}
 		}
 	}
 
 	public function get_default_message( $rule = null ) {
 		if ( empty( $rule ) ) {
-			return icf_get_array( $this->_defaults, 'message' );
+			return icf_get_array( $this->_config, 'message' );
 
 		} else {
-			return icf_get_array( $this->_defaults, 'message.' . $rule );
+			return icf_get_array( $this->_config, 'message.' . $rule );
 		}
 	}
 
-	public function set_default( $key, $value = null ) {
+	public function set_config( $key, $value = null ) {
 		if ( is_null( $value ) ) {
-			icf_delete_array( $this->_defaults, $key );
+			icf_delete_array( $this->_config, $key );
 
 		} else {
-			icf_set_array( $this->_defaults, $key, $value );
+			icf_set_array( $this->_config, $key, $value );
 		}
 	}
 
-	public function get_default( $key, $default = null ) {
-		return icf_get_array( $this->_defaults, $key, $default );
+	public function get_config( $key, $default = null ) {
+		return icf_get_array( $this->_config, $key, $default );
 	}
 
 	public function create_callback_name( $callback ) {
