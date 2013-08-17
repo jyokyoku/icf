@@ -75,7 +75,7 @@ if (!class_exists('ICF_Loader')) {
 
 			do_action('icf_loaded', self::$_loaded_files);
 
-			self::$_loaded = true;
+			self::$_loaded = self::get_latest_version();
 
 			if (!defined('ICF_DEBUG')) {
 				define('ICF_DEBUG', false);
@@ -83,11 +83,81 @@ if (!class_exists('ICF_Loader')) {
 		}
 
 		/**
-		 * Returns the latest version directory path of ICF
+		 * Returns the any version directory path
 		 *
-		 * @return	NULL|string
+		 * @param $version
+		 * @return bool|string
 		 */
-		public static function get_latest_version_dir()
+		public static function get_any_version_dir($version)
+		{
+			if (empty($version) || !isset($GLOBALS['icf_versions'][$version])) {
+				return false;
+			}
+
+			return dirname($GLOBALS['icf_versions'][$version]);
+		}
+
+		/**
+		 * Returns the any version directory url
+		 *
+		 * @param $version
+		 * @return bool|string
+		 */
+		public static function get_any_version_url($version)
+		{
+			if (empty($version) || !($dir = self::get_any_version_dir($version))) {
+				return false;
+			}
+
+			return get_option('siteurl') . '/' . str_replace(ABSPATH, '', $dir);
+		}
+
+		/**
+		 * Returns the loaded status
+		 *
+		 * @return bool
+		 */
+		public static function is_loaded()
+		{
+			return (bool)self::$_loaded;
+		}
+
+		/**
+		 * Returns the current loaded version
+		 *
+		 * @return bool|string
+		 */
+		public static function get_current_version()
+		{
+			return self::is_loaded() ? self::$_loaded : false;
+		}
+
+		/**
+		 * Returns the current loaded version directory path
+		 *
+		 * @return bool|string
+		 */
+		public static function get_current_version_dir()
+		{
+			return self::get_any_version_dir(self::get_current_version());
+		}
+
+		/**
+		 * Returns the current loaded version directory uri
+		 *
+		 * @return bool|string
+		 */
+		public static function get_current_version_url()
+		{
+			return self::get_any_version_url(self::get_current_version());
+		}
+
+		/**
+		 * Returns the current version number
+		 *
+		 * @return null|string
+		 */
+		public static function get_latest_version()
 		{
 			$latest = null;
 
@@ -102,11 +172,17 @@ if (!class_exists('ICF_Loader')) {
 				}
 			}
 
-			if (is_null($latest)) {
-				return null;
-			}
+			return $latest;
+		}
 
-			return dirname($GLOBALS['icf_versions'][$latest]);
+		/**
+		 * Returns the latest version directory path of ICF
+		 *
+		 * @return	NULL|string
+		 */
+		public static function get_latest_version_dir()
+		{
+			return self::get_any_version_dir(self::get_latest_version());
 		}
 
 		/**
@@ -116,7 +192,7 @@ if (!class_exists('ICF_Loader')) {
 		 */
 		public static function get_latest_version_url()
 		{
-			return get_option('siteurl') . '/' . str_replace(ABSPATH, '', self::get_latest_version_dir());
+			return self::get_any_version_url(self::get_latest_version());
 		}
 
 		/**
