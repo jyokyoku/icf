@@ -190,39 +190,39 @@ if ( !class_exists( 'ICF_Loader' ) ) {
 		public static function register_javascript() {
 			wp_enqueue_script( 'media-upload' );
 			wp_enqueue_script( 'thickbox' );
-			wp_enqueue_script( 'icf-flexible-wh', self::get_latest_version_url() . '/js/flexible_wh.js', array( 'jquery' ), null, true );
+			wp_enqueue_script( 'icf-flexible-wh', self::get_current_version_url() . '/js/flexible_wh.js', array( 'jquery' ), null, true );
 
 			if ( version_compare( get_bloginfo( 'version' ), '3.3', '>=' ) ) {
 				wp_enqueue_script( 'wplink' );
 				wp_enqueue_script( 'wpdialogs-popup' );
-				wp_enqueue_script( 'icf-active-editor', self::get_latest_version_url() . '/js/active_editor.js', array( 'jquery' ), null, true );
-				wp_enqueue_script( 'icf-quicktags', self::get_latest_version_url() . '/js/quicktags.js', array( 'quicktags' ), null, true );
+				wp_enqueue_script( 'icf-active-editor', self::get_current_version_url() . '/js/active_editor.js', array( 'jquery' ), null, true );
+				wp_enqueue_script( 'icf-quicktags', self::get_current_version_url() . '/js/quicktags.js', array( 'quicktags' ), null, true );
 			}
 
 			if ( !wp_script_is( 'icf-mobiscroll', 'registered' ) ) {
-				wp_enqueue_script( 'icf-mobiscroll', self::get_latest_version_url() . '/js/mobiscroll/mobiscroll.custom-2.4.4.min.js', array( 'jquery' ), null, true );
+				wp_enqueue_script( 'icf-mobiscroll', self::get_current_version_url() . '/js/mobiscroll/mobiscroll.custom-2.4.4.min.js', array( 'jquery' ), null, true );
 			}
 
 			if ( !wp_script_is( 'icf-exvalidaion', 'registered' ) ) {
-				wp_enqueue_script( 'icf-exvalidation', self::get_latest_version_url() . '/js/exvalidation/exvalidation.js', array( 'jquery' ), null, true );
+				wp_enqueue_script( 'icf-exvalidation', self::get_current_version_url() . '/js/exvalidation/exvalidation.js', array( 'jquery' ), null, true );
 			}
 
 			if ( !wp_script_is( 'icf-exchecker', 'registered' ) ) {
 				$exchecker = 'exchecker-' . get_locale() . '.js';
 
-				if ( !is_readable( self::get_latest_version_dir() . '/js/exvalidation/' . $exchecker ) ) {
+				if ( !is_readable( self::get_current_version_dir() . '/js/exvalidation/' . $exchecker ) ) {
 					$exchecker = 'exchecker-en_US.min.js';
 				}
 
-				wp_enqueue_script( 'icf-exchecker', self::get_latest_version_url() . '/js/exvalidation/' . $exchecker, array( 'jquery' ) );
+				wp_enqueue_script( 'icf-exchecker', self::get_current_version_url() . '/js/exvalidation/' . $exchecker, array( 'jquery' ) );
 			}
 
 			if ( !wp_script_is( 'icf-common', 'registered' ) ) {
 				$assoc = array( 'jquery', 'media-upload', 'thickbox', 'icf-exchecker', 'icf-mobiscroll' );
 
-				wp_enqueue_script( 'icf-common', self::get_latest_version_url() . '/js/common.js', $assoc, null, true );
-				wp_enqueue_script( 'icf-metabox', self::get_latest_version_url() . '/js/metabox.js', array( 'icf-common' ), null, true );
-				wp_enqueue_script( 'icf-settingspage', self::get_latest_version_url() . '/js/settingspage.js', array( 'icf-common' ), null, true );
+				wp_enqueue_script( 'icf-common', self::get_current_version_url() . '/js/common.js', $assoc, null, true );
+				wp_enqueue_script( 'icf-metabox', self::get_current_version_url() . '/js/metabox.js', array( 'icf-common' ), null, true );
+				wp_enqueue_script( 'icf-settingspage', self::get_current_version_url() . '/js/settingspage.js', array( 'icf-common' ), null, true );
 
 				wp_localize_script( 'icf-common', 'icfCommonL10n', array(
 					'insertToField' => __( 'Insert to field', 'icf' ),
@@ -286,18 +286,18 @@ if ( !class_exists( 'ICF_Loader' ) ) {
 		public static function register_css() {
 			wp_enqueue_style( 'thickbox' );
 			wp_enqueue_style( 'editor-buttons' );
-			wp_enqueue_style( 'icf-common', ICF_Loader::get_latest_version_url() . '/css/common.css' );
+			wp_enqueue_style( 'icf-common', self::get_current_version_url() . '/css/common.css' );
 
 			if ( version_compare( get_bloginfo( 'version' ), '3.3', '>=' ) ) {
 				wp_enqueue_style( 'wp-jquery-ui-dialog' );
 			}
 
 			if ( !wp_style_is( 'icf-mobiscroll', 'registered' ) ) {
-				wp_enqueue_style( 'icf-mobiscroll', ICF_Loader::get_latest_version_url() . '/js/mobiscroll/mobiscroll.custom-2.4.4.min.css' );
+				wp_enqueue_style( 'icf-mobiscroll', self::get_current_version_url() . '/js/mobiscroll/mobiscroll.custom-2.4.4.min.css' );
 			}
 
 			if ( !wp_style_is( 'icf-exvalidation', 'registered' ) ) {
-				wp_enqueue_style( 'icf-exvalidation', ICF_Loader::get_latest_version_url() . '/js/exvalidation/exvalidation.css' );
+				wp_enqueue_style( 'icf-exvalidation', self::get_current_version_url() . '/js/exvalidation/exvalidation.css' );
 			}
 		}
 

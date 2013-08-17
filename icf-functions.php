@@ -144,7 +144,7 @@ function icf_timthumb( $file, $width = null, $height = null, $attr = array() ) {
 	);
 
 	$attr = array_intersect_key( wp_parse_args( $attr, $defaults ), $defaults );
-	$timthumb = ICF_Loader::get_latest_version_url() . '/vendors/timthumb.php';
+	$timthumb = ICF_Loader::get_current_version_url() . '/vendors/timthumb.php';
 
 	$attr['src'] = icf_get_array_hard( $attr, 'path' ) ? icf_url_to_path( $file ) : $file;
 
