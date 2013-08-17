@@ -2,83 +2,81 @@
 /**
  * Inspire Custom field Framework (ICF)
  *
- * @package		ICF
- * @author		Masayuki Ietomi <jyokyoku@gmail.com>
- * @copyright	Copyright(c) 2011 Masayuki Ietomi
- * @link		http://inspire-tech.jp
+ * @package        ICF
+ * @author         Masayuki Ietomi <jyokyoku@gmail.com>
+ * @copyright      Copyright(c) 2011 Masayuki Ietomi
+ * @link           http://inspire-tech.jp
  */
 
 $GLOBALS['icf_versions']['1.8.1'] = __FILE__;
 
-if (!class_exists('ICF_Loader')) {
-	class ICF_Loader
-	{
+if ( !class_exists( 'ICF_Loader' ) ) {
+	class ICF_Loader {
 		protected static $_loaded_files = array();
+
 		protected static $_loaded = false;
 
 		/**
 		 * Initialize
 		 *
-		 * @param	mixed	$callback
+		 * @param    mixed $callback
 		 */
-		public static function init($callback = '')
-		{
+		public static function init( $callback = '' ) {
 			$callbacks = array();
 
-			if (func_num_args() > 1) {
+			if ( func_num_args() > 1 ) {
 				$callbacks = func_get_args();
 
-			} else if ($callback) {
-				$callbacks = is_array($callback) && is_callable($callback) ? array($callback) : (array)$callback;
+			} else if ( $callback ) {
+				$callbacks = is_array( $callback ) && is_callable( $callback ) ? array( $callback ) : (array)$callback;
 			}
 
-			foreach ($callbacks as $callback) {
-				if (is_callable($callback)) {
-					add_action('icf_loaded', $callback, 10, 1);
+			foreach ( $callbacks as $callback ) {
+				if ( is_callable( $callback ) ) {
+					add_action( 'icf_loaded', $callback, 10, 1 );
 				}
 			}
 
-			add_action('admin_init', array('ICF_Loader', 'register_javascript'));
-			add_action('admin_init', array('ICF_Loader', 'register_css'));
-			add_action('admin_print_footer_scripts', array('ICF_Loader', 'load_wpeditor_html'));
-			add_action('plugins_loaded', array('ICF_Loader', 'load'));
-			add_action('after_setup_theme', array('ICF_Loader', 'load'));
+			add_action( 'admin_init', array( 'ICF_Loader', 'register_javascript' ) );
+			add_action( 'admin_init', array( 'ICF_Loader', 'register_css' ) );
+			add_action( 'admin_print_footer_scripts', array( 'ICF_Loader', 'load_wpeditor_html' ) );
+			add_action( 'plugins_loaded', array( 'ICF_Loader', 'load' ) );
+			add_action( 'after_setup_theme', array( 'ICF_Loader', 'load' ) );
 		}
 
 		/**
 		 * Loads the class files
 		 */
-		public static function load()
-		{
-			if (self::$_loaded) {
+		public static function load() {
+			if ( self::$_loaded ) {
 				return;
 			}
 
 			$base_dir = self::get_latest_version_dir();
-			load_textdomain('icf', $base_dir . '/languages/icf-' . get_locale() . '.mo');
+			load_textdomain( 'icf', $base_dir . '/languages/icf-' . get_locale() . '.mo' );
 
-			if ($dh = opendir($base_dir)) {
-				while (false !== ($file = readdir($dh))) {
-					if ($file === '.' || $file === '..' || $file[0] === '.' || strrpos($file, '.php') === false) {
+			if ( $dh = opendir( $base_dir ) ) {
+				while ( false !== ( $file = readdir( $dh ) ) ) {
+					if ( $file === '.' || $file === '..' || $file[0] === '.' || strrpos( $file, '.php' ) === false ) {
 						continue;
 					}
 
 					$filepath = $base_dir . '/' . $file;
 
-					if (is_file($filepath) && is_readable($filepath) && @include_once $filepath) {
+					if ( is_file( $filepath ) && is_readable( $filepath ) && @include_once $filepath ) {
 						self::$_loaded_files[] = $filepath;
 					}
 				}
 
-				closedir($dh);
+				closedir( $dh );
 			}
 
-			do_action('icf_loaded', self::$_loaded_files);
+			do_action( 'icf_loaded', self::$_loaded_files );
 
 			self::$_loaded = self::get_latest_version();
 
-			if (!defined('ICF_DEBUG')) {
-				define('ICF_DEBUG', false);
+			if ( !defined( 'ICF_DEBUG' ) ) {
+				define( 'ICF_DEBUG', false );
 			}
 		}
 
@@ -88,13 +86,12 @@ if (!class_exists('ICF_Loader')) {
 		 * @param $version
 		 * @return bool|string
 		 */
-		public static function get_any_version_dir($version)
-		{
-			if (empty($version) || !isset($GLOBALS['icf_versions'][$version])) {
+		public static function get_any_version_dir( $version ) {
+			if ( empty( $version ) || !isset( $GLOBALS['icf_versions'][$version] ) ) {
 				return false;
 			}
 
-			return dirname($GLOBALS['icf_versions'][$version]);
+			return dirname( $GLOBALS['icf_versions'][$version] );
 		}
 
 		/**
@@ -103,13 +100,12 @@ if (!class_exists('ICF_Loader')) {
 		 * @param $version
 		 * @return bool|string
 		 */
-		public static function get_any_version_url($version)
-		{
-			if (empty($version) || !($dir = self::get_any_version_dir($version))) {
+		public static function get_any_version_url( $version ) {
+			if ( empty( $version ) || !( $dir = self::get_any_version_dir( $version ) ) ) {
 				return false;
 			}
 
-			return get_option('siteurl') . '/' . str_replace(ABSPATH, '', $dir);
+			return get_option( 'siteurl' ) . '/' . str_replace( ABSPATH, '', $dir );
 		}
 
 		/**
@@ -117,8 +113,7 @@ if (!class_exists('ICF_Loader')) {
 		 *
 		 * @return bool
 		 */
-		public static function is_loaded()
-		{
+		public static function is_loaded() {
 			return (bool)self::$_loaded;
 		}
 
@@ -127,8 +122,7 @@ if (!class_exists('ICF_Loader')) {
 		 *
 		 * @return bool|string
 		 */
-		public static function get_current_version()
-		{
+		public static function get_current_version() {
 			return self::is_loaded() ? self::$_loaded : false;
 		}
 
@@ -137,9 +131,8 @@ if (!class_exists('ICF_Loader')) {
 		 *
 		 * @return bool|string
 		 */
-		public static function get_current_version_dir()
-		{
-			return self::get_any_version_dir(self::get_current_version());
+		public static function get_current_version_dir() {
+			return self::get_any_version_dir( self::get_current_version() );
 		}
 
 		/**
@@ -147,9 +140,8 @@ if (!class_exists('ICF_Loader')) {
 		 *
 		 * @return bool|string
 		 */
-		public static function get_current_version_url()
-		{
-			return self::get_any_version_url(self::get_current_version());
+		public static function get_current_version_url() {
+			return self::get_any_version_url( self::get_current_version() );
 		}
 
 		/**
@@ -157,17 +149,16 @@ if (!class_exists('ICF_Loader')) {
 		 *
 		 * @return null|string
 		 */
-		public static function get_latest_version()
-		{
+		public static function get_latest_version() {
 			$latest = null;
 
-			foreach (array_keys($GLOBALS['icf_versions']) as $version) {
-				if (!$latest) {
+			foreach ( array_keys( $GLOBALS['icf_versions'] ) as $version ) {
+				if ( !$latest ) {
 					$latest = $version;
 					continue;
 				}
 
-				if (version_compare($version, $latest) > 0) {
+				if ( version_compare( $version, $latest ) > 0 ) {
 					$latest = $version;
 				}
 			}
@@ -178,148 +169,143 @@ if (!class_exists('ICF_Loader')) {
 		/**
 		 * Returns the latest version directory path of ICF
 		 *
-		 * @return	NULL|string
+		 * @return    NULL|string
 		 */
-		public static function get_latest_version_dir()
-		{
-			return self::get_any_version_dir(self::get_latest_version());
+		public static function get_latest_version_dir() {
+			return self::get_any_version_dir( self::get_latest_version() );
 		}
 
 		/**
 		 * Returns the latest version url of ICF
 		 *
-		 * @return	NULL|string
+		 * @return    NULL|string
 		 */
-		public static function get_latest_version_url()
-		{
-			return self::get_any_version_url(self::get_latest_version());
+		public static function get_latest_version_url() {
+			return self::get_any_version_url( self::get_latest_version() );
 		}
 
 		/**
-		 * Enqueues a JavaScript set
+		 * Enqueue the JavaScript set
 		 */
-		public static function register_javascript()
-		{
-			wp_enqueue_script('media-upload');
-			wp_enqueue_script('thickbox');
-			wp_enqueue_script('icf-flexible-wh', self::get_latest_version_url() . '/js/flexible_wh.js', array('jquery'), null, true);
+		public static function register_javascript() {
+			wp_enqueue_script( 'media-upload' );
+			wp_enqueue_script( 'thickbox' );
+			wp_enqueue_script( 'icf-flexible-wh', self::get_latest_version_url() . '/js/flexible_wh.js', array( 'jquery' ), null, true );
 
-			if (version_compare(get_bloginfo('version'), '3.3', '>=')) {
-				wp_enqueue_script('wplink');
-				wp_enqueue_script('wpdialogs-popup');
-				wp_enqueue_script('icf-active-editor', self::get_latest_version_url() . '/js/active_editor.js', array('jquery'), null, true);
-				wp_enqueue_script('icf-quicktags', self::get_latest_version_url() . '/js/quicktags.js', array('quicktags'), null, true);
+			if ( version_compare( get_bloginfo( 'version' ), '3.3', '>=' ) ) {
+				wp_enqueue_script( 'wplink' );
+				wp_enqueue_script( 'wpdialogs-popup' );
+				wp_enqueue_script( 'icf-active-editor', self::get_latest_version_url() . '/js/active_editor.js', array( 'jquery' ), null, true );
+				wp_enqueue_script( 'icf-quicktags', self::get_latest_version_url() . '/js/quicktags.js', array( 'quicktags' ), null, true );
 			}
 
-			if (!wp_script_is('icf-mobiscroll', 'registered')) {
-				wp_enqueue_script('icf-mobiscroll', self::get_latest_version_url() . '/js/mobiscroll/mobiscroll.custom-2.4.4.min.js', array('jquery'), null, true);
+			if ( !wp_script_is( 'icf-mobiscroll', 'registered' ) ) {
+				wp_enqueue_script( 'icf-mobiscroll', self::get_latest_version_url() . '/js/mobiscroll/mobiscroll.custom-2.4.4.min.js', array( 'jquery' ), null, true );
 			}
 
-			if (!wp_script_is('icf-exvalidaion', 'registered')) {
-				wp_enqueue_script('icf-exvalidation', self::get_latest_version_url() . '/js/exvalidation/exvalidation.js', array('jquery'), null, true);
+			if ( !wp_script_is( 'icf-exvalidaion', 'registered' ) ) {
+				wp_enqueue_script( 'icf-exvalidation', self::get_latest_version_url() . '/js/exvalidation/exvalidation.js', array( 'jquery' ), null, true );
 			}
 
-			if (!wp_script_is('icf-exchecker', 'registered')) {
+			if ( !wp_script_is( 'icf-exchecker', 'registered' ) ) {
 				$exchecker = 'exchecker-' . get_locale() . '.js';
 
-				if (!is_readable(self::get_latest_version_dir() . '/js/exvalidation/' . $exchecker)) {
+				if ( !is_readable( self::get_latest_version_dir() . '/js/exvalidation/' . $exchecker ) ) {
 					$exchecker = 'exchecker-en_US.min.js';
 				}
 
-				wp_enqueue_script('icf-exchecker', self::get_latest_version_url() . '/js/exvalidation/' . $exchecker, array('jquery'));
+				wp_enqueue_script( 'icf-exchecker', self::get_latest_version_url() . '/js/exvalidation/' . $exchecker, array( 'jquery' ) );
 			}
 
-			if (!wp_script_is('icf-common', 'registered')) {
-				$assoc = array('jquery', 'media-upload', 'thickbox', 'icf-exchecker', 'icf-mobiscroll');
+			if ( !wp_script_is( 'icf-common', 'registered' ) ) {
+				$assoc = array( 'jquery', 'media-upload', 'thickbox', 'icf-exchecker', 'icf-mobiscroll' );
 
-				wp_enqueue_script('icf-common', self::get_latest_version_url() . '/js/common.js', $assoc, null, true);
-				wp_enqueue_script('icf-metabox', self::get_latest_version_url() . '/js/metabox.js', array('icf-common'), null, true);
-				wp_enqueue_script('icf-settingspage', self::get_latest_version_url() . '/js/settingspage.js', array('icf-common'), null, true);
+				wp_enqueue_script( 'icf-common', self::get_latest_version_url() . '/js/common.js', $assoc, null, true );
+				wp_enqueue_script( 'icf-metabox', self::get_latest_version_url() . '/js/metabox.js', array( 'icf-common' ), null, true );
+				wp_enqueue_script( 'icf-settingspage', self::get_latest_version_url() . '/js/settingspage.js', array( 'icf-common' ), null, true );
 
-				wp_localize_script('icf-common', 'icfCommonL10n', array(
-					'insertToField' => __('Insert to field', 'icf'),
-					'cancelText' => __('Cancel', 'icf'),
-					'dateFormat' => __('mm/dd/yy', 'icf'),
-					'dateOrder' => __('mmddy', 'icf'),
-					'sunday' => __('Sunday', 'icf'),
-					'monday' => __('Monday', 'icf'),
-					'tuesday' => __('Tuesday', 'icf'),
-					'wednesday' => __('Wednesday', 'icf'),
-					'thursday' => __('Thursday', 'icf'),
-					'friday' => __('Friday', 'icf'),
-					'saturday' => __('Saturday', 'icf'),
-					'sundayShort' => __('Sun', 'icf'),
-					'mondayShort' => __('Mon', 'icf'),
-					'tuesdayShort' => __('Tue', 'icf'),
-					'wednesdayShort' => __('Wed', 'icf'),
-					'thursdayShort' => __('Thu', 'icf'),
-					'fridayShort' => __('Fri', 'icf'),
-					'saturdayShort' => __('Sat', 'icf'),
-					'dayText' => __('Day', 'icf'),
-					'hourText' => __('Hours', 'icf'),
-					'minuteText' => __('Minutes', 'icf'),
-					'january' => __('January', 'icf'),
-					'february' => __('February', 'icf'),
-					'march' => __('March', 'icf'),
-					'april' => __('April', 'icf'),
-					'may' => _x('May', 'long', 'icf'),
-					'june' => __('June', 'icf'),
-					'july' => __('July', 'icf'),
-					'august' => __('August', 'icf'),
-					'september' => __('September', 'icf'),
-					'october' => __('October', 'icf'),
-					'november' => __('November', 'icf'),
-					'december' => __('December', 'icf'),
-					'januaryShort' => __('Jan', 'icf'),
-					'februaryShort' => __('Feb', 'icf'),
-					'marchShort' => __('Mar', 'icf'),
-					'aprilShort' => __('Apr', 'icf'),
-					'mayShort' => _x('May', 'short', 'icf'),
-					'juneShort' => __('Jun', 'icf'),
-					'julyShort' => __('Jul', 'icf'),
-					'augustShort' => __('Aug', 'icf'),
-					'septemberShort' => __('Sep', 'icf'),
-					'octoberShort' => __('Oct', 'icf'),
-					'novemberShort' => __('Nov', 'icf'),
-					'decemberShort' => __('Dec', 'icf'),
-					'monthText' => __('Month', 'icf'),
-					'secText' => __('Seconds', 'icf'),
-					'setText' => __('Set', 'icf'),
-					'timeFormat' => __('hh:ii A', 'icf'),
-					'timeWheels' => __('hhiiA', 'icf'),
-					'yearText' => __('Year', 'icf')
-				));
+				wp_localize_script( 'icf-common', 'icfCommonL10n', array(
+					'insertToField' => __( 'Insert to field', 'icf' ),
+					'cancelText' => __( 'Cancel', 'icf' ),
+					'dateFormat' => __( 'mm/dd/yy', 'icf' ),
+					'dateOrder' => __( 'mmddy', 'icf' ),
+					'sunday' => __( 'Sunday', 'icf' ),
+					'monday' => __( 'Monday', 'icf' ),
+					'tuesday' => __( 'Tuesday', 'icf' ),
+					'wednesday' => __( 'Wednesday', 'icf' ),
+					'thursday' => __( 'Thursday', 'icf' ),
+					'friday' => __( 'Friday', 'icf' ),
+					'saturday' => __( 'Saturday', 'icf' ),
+					'sundayShort' => __( 'Sun', 'icf' ),
+					'mondayShort' => __( 'Mon', 'icf' ),
+					'tuesdayShort' => __( 'Tue', 'icf' ),
+					'wednesdayShort' => __( 'Wed', 'icf' ),
+					'thursdayShort' => __( 'Thu', 'icf' ),
+					'fridayShort' => __( 'Fri', 'icf' ),
+					'saturdayShort' => __( 'Sat', 'icf' ),
+					'dayText' => __( 'Day', 'icf' ),
+					'hourText' => __( 'Hours', 'icf' ),
+					'minuteText' => __( 'Minutes', 'icf' ),
+					'january' => __( 'January', 'icf' ),
+					'february' => __( 'February', 'icf' ),
+					'march' => __( 'March', 'icf' ),
+					'april' => __( 'April', 'icf' ),
+					'may' => _x( 'May', 'long', 'icf' ),
+					'june' => __( 'June', 'icf' ),
+					'july' => __( 'July', 'icf' ),
+					'august' => __( 'August', 'icf' ),
+					'september' => __( 'September', 'icf' ),
+					'october' => __( 'October', 'icf' ),
+					'november' => __( 'November', 'icf' ),
+					'december' => __( 'December', 'icf' ),
+					'januaryShort' => __( 'Jan', 'icf' ),
+					'februaryShort' => __( 'Feb', 'icf' ),
+					'marchShort' => __( 'Mar', 'icf' ),
+					'aprilShort' => __( 'Apr', 'icf' ),
+					'mayShort' => _x( 'May', 'short', 'icf' ),
+					'juneShort' => __( 'Jun', 'icf' ),
+					'julyShort' => __( 'Jul', 'icf' ),
+					'augustShort' => __( 'Aug', 'icf' ),
+					'septemberShort' => __( 'Sep', 'icf' ),
+					'octoberShort' => __( 'Oct', 'icf' ),
+					'novemberShort' => __( 'Nov', 'icf' ),
+					'decemberShort' => __( 'Dec', 'icf' ),
+					'monthText' => __( 'Month', 'icf' ),
+					'secText' => __( 'Seconds', 'icf' ),
+					'setText' => __( 'Set', 'icf' ),
+					'timeFormat' => __( 'hh:ii A', 'icf' ),
+					'timeWheels' => __( 'hhiiA', 'icf' ),
+					'yearText' => __( 'Year', 'icf' )
+				) );
 			}
 		}
 
 		/**
-		 * Enqueues a CSS set
+		 * Enqueue the CSS set
 		 */
-		public static function register_css()
-		{
-			wp_enqueue_style('thickbox');
-			wp_enqueue_style('editor-buttons');
-			wp_enqueue_style('icf-common', ICF_Loader::get_latest_version_url() . '/css/common.css');
+		public static function register_css() {
+			wp_enqueue_style( 'thickbox' );
+			wp_enqueue_style( 'editor-buttons' );
+			wp_enqueue_style( 'icf-common', ICF_Loader::get_latest_version_url() . '/css/common.css' );
 
-			if (version_compare(get_bloginfo('version'), '3.3', '>=')) {
-				wp_enqueue_style('wp-jquery-ui-dialog');
+			if ( version_compare( get_bloginfo( 'version' ), '3.3', '>=' ) ) {
+				wp_enqueue_style( 'wp-jquery-ui-dialog' );
 			}
 
-			if (!wp_style_is('icf-mobiscroll', 'registered')) {
-				wp_enqueue_style('icf-mobiscroll', ICF_Loader::get_latest_version_url() . '/js/mobiscroll/mobiscroll.custom-2.4.4.min.css');
+			if ( !wp_style_is( 'icf-mobiscroll', 'registered' ) ) {
+				wp_enqueue_style( 'icf-mobiscroll', ICF_Loader::get_latest_version_url() . '/js/mobiscroll/mobiscroll.custom-2.4.4.min.css' );
 			}
 
-			if (!wp_style_is('icf-exvalidation', 'registered')) {
-				wp_enqueue_style('icf-exvalidation', ICF_Loader::get_latest_version_url() . '/js/exvalidation/exvalidation.css');
+			if ( !wp_style_is( 'icf-exvalidation', 'registered' ) ) {
+				wp_enqueue_style( 'icf-exvalidation', ICF_Loader::get_latest_version_url() . '/js/exvalidation/exvalidation.css' );
 			}
 		}
 
 		/**
 		 * Adds the codes of link dialog
 		 */
-		public static function load_wpeditor_html()
-		{
-			if (version_compare(get_bloginfo('version'), '3.3', '>=')) {
+		public static function load_wpeditor_html() {
+			if ( version_compare( get_bloginfo( 'version' ), '3.3', '>=' ) ) {
 				include_once ABSPATH . WPINC . '/class-wp-editor.php';
 				_WP_Editors::wp_link_dialog();
 			}
