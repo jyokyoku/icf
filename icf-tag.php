@@ -51,10 +51,11 @@ class ICF_Tag {
 			$current_tag = array_pop( $this->_stack );
 
 			if ( !empty( $tag ) && strtolower( $tag ) !== $current_tag ) {
-				throw new Exception( 'Tag "' . strtolower( $tag ) . '" is not current opened tag' );
-			}
+				trigger_error( 'Tag "' . strtolower( $tag ) . '" is not current opened tag', E_USER_WARNING );
 
-			$this->_elements[] = new ICF_Tag_Element_Node( $current_tag, false );
+			} else {
+				$this->_elements[] = new ICF_Tag_Element_Node( $current_tag, false );
+			}
 		}
 
 		return $this;

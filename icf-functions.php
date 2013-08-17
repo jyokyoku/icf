@@ -65,7 +65,7 @@ function icf_log( $message = null ) {
 
 	if ( !is_dir( $log_dir ) ) {
 		if ( !@mkdir( $log_dir ) ) {
-			throw Exception( 'Could not make a log directory.' );
+			trigger_error( 'Could not make a log directory.', E_USER_WARNING );
 		}
 	}
 
@@ -73,7 +73,7 @@ function icf_log( $message = null ) {
 
 	if ( !is_file( $log_file ) ) {
 		if ( !@touch( $log_file ) ) {
-			throw Exception( 'Could not make a log file.' );
+			trigger_error( 'Could not make a log file.', E_USER_WARNING );
 		}
 	}
 

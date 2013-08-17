@@ -77,14 +77,14 @@ abstract class ICF_Component_Abstract extends ICF_Tag {
 				: 'ICF_' . $this->_name . '_Component_Element_Interface';
 
 			if ( interface_exists( $interface ) && !( $element instanceof $interface ) ) {
-				throw new Exception( 'Class "' . $element_class . '" does not implements interface of the "' . $interface . '"' );
+				trigger_error( 'Class "' . $element_class . '" does not implements interface of the "' . $interface . '"', E_USER_WARNING );
 			}
 		}
 
 		$sub_class = $is_form ? 'ICF_Component_Element_FormField_Abstract' : 'ICF_Component_Element_Abstract';
 
 		if ( !is_subclass_of( $element, $sub_class ) ) {
-			throw new Exception( 'Class "' . $element_class . '" is not sub class of the "' . $sub_class . '"' );
+			trigger_error( 'Class "' . $element_class . '" is not sub class of the "' . $sub_class . '"', E_USER_WARNING );
 		}
 
 		$this->_element_trigger( $element, 'initialize' );
@@ -252,7 +252,7 @@ abstract class ICF_Component_Element_FormField_Abstract extends ICF_Component_El
 		}
 
 		if ( empty( $args['name'] ) ) {
-			throw new Exception( 'Class "' . __CLASS__ . '" requires the "name" attribute' );
+			trigger_error( 'Class "' . __CLASS__ . '" requires the "name" attribute', E_USER_WARNING );
 		}
 
 		if ( $component_name = $component->get_name() ) {
