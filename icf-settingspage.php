@@ -560,7 +560,7 @@ class ICF_SettingsPage_Section_Component extends ICF_Component_Abstract {
 
 		$this->_id = $id;
 		$this->_page_slug = $page_slug;
-		$this->_section_id = empty( $section_id ) ? 'default' : $section_id;
+		$this->_section_id = ( empty( $section_id ) && $section_id !== false ) ? 'default' : $section_id;
 
 		$this->title = empty( $title ) ? $this->_id : $title;
 
