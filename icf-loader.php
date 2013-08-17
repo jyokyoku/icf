@@ -41,6 +41,7 @@ if (!class_exists('ICF_Loader')) {
 			add_action('admin_init', array('ICF_Loader', 'register_javascript'));
 			add_action('admin_init', array('ICF_Loader', 'register_css'));
 			add_action('admin_print_footer_scripts', array('ICF_Loader', 'load_wpeditor_html'));
+			add_action('plugins_loaded', array('ICF_Loader', 'load'));
 			add_action('after_setup_theme', array('ICF_Loader', 'load'));
 		}
 
