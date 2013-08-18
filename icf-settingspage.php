@@ -33,6 +33,8 @@ abstract class ICF_SettingsPage_Abstract {
 
 	public $embed_form;
 
+	protected $_rendered_html = '';
+
 	protected $_slug;
 
 	protected $_sections = array();
@@ -44,9 +46,8 @@ abstract class ICF_SettingsPage_Abstract {
 	 */
 	public function __construct( $slug, $title = null, $args = array() ) {
 		$args = wp_parse_args( $args, array(
-			'menu_title' => null, 'capability' => 'manage_options', 'template' => null,
-			'include_header' => true, 'independent' => false, 'function' => null,
-			'before_template' => null, 'after_template' => null, 'embed_form' => true,
+			'menu_title' => null, 'capability' => 'manage_options',
+			'template' => null, 'function' => null,
 		) );
 
 		$this->_slug = $slug;
@@ -62,13 +63,9 @@ abstract class ICF_SettingsPage_Abstract {
 		$this->template = $args['template'];
 		$this->function = $args['function'];
 
-		$this->include_header = $args['independent'] ? false : $args['include_header'];
-		$this->before_template = $args['independent'] ? '' : $args['before_template'];
-		$this->after_template = $args['independent'] ? '' : $args['after_template'];
-		$this->embed_form = $args['independent'] ? false : $args['embed_form'];
-
 		add_action( 'option_page_capability_' . $this->_slug, array( $this, 'get_capability' ) );
 		add_action( 'admin_menu', array( $this, 'register' ) );
+		add_action( 'admin_init', array( $this, 'pre_render' ) );
 	}
 
 	/**
@@ -179,35 +176,30 @@ abstract class ICF_SettingsPage_Abstract {
 	}
 
 	/**
-	 * Displays the rendered html
+	 * Render and cache the html
 	 */
-	public function display() {
+	public function pre_render() {
 		global $wp_settings_fields;
 
-		if ( $this->before_template ) {
-			echo $this->before_template;
-
-		} else if ( $this->before_template === null ) {
-			?>
-			<div class="wrap">
-				<h2><?php echo esc_html( $this->title ) ?></h2>
-			<?php
-		}
-
-		if ( $this->embed_form ) {
-			?>
-			<form method="post" action="options.php" id="<?php echo $this->_slug ?>_form">
-			<?php
-			require ABSPATH . 'wp-admin/options-head.php';
-			$this->display_hidden_fields();
-		}
+		ob_start();
 
 		if ( $this->template ) {
-			if ( is_callable( $this->template ) ) {
-				call_user_func_array( $this->template, array( $this ) );
+			$plugin_basename = IPF_Core::plugin_basename( __FILE__ );
 
-			} else if ( is_file( $this->template ) && is_readable( $this->template ) ) {
+			if ( is_file( $this->template ) && is_readable( $this->template ) ) {
 				include $this->template;
+
+			} else if (
+				is_file( WP_PLUGIN_DIR . '/' . $plugin_basename . '/' . $this->template )
+				&& is_readable( WP_PLUGIN_DIR . '/' . $plugin_basename . '/' . $this->template )
+			) {
+				include WP_PLUGIN_DIR . '/' . $plugin_basename . '/' . $this->template;
+
+			} else if (
+				is_file( WPMU_PLUGIN_DIR . '/' . $plugin_basename . '/' . $this->template )
+				&& is_readable( WPMU_PLUGIN_DIR . '/' . $plugin_basename . '/' . $this->template )
+			) {
+				include WPMU_PLUGIN_DIR . '/' . $plugin_basename . '/' . $this->template;
 
 			} else if (
 				is_file( get_stylesheet_directory() . '/' . $this->template )
@@ -220,43 +212,103 @@ abstract class ICF_SettingsPage_Abstract {
 				&& is_readable( get_template_directory() . '/' . $this->template )
 			) {
 				include get_template_directory() . '/' . $this->template;
+
+			} else {
+				wp_die( sprintf( __( 'Template file `%s` is not exists.', 'icf' ), $this->template ) );
 			}
 
 		} else {
+			echo $this->get_header();
+
 			if ( !empty( $wp_settings_fields[$this->_slug]['default'] ) ) {
 				?>
 				<table class="form-table">
-					<?php $this->display_settings_fields( 'default' ) ?>
+					<?php echo $this->get_settings_fields( 'default' ) ?>
 				</table>
 				<?php
 			}
 
-			$this->display_settings_sections();
+			echo $this->get_settings_sections();
 			?>
 			<div id="poststuff">
 				<?php
-				$this->display_metaboxes( 'normal' );
-				$this->display_metaboxes( 'advanced' );
+				echo $this->get_metaboxes( 'normal' );
+				echo $this->get_metaboxes( 'advanced' );
 				?>
 			</div>
 			<?php
+			echo $this->get_footer();
 		}
 
-		if ( $this->embed_form ) {
-			submit_button();
+		$this->_rendered_html = ob_get_clean();
+	}
+
+	/**
+	 * Returns the rendered html
+	 *
+	 * @return string
+	 */
+	public function render() {
+		if ( !$this->_rendered_html ) {
+			$this->pre_render();
+		}
+
+		return $this->_rendered_html;
+	}
+
+	/**
+	 * Display the html
+	 */
+	public function display() {
+		echo $this->render();
+	}
+
+	/**
+	 * Returns the header html
+	 *
+	 * @param array $attr
+	 * @return string
+	 */
+	public function get_header( $attr = array() ) {
+		$attr = wp_parse_args( $attr, array(
+			'title' => $this->title,
+			'form_action' => 'options.php',
+			'form_id' => $this->_slug . '_form'
+		) );
+
+		ob_start();
 			?>
-			</form>
+		<div class="wrap">
+		<h2><?php echo esc_html( $attr['title'] ) ?></h2>
+		<form method="post" action="<?php echo $attr['form_action'] ?>" id="<?php echo $attr['form_id'] ?>">
 			<?php
+		require ABSPATH . 'wp-admin/options-head.php';
+		echo $this->get_hidden_fields();
+
+		return ob_get_clean();
 		}
 
-		if ( $this->after_template ) {
-			echo $this->after_template;
+	/**
+	 * Returns the footer html
+	 *
+	 * @param array $attr
+	 * @return string
+	 */
+	public function get_footer( $attr = array() ) {
+		$attr = wp_parse_args( $attr, array(
+			'submit_button' => true
+		) );
 
-		} else if ( $this->after_template === null ) {
+		ob_start();
+
+		if ($attr['submit_button']) {
+			submit_button();
+		}
 			?>
+		</form>
 			</div>
 			<?php
-		}
+		return ob_get_clean();
 	}
 
 	/**
@@ -264,8 +316,11 @@ abstract class ICF_SettingsPage_Abstract {
 	 *
 	 * @see    settings_fields
 	 */
-	public function display_hidden_fields() {
+	public function get_hidden_fields() {
+		ob_start();
 		settings_fields( $this->_slug );
+
+		return ob_get_clean();
 	}
 
 	/**
@@ -273,8 +328,11 @@ abstract class ICF_SettingsPage_Abstract {
 	 *
 	 * @see    do_settings_sections
 	 */
-	public function display_settings_sections() {
+	public function get_settings_sections() {
+		ob_start();
 		do_settings_sections( $this->_slug );
+
+		return ob_get_clean();
 	}
 
 	/**
@@ -283,8 +341,11 @@ abstract class ICF_SettingsPage_Abstract {
 	 * @param    string $section
 	 * @see        do_settings_fields
 	 */
-	public function display_settings_fields( $section = 'default' ) {
+	public function get_settings_fields( $section = 'default' ) {
+		ob_start();
 		do_settings_fields( $this->_slug, $section );
+
+		return ob_get_clean();
 	}
 
 	/**
@@ -293,14 +354,11 @@ abstract class ICF_SettingsPage_Abstract {
 	 * @param    string $context
 	 * @see        do_meta_boxes
 	 */
-	public function display_metaboxes( $context = 'normal' ) {
+	public function get_metaboxes( $context = 'normal' ) {
+		ob_start();
 		do_meta_boxes( $this->_slug, $context, $this );
-	}
 
-	public function before_display() {
-		if ( !$this->include_header && ( $this->template || $this->function ) ) {
-			$_GET['noheader'] = true;
-		}
+		return ob_get_clean();
 	}
 
 	abstract public function register();
@@ -326,8 +384,6 @@ class ICF_SettingsPage_Parent extends ICF_SettingsPage_Abstract {
 
 		$this->icon_url = $args['icon_url'];
 		$this->position = $args['position'];
-
-		add_action( 'load-toplevel_page_' . $this->_slug, array( $this, 'before_display' ) );
 	}
 
 	/**
@@ -420,8 +476,6 @@ class ICF_SettingsPage_Child extends ICF_SettingsPage_Abstract {
 
 			$this->_parent_slug = isset( $parent_alias[$parent_slug] ) ? $parent_alias[$parent_slug] : $parent_slug;
 		}
-
-		add_action( 'load-' . $this->_parent_slug . '_page_' . $this->_slug, array( $this, 'before_display' ) );
 	}
 
 	/**
