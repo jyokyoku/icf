@@ -15,7 +15,7 @@ require_once dirname( __FILE__ ) . '/icf-metabox.php';
 abstract class ICF_SettingsPage_Abstract {
 	public $title;
 
-	public $menu_title;
+	protected $_menu_title;
 
 	protected $_capability;
 
@@ -44,16 +44,15 @@ abstract class ICF_SettingsPage_Abstract {
 			'template' => null, 'function' => null, 'option_set' => ''
 		) );
 
-		$this->title = empty( $title ) ? $this->_slug : $title;
-
 		$this->_slug = $slug;
-		$this->_menu_title = empty( $args['menu_title'] ) ? $this->title : $args['menu_title'];
 		$this->_capability = $args['capability'];
 		$this->_option_set = $args['option_set'];
-
 		$this->_template = $args['template'];
 		$this->_function = $args['function'];
 		$this->_component = new ICF_SettingsPage_Section_Component( 'common', null, $this->_slug, false, $this->_option_set );
+
+		$this->title = empty( $title ) ? $this->_slug : $title;
+		$this->_menu_title = empty( $args['menu_title'] ) ? $this->title : $args['menu_title'];
 
 		add_action( 'admin_menu', array( $this, 'register' ) );
 	}
