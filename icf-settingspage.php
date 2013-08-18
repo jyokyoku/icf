@@ -167,6 +167,10 @@ abstract class ICF_SettingsPage_Abstract {
 			$metabox = $this->_metaboxes[$id];
 
 		} else {
+			$args = wp_parse_args($args, array(
+				'option_set' => $this->_option_set
+			));
+
 			$metabox = new ICF_MetaBox( $this->_slug, $id, $title, $args );
 			$this->_metaboxes[$id] = $metabox;
 		}
