@@ -14,11 +14,11 @@ require_once dirname( __FILE__ ) . '/icf-component.php';
 class ICF_MetaBox {
 	public $title;
 
-	public $context;
+	protected $_context;
 
-	public $priority;
+	protected $_priority;
 
-	public $capability;
+	protected $_capability;
 
 	protected $_screen;
 
@@ -44,11 +44,11 @@ class ICF_MetaBox {
 		$this->_screen = $screen;
 		$this->_id = $id;
 		$this->_is_post = !is_null( get_post_type_object( $this->_screen ) );
+		$this->_context = $args['context'];
+		$this->_priority = $args['priority'];
+		$this->_capability = $args['capability'];
 
 		$this->title = empty( $title ) ? $id : $title;
-		$this->context = $args['context'];
-		$this->priority = $args['priority'];
-		$this->capability = $args['capability'];
 
 		if ( $args['register'] ) {
 			add_action( 'admin_menu', array( $this, 'register' ) );
@@ -127,8 +127,8 @@ class ICF_MetaBox {
 	 * Registers to system
 	 */
 	public function register() {
-		if ( empty( $this->capability ) || ( !empty( $this->capability ) && current_user_can( $this->capability ) ) ) {
-			add_meta_box( $this->_id, $this->title, array( $this, 'display' ), $this->_screen, $this->context, $this->priority );
+		if ( empty( $this->_capability ) || ( !empty( $this->_capability ) && current_user_can( $this->_capability ) ) ) {
+			add_meta_box( $this->_id, $this->title, array( $this, 'display' ), $this->_screen, $this->_context, $this->_priority );
 		}
 	}
 
@@ -167,7 +167,7 @@ class ICF_MetaBox {
 			defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE
 			|| empty( $_POST['post_type'] )
 			|| $_POST['post_type'] != $this->_screen
-			|| ( !empty( $this->capability ) && !current_user_can( $this->capability, $post_id ) )
+			|| ( !empty( $this->_capability ) && !current_user_can( $this->_capability, $post_id ) )
 		) {
 			return $post_id;
 		}
