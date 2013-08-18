@@ -54,6 +54,11 @@ abstract class ICF_SettingsPage_Abstract {
 		$this->title = empty( $title ) ? $this->_slug : $title;
 		$this->menu_title = empty( $args['menu_title'] ) ? $this->title : $args['menu_title'];
 		$this->capability = $args['capability'];
+
+		if ( version_compare( get_bloginfo( 'version' ), '3.2', '<' ) && $this->capability != 'manage_options' ) {
+			trigger_error( 'Specifying capabilities are supported the WordPress version 3.2 or above.', E_USER_WARNING );
+		}
+
 		$this->template = $args['template'];
 		$this->function = $args['function'];
 
@@ -62,7 +67,17 @@ abstract class ICF_SettingsPage_Abstract {
 		$this->after_template = $args['independent'] ? '' : $args['after_template'];
 		$this->embed_form = $args['independent'] ? false : $args['embed_form'];
 
+		add_action( 'option_page_capability_' . $this->_slug, array( $this, 'get_capability' ) );
 		add_action( 'admin_menu', array( $this, 'register' ) );
+	}
+
+	/**
+	 * Returns the capability of settings page
+	 *
+	 * @return string
+	 */
+	public function get_capability() {
+		return $this->capability;
 	}
 
 	/**
