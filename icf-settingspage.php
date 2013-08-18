@@ -68,7 +68,7 @@ abstract class ICF_SettingsPage_Abstract {
 
 		add_action( 'option_page_capability_' . $this->_slug, array( $this, 'get_capability' ) );
 		add_action( 'admin_menu', array( $this, 'register' ) );
-		add_action( 'admin_init', array( $this, 'pre_render' ) );
+		add_action( 'admin_menu', array( $this, 'pre_render' ), 20 );
 	}
 
 	/**
@@ -130,8 +130,8 @@ abstract class ICF_SettingsPage_Abstract {
 
 				return $section;
 			}
-
 		}
+
 		if ( isset( $this->_sections[$id] ) ) {
 			return $this->_sections[$id];
 
@@ -173,8 +173,8 @@ abstract class ICF_SettingsPage_Abstract {
 			if ( isset( $this->_metaboxes[$id] ) && $this->_metaboxes[$id] !== $metabox ) {
 				$this->_metaboxes[$id] = $metabox;
 			}
-
 		}
+
 		if ( is_string( $id ) && isset( $this->_metaboxes[$id] ) ) {
 			$metabox = $this->_metaboxes[$id];
 
@@ -249,7 +249,7 @@ abstract class ICF_SettingsPage_Abstract {
 				<table class="form-table">
 					<?php echo $this->get_settings_fields( 'default' ) ?>
 				</table>
-				<?php
+			<?php
 			}
 
 			echo $this->get_settings_sections();
@@ -301,16 +301,16 @@ abstract class ICF_SettingsPage_Abstract {
 		) );
 
 		ob_start();
-			?>
+		?>
 		<div class="wrap">
 		<h2><?php echo esc_html( $attr['title'] ) ?></h2>
 		<form method="post" action="<?php echo $attr['form_action'] ?>" id="<?php echo $attr['form_id'] ?>">
-			<?php
+		<?php
 		require ABSPATH . 'wp-admin/options-head.php';
 		echo $this->get_hidden_fields();
 
 		return ob_get_clean();
-		}
+	}
 
 	/**
 	 * Returns the footer html
@@ -328,10 +328,10 @@ abstract class ICF_SettingsPage_Abstract {
 		if ($attr['submit_button']) {
 			submit_button();
 		}
-			?>
+		?>
 		</form>
-			</div>
-			<?php
+		</div>
+		<?php
 		return ob_get_clean();
 	}
 
@@ -638,8 +638,6 @@ class ICF_SettingsPage_Section_Component extends ICF_Component_Abstract {
 
 	protected $_section_id;
 
-	protected $_registered = false;
-
 	/**
 	 * Constructor
 	 *
@@ -657,7 +655,7 @@ class ICF_SettingsPage_Section_Component extends ICF_Component_Abstract {
 
 		$this->title = empty( $title ) ? $this->_id : $title;
 
-		add_action( 'admin_menu', array( $this, 'register' ) );
+		add_action( 'admin_menu', array( $this, 'register' ));
 	}
 
 	/**
@@ -694,22 +692,6 @@ class ICF_SettingsPage_Section_Component extends ICF_Component_Abstract {
 		if ( $this->_page_slug && $this->_section_id ) {
 			add_settings_field( $this->_id, $this->title, array( $this, 'display' ), $this->_page_slug, $this->_section_id );
 		}
-
-		foreach ( $this->_elements as $element ) {
-			if ( is_subclass_of( $element, 'ICF_SettingsPage_Section_Component_Element_FormField_Abstract' ) ) {
-				$element->register();
-			}
-		}
-
-		$this->_registered = true;
-	}
-
-	public function render() {
-		if ( !$this->_registered ) {
-			$this->register();
-		}
-
-		return parent::render();
 	}
 }
 
@@ -733,11 +715,13 @@ abstract class ICF_SettingsPage_Section_Component_Element_FormField_Abstract ext
 
 	public function __construct( ICF_SettingsPage_Section_Component $component, $name, $value = null, array $args = array() ) {
 		parent::__construct( $component, $name, $value, $args );
+
+		add_action('admin_init', array($this, 'register'));
 	}
 
 	public function register() {
 		if ( $this->_component->get_page_slug() ) {
-		register_setting( $this->_component->get_page_slug(), $this->_name );
+			register_setting( $this->_component->get_page_slug(), $this->_name );
 		}
 
 		if ( get_option( $this->_name ) === false && $this->_value ) {
