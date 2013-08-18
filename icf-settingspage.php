@@ -35,6 +35,8 @@ abstract class ICF_SettingsPage_Abstract {
 
 	protected $_rendered_html = '';
 
+	protected $_component;
+
 	protected $_slug;
 
 	protected $_sections = array();
@@ -51,6 +53,7 @@ abstract class ICF_SettingsPage_Abstract {
 		) );
 
 		$this->_slug = $slug;
+		$this->_component = new ICF_SettingsPage_Section_Component( 'common', null, $this->_slug, false );
 
 		$this->title = empty( $title ) ? $this->_slug : $title;
 		$this->menu_title = empty( $args['menu_title'] ) ? $this->title : $args['menu_title'];
@@ -66,6 +69,27 @@ abstract class ICF_SettingsPage_Abstract {
 		add_action( 'option_page_capability_' . $this->_slug, array( $this, 'get_capability' ) );
 		add_action( 'admin_menu', array( $this, 'register' ) );
 		add_action( 'admin_init', array( $this, 'pre_render' ) );
+	}
+
+	/**
+	 * Magic method
+	 *
+	 * @param $method
+	 * @param $args
+	 * @return mixed
+	 */
+	public function __call( $method, $args ) {
+		return call_user_func_array( array( $this->_component, $method ), $args );
+	}
+
+	/**
+	 * Magic method
+	 *
+	 * @param $property
+	 * @return mixed
+	 */
+	public function __get( $property ) {
+		return $this->{$property}();
 	}
 
 	/**
