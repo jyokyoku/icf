@@ -17,21 +17,13 @@ abstract class ICF_SettingsPage_Abstract {
 
 	public $menu_title;
 
-	public $capability;
+	protected $_capability;
 
-	public $template;
+	protected $_template;
 
-	public $independent;
+	protected $_function;
 
-	public $function;
-
-	public $include_header;
-
-	public $before_template;
-
-	public $after_template;
-
-	public $embed_form;
+	protected $_option_set;
 
 	protected $_rendered_html = '';
 
@@ -49,26 +41,21 @@ abstract class ICF_SettingsPage_Abstract {
 	public function __construct( $slug, $title = null, $args = array() ) {
 		$args = wp_parse_args( $args, array(
 			'menu_title' => null, 'capability' => 'manage_options',
-			'template' => null, 'function' => null,
+			'template' => null, 'function' => null, 'option_set' => ''
 		) );
 
-		$this->_slug = $slug;
-		$this->_component = new ICF_SettingsPage_Section_Component( 'common', null, $this->_slug, false );
-
 		$this->title = empty( $title ) ? $this->_slug : $title;
-		$this->menu_title = empty( $args['menu_title'] ) ? $this->title : $args['menu_title'];
-		$this->capability = $args['capability'];
 
-		if ( version_compare( get_bloginfo( 'version' ), '3.2', '<' ) && $this->capability != 'manage_options' ) {
-			trigger_error( 'Specifying capabilities are supported the WordPress version 3.2 or above.', E_USER_WARNING );
-		}
+		$this->_slug = $slug;
+		$this->_menu_title = empty( $args['menu_title'] ) ? $this->title : $args['menu_title'];
+		$this->_capability = $args['capability'];
+		$this->_option_set = $args['option_set'];
 
-		$this->template = $args['template'];
-		$this->function = $args['function'];
+		$this->_template = $args['template'];
+		$this->_function = $args['function'];
+		$this->_component = new ICF_SettingsPage_Section_Component( 'common', null, $this->_slug, false, $this->_option_set );
 
-		add_action( 'option_page_capability_' . $this->_slug, array( $this, 'get_capability' ) );
 		add_action( 'admin_menu', array( $this, 'register' ) );
-		add_action( 'admin_menu', array( $this, 'pre_render' ), 20 );
 	}
 
 	/**
@@ -98,7 +85,7 @@ abstract class ICF_SettingsPage_Abstract {
 	 * @return string
 	 */
 	public function get_capability() {
-		return $this->capability;
+		return $this->_capability;
 	}
 
 	/**
@@ -118,7 +105,7 @@ abstract class ICF_SettingsPage_Abstract {
 	 * @param    callback                        $callback
 	 * @return    ICF_SettingsPage_Section
 	 */
-	public function section( $id = null, $title = null, $callback = null ) {
+	public function section( $id = null, $title = null, $callback = null, $option_set = null ) {
 		if ( is_object( $id ) && is_a( $id, 'ICF_SettingsPage_Section' ) ) {
 			$section = $id;
 			$id = $section->get_id();
@@ -136,7 +123,8 @@ abstract class ICF_SettingsPage_Abstract {
 			return $this->_sections[$id];
 
 		} else {
-			$section = new ICF_SettingsPage_Section( $this->_slug, $id, $title, $callback );
+			$option_set = empty( $option_set ) ? ( empty( $this->_option_set ) ? null : $this->_option_set ) : $option_set;
+			$section = new ICF_SettingsPage_Section( $this->_slug, $id, $title, $callback, $option_set );
 		}
 
 		$this->_sections[$id] = $section;
@@ -153,8 +141,8 @@ abstract class ICF_SettingsPage_Abstract {
 	 * @return    ICF_SettingsPage_Section
 	 * @see        ICF_SettingsPage_Abstract::section
 	 */
-	public function s( $id = null, $title = null, $callback = null ) {
-		return $this->section( $id, $title, $callback );
+	public function s( $id = null, $title = null, $callback = null, $option_set = null ) {
+		return $this->section( $id, $title, $callback, $option_set );
 	}
 
 	/**
@@ -205,40 +193,51 @@ abstract class ICF_SettingsPage_Abstract {
 	public function pre_render() {
 		global $wp_settings_fields;
 
+		if ( !isset( $_GET['page'] ) ) {
+			return;
+		}
+
+		$plugin_page = stripslashes( $_GET['page'] );
+		$plugin_page = plugin_basename( $plugin_page );
+
+		if ( $plugin_page !== $this->_slug ) {
+			return;
+		}
+
 		ob_start();
 
-		if ( $this->template ) {
+		if ( $this->_template ) {
 			$plugin_basename = IPF_Core::plugin_basename( __FILE__ );
 
-			if ( is_file( $this->template ) && is_readable( $this->template ) ) {
-				include $this->template;
+			if ( is_file( $this->_template ) && is_readable( $this->_template ) ) {
+				include $this->_template;
 
 			} else if (
-				is_file( WP_PLUGIN_DIR . '/' . $plugin_basename . '/' . $this->template )
-				&& is_readable( WP_PLUGIN_DIR . '/' . $plugin_basename . '/' . $this->template )
+				is_file( WP_PLUGIN_DIR . '/' . $plugin_basename . '/' . $this->_template )
+				&& is_readable( WP_PLUGIN_DIR . '/' . $plugin_basename . '/' . $this->_template )
 			) {
-				include WP_PLUGIN_DIR . '/' . $plugin_basename . '/' . $this->template;
+				include WP_PLUGIN_DIR . '/' . $plugin_basename . '/' . $this->_template;
 
 			} else if (
-				is_file( WPMU_PLUGIN_DIR . '/' . $plugin_basename . '/' . $this->template )
-				&& is_readable( WPMU_PLUGIN_DIR . '/' . $plugin_basename . '/' . $this->template )
+				is_file( WPMU_PLUGIN_DIR . '/' . $plugin_basename . '/' . $this->_template )
+				&& is_readable( WPMU_PLUGIN_DIR . '/' . $plugin_basename . '/' . $this->_template )
 			) {
-				include WPMU_PLUGIN_DIR . '/' . $plugin_basename . '/' . $this->template;
+				include WPMU_PLUGIN_DIR . '/' . $plugin_basename . '/' . $this->_template;
 
 			} else if (
-				is_file( get_stylesheet_directory() . '/' . $this->template )
-				&& is_readable( get_stylesheet_directory() . '/' . $this->template )
+				is_file( get_stylesheet_directory() . '/' . $this->_template )
+				&& is_readable( get_stylesheet_directory() . '/' . $this->_template )
 			) {
-				include get_stylesheet_directory() . '/' . $this->template;
+				include get_stylesheet_directory() . '/' . $this->_template;
 
 			} else if (
-				is_file( get_template_directory() . '/' . $this->template )
-				&& is_readable( get_template_directory() . '/' . $this->template )
+				is_file( get_template_directory() . '/' . $this->_template )
+				&& is_readable( get_template_directory() . '/' . $this->_template )
 			) {
-				include get_template_directory() . '/' . $this->template;
+				include get_template_directory() . '/' . $this->_template;
 
 			} else {
-				wp_die( sprintf( __( 'Template file `%s` is not exists.', 'icf' ), $this->template ) );
+				wp_die( sprintf( __( 'Template file `%s` is not exists.', 'icf' ), $this->_template ) );
 			}
 
 		} else {
@@ -261,6 +260,7 @@ abstract class ICF_SettingsPage_Abstract {
 				?>
 			</div>
 			<?php
+			submit_button();
 			echo $this->get_footer();
 		}
 
@@ -296,13 +296,15 @@ abstract class ICF_SettingsPage_Abstract {
 	public function get_header( $attr = array() ) {
 		$attr = wp_parse_args( $attr, array(
 			'title' => $this->title,
-			'form_action' => 'options.php',
+			'form_action' => '',
+			'icon' => 'options-general',
 			'form_id' => $this->_slug . '_form'
 		) );
 
 		ob_start();
 		?>
 		<div class="wrap">
+		<?php screen_icon($attr['icon']); ?>
 		<h2><?php echo esc_html( $attr['title'] ) ?></h2>
 		<form method="post" action="<?php echo $attr['form_action'] ?>" id="<?php echo $attr['form_id'] ?>">
 		<?php
@@ -315,19 +317,10 @@ abstract class ICF_SettingsPage_Abstract {
 	/**
 	 * Returns the footer html
 	 *
-	 * @param array $attr
 	 * @return string
 	 */
-	public function get_footer( $attr = array() ) {
-		$attr = wp_parse_args( $attr, array(
-			'submit_button' => true
-		) );
-
+	public function get_footer() {
 		ob_start();
-
-		if ($attr['submit_button']) {
-			submit_button();
-		}
 		?>
 		</form>
 		</div>
@@ -385,13 +378,40 @@ abstract class ICF_SettingsPage_Abstract {
 		return ob_get_clean();
 	}
 
+	public function save() {
+		if ( !$action = icf_get_array( $_GET, 'action' ) ) {
+			$action = icf_get_array( $_POST, 'action' );
+		}
+
+		if ( $action == 'update' ) {
+			check_admin_referer( $this->_slug . '-options' );
+
+			if ( !current_user_can( $this->_capability ) ) {
+				wp_die( __( 'Error: options page not found.' ) );
+			}
+
+			do_action('icf_settings_page_save');
+			do_action('icf_settings_page_save_' . $this->_slug);
+
+			if ( !count( get_settings_errors() ) ) {
+				add_settings_error('general', 'settings_updated', __('Settings saved.'), 'updated');
+			}
+
+			set_transient('settings_errors', get_settings_errors(), 30);
+
+			$goback = add_query_arg( 'settings-updated', 'true',  wp_get_referer() );
+			wp_redirect( $goback );
+			exit;
+		}
+	}
+
 	abstract public function register();
 }
 
 class ICF_SettingsPage_Parent extends ICF_SettingsPage_Abstract {
-	public $icon_url;
+	protected $_icon_url;
 
-	public $position;
+	protected $_position;
 
 	protected $_children = array();
 
@@ -406,8 +426,8 @@ class ICF_SettingsPage_Parent extends ICF_SettingsPage_Abstract {
 		parent::__construct( $slug, $title, $args );
 		$args = wp_parse_args( $args, array( 'icon_url' => null, 'position' => null ) );
 
-		$this->icon_url = $args['icon_url'];
-		$this->position = $args['position'];
+		$this->_icon_url = $args['icon_url'];
+		$this->_position = $args['position'];
 	}
 
 	/**
@@ -435,6 +455,11 @@ class ICF_SettingsPage_Parent extends ICF_SettingsPage_Abstract {
 			return $this->_children[$slug];
 
 		} else {
+			$args = wp_parse_args($args, array(
+				'capability' => $this->_capability,
+				'option_set' => $this->_option_set,
+			));
+
 			$child = new ICF_SettingsPage_Child( $this, $slug, $title, $args );
 		}
 
@@ -458,10 +483,15 @@ class ICF_SettingsPage_Parent extends ICF_SettingsPage_Abstract {
 
 	public function register() {
 		add_menu_page(
-			$this->title, $this->menu_title, $this->capability, $this->_slug,
-			is_callable( $this->function ) ? $this->function : array( $this, 'display' ),
-			$this->icon_url, $this->position
+			$this->title, $this->_menu_title, $this->_capability, $this->_slug,
+			is_callable( $this->_function ) ? $this->_function : array( $this, 'display' ),
+			$this->_icon_url, $this->_position
 		);
+
+		$hook = get_plugin_page_hookname($this->_slug, '');
+
+		add_action( 'load-' . $hook, array( $this, 'pre_render' ) );
+		add_action( 'load-' . $hook, array( $this, 'save' ) );
 	}
 }
 
@@ -516,10 +546,15 @@ class ICF_SettingsPage_Child extends ICF_SettingsPage_Abstract {
 	 */
 	public function register() {
 		add_submenu_page(
-			$this->_parent_slug, $this->title, $this->menu_title,
-			$this->capability, $this->_slug,
-			is_callable( $this->function ) ? $this->function : array( $this, 'display' )
+			$this->_parent_slug, $this->title, $this->_menu_title,
+			$this->_capability, $this->_slug,
+			is_callable( $this->_function ) ? $this->_function : array( $this, 'display' )
 		);
+
+		$hook = get_plugin_page_hookname($this->_slug, $this->_parent_slug);
+
+		add_action( 'load-' . $hook, array( $this, 'pre_render' ) );
+		add_action( 'load-' . $hook, array( $this, 'save' ) );
 	}
 }
 
@@ -532,6 +567,8 @@ class ICF_SettingsPage_Section {
 
 	protected $_page_slug;
 
+	protected $_option_set;
+
 	protected $_components = array();
 
 	/**
@@ -542,9 +579,10 @@ class ICF_SettingsPage_Section {
 	 * @param    stirng          $title
 	 * @param    string|callback $description_or_callback
 	 */
-	public function __construct( $page_slug, $id = null, $title = null, $description_or_callback = null ) {
+	public function __construct( $page_slug, $id = null, $title = null, $description_or_callback = null, $option_set = null ) {
 		$this->_page_slug = $page_slug;
 		$this->_id = empty( $id ) ? 'default' : $id;
+		$this->_option_set = $option_set;
 
 		$this->title = empty( $title ) ? $this->_id : $title;
 		$this->description_or_callback = $description_or_callback;
@@ -571,13 +609,22 @@ class ICF_SettingsPage_Section {
 	}
 
 	/**
+	 * Returns the option set
+	 *
+	 * @return string|null
+	 */
+	public function get_option_set() {
+		return $this->_option_set;
+	}
+
+	/**
 	 * Creates the component
 	 *
 	 * @param    string|ICF_SettingsPage_Section_Component $id
 	 * @param    string                                    $title
 	 * @return    ICF_SettingsPage_Section_Component
 	 */
-	public function component( $id, $title = '' ) {
+	public function component( $id, $title = '', $option_set = null ) {
 		if ( is_object( $id ) && is_a( $id, 'ICF_SettingsPage_Section_Component' ) ) {
 			$component = $id;
 			$id = $component->get_id();
@@ -590,7 +637,8 @@ class ICF_SettingsPage_Section {
 			$component = $this->_components[$id];
 
 		} else {
-			$component = new ICF_SettingsPage_Section_Component( $id, $title, $this->_page_slug, $this->_id );
+			$option_set = empty( $option_set ) ? ( empty( $this->_option_set ) ? null : $this->_option_set ) : $option_set;
+			$component = new ICF_SettingsPage_Section_Component( $id, $title, $this->_page_slug, $this->_id, $option_set );
 			$this->_components[$id] = $component;
 		}
 
@@ -638,6 +686,8 @@ class ICF_SettingsPage_Section_Component extends ICF_Component_Abstract {
 
 	protected $_section_id;
 
+	protected $_option_set;
+
 	/**
 	 * Constructor
 	 *
@@ -646,12 +696,13 @@ class ICF_SettingsPage_Section_Component extends ICF_Component_Abstract {
 	 * @param    string $page_slug
 	 * @param    string $section_id
 	 */
-	public function __construct( $id, $title = null, $page_slug = null, $section_id = null ) {
+	public function __construct( $id, $title = null, $page_slug = null, $section_id = null, $option_set = null ) {
 		parent::__construct();
 
 		$this->_id = $id;
 		$this->_page_slug = $page_slug;
 		$this->_section_id = ( empty( $section_id ) && $section_id !== false ) ? 'default' : $section_id;
+		$this->_option_set = $option_set;
 
 		$this->title = empty( $title ) ? $this->_id : $title;
 
@@ -686,6 +737,15 @@ class ICF_SettingsPage_Section_Component extends ICF_Component_Abstract {
 	}
 
 	/**
+	 * Returns the option set
+	 *
+	 * @return string|null
+	 */
+	public function get_option_set() {
+		return $this->_option_set;
+	}
+
+	/**
 	 * Registers to system
 	 */
 	public function register() {
@@ -711,21 +771,39 @@ class ICF_SettingsPage_Section_Component_Element_Value extends ICF_Component_Ele
 }
 
 abstract class ICF_SettingsPage_Section_Component_Element_FormField_Abstract extends ICF_Component_Element_FormField_Abstract {
-	protected $_stored_value = false;
+	protected $_is_system_page_form = false;
 
 	public function __construct( ICF_SettingsPage_Section_Component $component, $name, $value = null, array $args = array() ) {
 		parent::__construct( $component, $name, $value, $args );
 
-		add_action('admin_init', array($this, 'register'));
+		$system_pages = array(
+			'general', 'media', 'discussion', 'permalink',
+			'privacy', 'reading', 'writing'
+		);
+
+		add_action( 'admin_menu', array( $this, 'register' ) );
+
+		if ( in_array( $this->_component->get_page_slug(), $system_pages ) ) {
+			$this->_is_system_page_form = true;
+
+		} else {
+			add_action( 'icf_settings_page_save_' . $this->_component->get_page_slug(), array( $this, 'save_form' ) );
+		}
 	}
 
 	public function register() {
-		if ( $this->_component->get_page_slug() ) {
+		if ( $this->_is_system_page_form ) {
 			register_setting( $this->_component->get_page_slug(), $this->_name );
 		}
 
-		if ( get_option( $this->_name ) === false && $this->_value ) {
-			update_option( $this->_name, $this->_value );
+		if ( $this->read_value() === false && ( !empty( $this->_value ) || $this->_value === 0 ) ) {
+			$this->save_value( $this->_value );
+		}
+	}
+
+	public function save_form() {
+		if ( isset( $_POST[$this->_name] ) ) {
+			$this->save_value( $_POST[$this->_name] );
 		}
 	}
 
@@ -742,117 +820,124 @@ abstract class ICF_SettingsPage_Section_Component_Element_FormField_Abstract ext
 	}
 
 	public function before_render() {
-		$value = get_option( $this->_name, false );
+		$value = $this->read_value();
 
 		if ( $value !== false ) {
-			$this->_stored_value = $value;
+			$this->_value = $value;
+		}
+	}
+
+	public function read_value() {
+		if ( $this->_component->get_option_set() && !$this->_is_system_page_form ) {
+			$values = (array)get_option( $this->_component->get_option_set() );
+			$value = icf_get_array( $values, $this->_name );
+
+		} else {
+			$value = get_option( $this->_name );
+		}
+
+		return !empty($value) || $value === 0 ? $value : false;
+	}
+
+	public function save_value( $value ) {
+		if ( !is_array( $value ) ) {
+			$value = trim( $value );
+		}
+
+		$value = stripslashes_deep( $value );
+
+		if ( $this->_component->get_option_set() && !$this->_is_system_page_form ) {
+			$values = (array)get_option( $this->_component->get_option_set() );
+			icf_set_array( $values, $this->_name, $value );
+			update_option( $this->_component->get_option_set(), $values );
+
+		} else {
+			update_option( $this->_name, $value );
 		}
 	}
 }
 
 class ICF_SettingsPage_Section_Component_Element_FormField_Text extends ICF_SettingsPage_Section_Component_Element_FormField_Abstract {
-	public function before_render() {
-		parent::before_render();
-
-		if ( $this->_stored_value !== false ) {
-			$this->_value = $this->_stored_value;
-		}
-	}
 }
 
 class ICF_SettingsPage_Section_Component_Element_FormField_Password extends ICF_SettingsPage_Section_Component_Element_FormField_Abstract {
-	public function before_render() {
-		parent::before_render();
-
-		if ( $this->_stored_value !== false ) {
-			$this->_value = $this->_stored_value;
-		}
-	}
 }
 
 class ICF_SettingsPage_Section_Component_Element_FormField_Hidden extends ICF_SettingsPage_Section_Component_Element_FormField_Abstract {
-	public function before_render() {
-		parent::before_render();
-
-		if ( $this->_stored_value !== false ) {
-			$this->_value = $this->_stored_value;
-		}
-	}
 }
 
 class ICF_SettingsPage_Section_Component_Element_FormField_Textarea extends ICF_SettingsPage_Section_Component_Element_FormField_Abstract {
-	public function before_render() {
-		parent::before_render();
-
-		if ( $this->_stored_value !== false ) {
-			$this->_value = $this->_stored_value;
-		}
-	}
 }
 
 class ICF_SettingsPage_Section_Component_Element_FormField_Checkbox extends ICF_SettingsPage_Section_Component_Element_FormField_Abstract {
 	public function register() {
-		register_setting( $this->_component->get_page_slug(), $this->_name );
+		if ( $this->_is_system_page_form ) {
+			register_setting( $this->_component->get_page_slug(), $this->_name );
+		}
 
-		if ( get_option( $this->_name ) === false && $this->_value && !empty( $this->_args['checked'] ) ) {
-			update_option( $this->_name, $this->_value );
+		if ( $this->read_value() === false && ( !empty( $this->_value ) || $this->_value === 0 ) && !empty( $this->_args['checked'] ) ) {
+			$this->save_value( $this->_value );
 		}
 	}
 
 	public function before_render() {
-		parent::before_render();
+		$value = $this->read_value();
 
-		if ( $this->_stored_value !== false ) {
+		if ( $value !== false ) {
 			unset( $this->_args['checked'], $this->_args['selected'] );
-			$this->_args['checked'] = ( $this->_stored_value == $this->_value );
+			$this->_args['checked'] = ( $value == $this->_value );
 		}
 	}
 }
 
 class ICF_SettingsPage_Section_Component_Element_FormField_Radio extends ICF_SettingsPage_Section_Component_Element_FormField_Abstract {
 	public function register() {
-		register_setting( $this->_component->get_page_slug(), $this->_name );
+		if ( $this->_is_system_page_form ) {
+			register_setting( $this->_component->get_page_slug(), $this->_name );
+		}
 
 		if (
-			get_option( $this->_name ) === false
-			&& $this->_value
+			$this->read_value() === false
+			&& !empty( $this->_value )
 			&& !empty( $this->_args['checked'] )
 			&& in_array( $this->_args['checked'], array_values( (array)$this->_value ) )
 		) {
-			update_option( $this->_name, $this->_args['checked'] );
+			$this->save_value( $this->_args['checked'] );
 		}
 	}
 
 	public function before_render() {
-		parent::before_render();
+		$value = $this->read_value();
 
-		if ( $this->_stored_value !== false ) {
+		if ( $value !== false ) {
 			unset( $this->_args['checked'], $this->_args['selected'] );
-			$this->_args['checked'] = in_array( $this->_stored_value, (array)$this->_value ) ? $this->_stored_value : false;
+			$this->_args['checked'] = in_array( $value, (array)$this->_value ) ? $value : false;
 		}
 	}
 }
 
 class ICF_SettingsPage_Section_Component_Element_FormField_Select extends ICF_SettingsPage_Section_Component_Element_FormField_Abstract {
 	public function register() {
-		register_setting( $this->_component->get_page_slug(), $this->_name );
+		if ( $this->_is_system_page_form ) {
+			register_setting( $this->_component->get_page_slug(), $this->_name );
+		}
 
 		if (
-			get_option( $this->_name ) === false
-			&& $this->_value
+			$this->read_value() === false
+			&& !empty( $this->_value )
 			&& !empty( $this->_args['selected'] )
 			&& in_array( $this->_args['selected'], array_values( (array)$this->_value ) )
 		) {
-			update_option( $this->_name, $this->_args['selected'] );
+			$this->save_value( $this->_args['selected'] );
 		}
 	}
 
 	public function before_render() {
-		parent::before_render();
+		$value = $this->read_value();
 
-		if ( $this->_stored_value !== false ) {
+		if ( $value !== false ) {
 			unset( $this->_args['checked'], $this->_args['selected'] );
-			$this->_args['selected'] = in_array( $this->_stored_value, (array)$this->_value ) ? $this->_stored_value : false;
+			$this->_args['selected'] = in_array( $value, (array)$this->_value ) ? $value : false;
 		}
 	}
 }
@@ -866,14 +951,6 @@ class ICF_SettingsPage_Section_Component_Element_FormField_Wysiwyg extends ICF_S
 		}
 
 		$this->_args['id'] = $this->_name;
-	}
-
-	public function before_render() {
-		parent::before_render();
-
-		if ( $this->_stored_value !== false ) {
-			$this->_value = $this->_stored_value;
-		}
 	}
 
 	public function render() {
