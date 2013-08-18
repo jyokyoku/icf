@@ -193,9 +193,9 @@ function icf_timthumb( $file, $width = null, $height = null, $attr = array() ) {
 		}
 	}
 
-	$attr = apply_filters('icf_timthumb_attr', $attr);
+	$attr = apply_filters( 'icf_timthumb_attr', $attr );
 
-	return $timthumb . '?' . http_build_query(array_filter($attr));
+	return $timthumb . '?' . http_build_query( array_filter( $attr ) );
 }
 
 /**
@@ -679,7 +679,7 @@ function icf_convert( $value, $type ) {
 /**
  * Apply functions to the value.
  *
- * @param mixed $value
+ * @param mixed                 $value
  * @param string|array|callback $callback
  * @return mixed
  */
@@ -689,7 +689,7 @@ function icf_callback( $value, $callback ) {
 	}
 
 	if ( is_string( $callback ) ) {
-		$callback = array_unique(array_filter(explode( ' ', $callback )));
+		$callback = array_unique( array_filter( explode( ' ', $callback ) ) );
 	}
 
 	if ( is_array( $callback ) ) {
@@ -721,7 +721,7 @@ function icf_callback( $value, $callback ) {
 /**
  * Apply filters to the value.
  *
- * @param mixed $value
+ * @param mixed        $value
  * @param string|array $attr
  * @return mixed
  */
@@ -770,18 +770,18 @@ function icf_filter( $value, $attr = array() ) {
 function icf_get_blogs( $args = array() ) {
 	global $wpdb;
 
-	$args = wp_parse_args( $args , array(
+	$args = wp_parse_args( $args, array(
 		'include_id' => null,
 		'exclude_id' => null,
 		'orderby' => null,
 		'order' => 'desc'
-	));
+	) );
 
 	if ( !$args['orderby'] || !in_array( $args['orderby'], array( 'blog_id', 'site_id', 'domain', 'path', 'registered', 'last_updated', 'pubilc', 'archived', 'mature', 'spam', 'deleted', 'lang_id' ) ) ) {
 		$args['orderby'] = 'registered';
 	}
 
-	if (strtolower($args['order']) != 'desc') {
+	if ( strtolower( $args['order'] ) != 'desc' ) {
 		$args['order'] = 'asc';
 	}
 
@@ -799,14 +799,38 @@ function icf_get_blogs( $args = array() ) {
 		$query[] = sprintf( "AND blog_id NOT IN ( %s )", implode( ', ', $args['exclude_id'] ) );
 	}
 
-	$query[] = sprintf( "ORDER BY %s %s", $args['orderby'], strtoupper($args['order']) );
-	$key = md5(implode('', $query));
+	$query[] = sprintf( "ORDER BY %s %s", $args['orderby'], strtoupper( $args['order'] ) );
+	$key = md5( implode( '', $query ) );
 
-	if (!empty($GLOBALS['_icf_all_blogs'][$key])) {
+	if ( !empty( $GLOBALS['_icf_all_blogs'][$key] ) ) {
 		return $GLOBALS['_icf_all_blogs'][$key];
 	}
 
-	$GLOBALS['_icf_all_blogs'][$key] = $blogs = $wpdb->get_results( implode(' ', $query) );
+	$GLOBALS['_icf_all_blogs'][$key] = $blogs = $wpdb->get_results( implode( ' ', $query ) );
 
 	return $blogs ? $blogs : array();
+}
+
+/**
+ * Get the option with the option set
+ *
+ * @param string $key Dot separated key, First part of separated key with dot is option set name
+ * @param bool $default
+ * @return array|bool|mixed|void
+ */
+function icf_get_option( $key, $default = false ) {
+	if ( strpos( $key, '.' ) !== false ) {
+		list( $option_set, $key ) = explode( '.', $key, 2 );
+
+		if ( !$option_set || !$key ) {
+			return $default;
+		}
+
+		$option = (array)get_option( $option_set );
+
+		return icf_get_array( $option, $key, $default );
+
+	} else {
+		return get_option( $key, $default );
+	}
 }

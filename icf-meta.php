@@ -102,7 +102,7 @@ class ICF_Meta {
 	}
 
 	public static function option( $key, $attr = array() ) {
-		$value = get_option( $key, false );
+		$value = icf_get_option( $key, false );
 
 		if ( $value && !is_string( $value ) ) {
 			return $option;
