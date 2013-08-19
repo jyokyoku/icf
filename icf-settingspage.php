@@ -210,34 +210,8 @@ abstract class ICF_SettingsPage_Abstract {
 		ob_start();
 
 		if ( $this->_template ) {
-			$plugin_basename = IPF_Core::plugin_basename( __FILE__ );
-
 			if ( is_file( $this->_template ) && is_readable( $this->_template ) ) {
 				include $this->_template;
-
-			} else if (
-				is_file( WP_PLUGIN_DIR . '/' . $plugin_basename . '/' . $this->_template )
-				&& is_readable( WP_PLUGIN_DIR . '/' . $plugin_basename . '/' . $this->_template )
-			) {
-				include WP_PLUGIN_DIR . '/' . $plugin_basename . '/' . $this->_template;
-
-			} else if (
-				is_file( WPMU_PLUGIN_DIR . '/' . $plugin_basename . '/' . $this->_template )
-				&& is_readable( WPMU_PLUGIN_DIR . '/' . $plugin_basename . '/' . $this->_template )
-			) {
-				include WPMU_PLUGIN_DIR . '/' . $plugin_basename . '/' . $this->_template;
-
-			} else if (
-				is_file( get_stylesheet_directory() . '/' . $this->_template )
-				&& is_readable( get_stylesheet_directory() . '/' . $this->_template )
-			) {
-				include get_stylesheet_directory() . '/' . $this->_template;
-
-			} else if (
-				is_file( get_template_directory() . '/' . $this->_template )
-				&& is_readable( get_template_directory() . '/' . $this->_template )
-			) {
-				include get_template_directory() . '/' . $this->_template;
 
 			} else {
 				wp_die( sprintf( __( 'Template file `%s` is not exists.', 'icf' ), $this->_template ) );
