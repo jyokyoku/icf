@@ -499,6 +499,9 @@ class ICF_SettingsPage_Parent extends ICF_SettingsPage_Abstract {
 }
 
 class ICF_SettingsPage_Child extends ICF_SettingsPage_Abstract {
+	/**
+	 * @var string
+	 */
 	protected $_parent_slug;
 
 	/**
@@ -511,8 +514,6 @@ class ICF_SettingsPage_Child extends ICF_SettingsPage_Abstract {
 	 * @param    array                          $args
 	 */
 	public function __construct( $parent_slug, $slug, $title = null, $args = array() ) {
-		parent::__construct( $slug, $title, $args );
-
 		if ( is_object( $parent_slug ) && is_a( $parent_slug, 'ICF_SettingsPage_Parent' ) ) {
 			$this->_parent_slug = $parent_slug->get_slug();
 
@@ -533,6 +534,8 @@ class ICF_SettingsPage_Child extends ICF_SettingsPage_Abstract {
 
 			$this->_parent_slug = isset( $parent_alias[$parent_slug] ) ? $parent_alias[$parent_slug] : $parent_slug;
 		}
+
+		parent::__construct( $this->_parent_slug . '_' . $slug, $title, $args );
 	}
 
 	/**
