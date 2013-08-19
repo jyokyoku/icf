@@ -834,3 +834,31 @@ function icf_get_option( $key, $default = false ) {
 		return get_option( $key, $default );
 	}
 }
+
+/**
+ * Get the plugin base name from any plugin files.
+ *
+ * @param $file
+ * @return bool|string
+ */
+function icf_plugin_basename( $file ) {
+	$file = str_replace( '\\', '/', $file );
+	$file = preg_replace( '|/+|', '/', $file );
+	$plugin_dir = str_replace( '\\', '/', WP_PLUGIN_DIR );
+	$plugin_dir = preg_replace( '|/+|', '/', $plugin_dir );
+	$mu_plugin_dir = str_replace( '\\', '/', WPMU_PLUGIN_DIR );
+	$mu_plugin_dir = preg_replace( '|/+|', '/', $mu_plugin_dir );
+
+	if ( !file_exists( $file ) || ( strpos( $file, $plugin_dir ) !== 0 && strpos( $file, $mu_plugin_dir ) !== 0 ) ) {
+		return false;
+	}
+
+	$file = preg_replace( '#^' . preg_quote( $plugin_dir, '#' ) . '/|^' . preg_quote( $mu_plugin_dir, '#' ) . '/#', '', $file );
+	$file = trim( $file, '/' );
+
+	while ( ( $tmp_file = dirname( $file ) ) != '.' ) {
+		$file = $tmp_file;
+	}
+
+	return $file;
+}
